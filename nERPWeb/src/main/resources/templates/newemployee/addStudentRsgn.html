@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/master}">
+<head>
+<meta charset="ISO-8859-1">
+<title>Student Registration</title>
+<script type="text/javascript">
+
+
+	$(document).ready(function(){
+		 var gridDiv = document.querySelector('#myGrid');
+		 new agGrid.Grid(gridDiv, gridOptions);
+		 
+		 	$("#cancel").hide();
+			$("#save").hide();
+			$("#demo").hide();
+			$('#delete').attr("disabled", true);
+		 
+		 agGrid.simpleHttpRequest({
+				url : "stud-regs-through-ajax"
+				}).then(function(data) {
+				gridOptions.api.setRowData(data);
+				});
+	//date	 
+		 var dateFormat = localStorage.getItem("dateFormat");
+			/* $("#fromDateCalendar").datetimepicker({
+				format : dateFormat,
+				closeOnDateSelect : true,
+				timepicker : false,
+			}).on("change", function() {
+				$('#fromDate').val($(this).val());
+			})
+			
+			$('#fromDate').blur(function(){
+				$("#fromDateCalendar").val($(this).val());
+			}) */
+			//dob
+			$("#toDateCalendar").datetimepicker({
+				format : dateFormat,
+				closeOnDateSelect : true,
+				timepicker : false,
+			}).on("change", function() {
+				$('#dob').val($(this).val());
+			})
+			
+			 $('#dob').blur(function(){
+				$("#toDateCalendar").val($(this).val());
+			})
+			//joining
+			
+			$("#joinDateCalendar").datetimepicker({
+				format : dateFormat,
+				closeOnDateSelect : true,
+				timepicker : false,
+			}).on("change", function() {
+				$('#join').val($(this).val());
+			})
+			
+			 $('#join').blur(function(){
+				$("#joinDateCalendar").val($(this).val());
+			}) 
+			
+			//passout
+			
+			$("#passDateCalendar").datetimepicker({
+				format : dateFormat,
+				closeOnDateSelect : true,
+				timepicker : false,
+			}).on("change", function() {
+				$('#passout').val($(this).val());
+			})
+			
+			 $('#passout').blur(function(){
+				$("#passDateCalendar").val($(this).val());
+			}) 
+			
+		 });
+	
+	
+	
+	
+	const columnDefs=[
+		{
+			headerCheckboxSelection: true,
+			 /*  headerCheckboxSelectionFilteredOnly: true */  checkboxSelection: true ,width: 10, sortable: false,filter: false,resizable: true 
+		},
+		{  headerName: 'Student ID', field: "studId" ,
+			 cellRenderer: function(params){
+		 	        return '<a onclick=editPage("' +  params.data.studId + '") href="javascript:void(0)">' + params.data.studId + '</a>';}},
+			{  headerName: 'Name',field: "name"},
+			{  headerName: 'FatherName',field: "fatherName"},
+			{  headerName: 'MotherName',field: "motherName"},
+			{  headerName: 'Date-Of-Birth',field: "dob",cellStyle: {textAlign: 'center'}},
+			{  headerName: 'Joining Year',field: "join",cellStyle: {textAlign: 'center'}},
+			{  headerName: 'PassOut Year',field: "passout",cellStyle: {textAlign: 'center'}},
+			{  headerName: 'Address',field: "address"},
+			{  headerName: 'Country',field: "country"},
+			{  headerName: 'State',field: "state"},
+			{  headerName: 'District',field: "district"},
+			{  headerName: 'Email',field: "email"},
+			{  headerName: 'Mobile',field: "mobile"},
+			{  headerName: 'Blood Group',field: "bloodgrp"},
+			{  headerName: 'Status',field: "status",cellStyle: {textAlign: 'center'}}
+		];
+	
+	const gridOptions = {
+		    columnDefs: columnDefs,
+		    defaultColDef: {
+			  	  sortable: true, 
+			  	  filter: true, 
+			  	  resizable: true, 
+			  	  width: 149,
+			  	  height: 10
+			     },
+			     rowSelection : 'multiple',
+			     onSelectionChanged: rowSelectStud,
+			     suppressRowClickSelection: true,
+			     getRowNodeId : function(data) {
+			    	 return data.studId;
+			    	 }
+		    };
+	
+	var  deleteId="";
+	
+	function rowSelectStud()
+		{
+			var selectedRows = gridOptions.api.getSelectedRows();
+			console.log(selectedRows);
+			
+			 deleteId="";
+			for(var i=0;i<selectedRows.length;i++)
+				{
+				
+				deleteId=deleteId+'"'+selectedRows[i].studId+'",';
+				
+				
+				} 
+			deleteId=deleteId.substring(0,deleteId.length-1);
+			
+			
+			var rowCount = 0;
+			selectedRows.forEach(function() {
+				rowCount = rowCount + 1;
+			});
+			if (rowCount > 0) {
+				$('#delete').attr("disabled", false);
+				
+			} else {
+				$('#delete').attr("disabled", true);
+			} 
+			
+		}
+		
+		
+		function deleteStudent(){
+			
+			 $.ajax({
+					type : "GET",
+					url : "stud-regs-delete?deleteId=" + deleteId,
+					async: false,
+					success : function(response) {
+						console.log(response)
+					if (response.message == "Success") {
+						agGrid.simpleHttpRequest({
+							url : "stud-regs-through-ajax"
+							}).then(function(data) {
+							gridOptions.api.setRowData(data);
+							});
+						$('#delete').attr("disabled", true);
+							
+					}
+							
+					},
+					error : function(data) {
+					
+					}
+					
+			 });
+			
+		
+		}
+		
+		
+	
+	function add(){
+		
+		$("#studId").val("");
+		$("#name").val("");
+		$("#fatherName").val("");
+		$("#motherName").val("");
+		$("#dob").val("");
+		$("#join").val("");
+		$("#passout").val("");
+		$("#address").val("");
+		$("#country").val("");
+		$("#state").val("");
+		$("#district").val(""); 
+		$("#email").val(""); 
+		$("#mobile").val(""); 
+		$("#bloodgrp").val(""); 
+		$("#status").prop("checked",true); 
+			 
+		$("#add").hide();
+		$("#myGrid").hide();
+		$("#cancel").show();
+		$("#save").show();
+		$("#demo").show();
+		$("#delete").hide();
+ }	
+	 
+	function cancel(){
+		
+		$("#add").show();
+		$("#myGrid").show();
+		$("#cancel").hide();
+		$("#save").hide();
+		$("#demo").hide();
+		$("#delete").show();
+}
+	
+	  function addDetails(){
+			
+			
+			var obj = {};
+			obj.studId = $("#studId").val();
+			obj.name = $("#name").val();
+			obj.fatherName = $("#fatherName").val();
+			obj.motherName =$("#motherName").val();
+			obj.dob = $("#dob").val();
+			obj.join = $("#join").val();
+			obj.passout = $("#passout").val();
+			obj.address = $("#address").val();
+			obj.country = $("#country").val();
+			obj.state = $("#state").val();
+			obj.district=$("#district").val();
+			obj.email=$("#email").val();
+			obj.mobile=$("#mobile").val();
+			obj.bloodgrp=$("#bloodgrp").val();
+			
+			obj.status=$("#status:checkbox:checked").val();
+			
+			 if(obj.status==undefined)
+				{
+				//alert("hello");
+				obj.status="0";
+				
+				}
+			else
+				{
+				obj.status="1";
+				} 
+			
+				
+				var validation = true;
+
+				if (obj.name == null || obj.name == "") {
+				validation = validationUpdated("Name Required", "name");
+				}
+				if (obj.fatherName == null || obj.fatherName == "") {
+				validation = validationUpdated("Father's Name Required","fatherName");
+				}
+				if (obj.motherName == null || obj.motherName == "") {
+				validation = validationUpdated("Mother's Required", "motherName");
+				}
+				if (obj.dob == null || obj.dob == "") {
+				validation = validationUpdated("DOB Required", "dob");
+				}
+				if (obj.join == null || obj.join == "") {
+				validation = validationUpdated("Joining Year Required", "join");
+				}
+				if (obj.passout == null || obj.passout == "") {
+				validation = validationUpdated("Passout Year Required", "passout");
+				}
+				if (obj.address == null || obj.address == "") {
+				validation = validationUpdated("Address Required", "address");
+				}
+				if (obj.country == null || obj.country == "") {
+				validation = validationUpdated("Country Required", "country");
+				}
+				if (obj.state == null || obj.state == "") {
+				validation = validationUpdated("State Required", "state");
+				}
+				if (obj.district == null || obj.district == "") {
+				validation = validationUpdated("District Required", "district");
+				}
+				if (obj.email == null || obj.email == "") {
+				validation = validationUpdated("Email Required", "email");
+				}
+				if (obj.mobile == null || obj.mobile == "") {
+				validation = validationUpdated("Mobile bNumber Required", "mobile");
+				}
+				if (obj.bloodgrp == null || obj.bloodgrp == "") {
+				validation = validationUpdated("Blood Group Required", "bloodgrp");
+				}
+				if (obj.status == null || obj.status == "") {
+				validation = validationUpdated("Status Required", "status");
+				} 
+				
+		if(validation){
+			
+			$.ajax({
+				type		: "POST",
+				url 		: "stud-regs-add",
+				contentType	: "application/json",
+				data		: JSON.stringify(obj),
+				
+				success		: function(response){
+					//console.log(response);
+					if(response.message == "Success"){
+						$("#add").show();
+						$("#myGrid").show();
+						$("#cancel").hide();
+						$("#save").hide();
+						$("#demo").hide(); 
+						$("#delete").show();
+						
+						agGrid.simpleHttpRequest({
+							url : "stud-regs-through-ajax"
+							}).then(function(data) {
+							gridOptions.api.setRowData(data);
+							});
+					}
+				},
+				error : function(data){
+					
+					//console.log(data);
+				}
+			})
+		}
+	  }
+	  
+	  //edit
+	  function editPage(id){
+				  $("#myGrid").hide();
+				  $("#cancel").show();
+					$("#save").show();
+					$("#demo").show();
+					$("#add").hide();
+					$("#delete").hide();
+					
+					  $.ajax({
+					type : "GET",
+					url : "stud-regs-edit?id=" + id,
+					async: false,
+					success : function(response) {
+					if (response.message == "Success") {
+						
+						//console.log(response.body.state)
+						
+							$("#studId").val(response.body.studId);
+							$("#name").val(response.body.name);
+							$("#fatherName").val(response.body.fatherName);
+							$("#motherName").val(response.body.motherName);
+							$('#dob').val(response.body.dob);
+							$('#join').val(response.body.join);
+							$('#passout').val(response.body.passout);
+							$('#address').val(response.body.address);
+							$('#country').val(response.body.country);
+							//var empCountry = response.body.country;
+							var empState = response.body.state;
+							var empDist=response.body.district;
+							stateOnChangeEdit(empState);
+							districtOnchangeEdit(empState,empDist);
+							$('#email').val(response.body.email);
+							$('#mobile').val(response.body.mobile);
+							$('#bloodgrp').val(response.body.bloodgrp);
+							$('#status').val(response.body.status);
+							var status = response.body.status;
+							if (status === '0') {
+
+									$('#status').prop('checked', false)
+
+							} else {
+									$('#status').prop('checked', true)
+							}
+							
+					}
+					
+					}
+			 }) 
+			}
+			 
+	  
+	  function stateOnChangeEdit(empState)
+	  {
+		  var empCountry = $("#country").val();
+
+			if (empCountry) {
+
+			$("#state").empty();
+			var option = $("<option></option>");
+			$(option).val(null);
+			$(option).html("Select");
+			$("#state").append(option);
+			$.ajax({
+				type : 'GET',
+				url : 'stud-regs-stateName-ajax?country='+ empCountry,
+				contentType : false,
+				
+				success : function(response) {
+					if (response.message == "success") {
+						$("#state").empty();
+						console.log("In State")
+						var option = $("<option></option>");
+						$(option).val(null);
+						$(option).html("Select");
+						$("#state").append(option);
+						console.log(response.body)
+						for (var i = 0; i < response.body.length; i++) {
+							var option = $("<option></option>");
+							$(option).val(response.body[i].key);
+							$(option).html(response.body[i].name);
+							$("#state").append(option);
+						}
+						$("#state").val(empState);
+					}
+				},
+				error : function(e) {
+					alert("error");
+				}
+			});
+		} else {
+			$("#state").empty();
+			var option = $("<option></option>");
+			$(option).val(null);
+			$(option).html("Select");
+			$("#state").append(option);
+			$("#district").empty();
+			var option = $("<option></option>");
+			$(option).val(null);
+			$(option).html("Select");
+			$("#district").append(option);
+		}
+	}
+	  
+	  function districtOnchangeEdit(empState,empDist)
+	  {
+		  //var empState = $("#state").val();
+
+			if (empState) {
+
+			$("#district").empty();
+			var option = $("<option></option>");
+			$(option).val(null);
+			$(option).html("Select");
+			$("#district").append(option);
+			$.ajax({
+				type : 'GET',
+				url : 'stud-regs-district-ajax?state='+ empState,
+				contentType : false,
+				
+				success : function(response) {
+					if (response.message == "success") {
+						$("#district").empty();
+						console.log("In State")
+						var option = $("<option></option>");
+						$(option).val(null);
+						$(option).html("Select");
+						$("#district").append(option);
+						console.log(response.body)
+						for (var i = 0; i < response.body.length; i++) {
+							var option = $("<option></option>");
+							$(option).val(response.body[i].key);
+							$(option).html(response.body[i].name);
+							$("#district").append(option);
+						}
+						$("#district").val(empDist);
+					}
+				},
+				error : function(e) {
+					alert("error");
+				}
+			});
+		} else {
+			$("#district").empty();
+			var option = $("<option></option>");
+			$(option).val(null);
+			$(option).html("Select");
+			$("#district").append(option);
+		}
+	  }  
+	  
+	  
+	  
+	  
+	  function getState(){
+		  
+		
+			var empCountry = $("#country").val();
+
+			if (empCountry) {
+
+			$("#state").empty();
+			var option = $("<option></option>");
+			$(option).val(null);
+			$(option).html("Select");
+			$("#state").append(option);
+			$.ajax({
+				type : 'GET',
+				url : 'stud-regs-stateName-ajax?country='+ empCountry,
+				contentType : false,
+				
+				success : function(response) {
+					if (response.message == "success") {
+						$("#state").empty();
+						console.log("In State")
+						var option = $("<option></option>");
+						$(option).val(null);
+						$(option).html("Select");
+						$("#state").append(option);
+						console.log(response.body)
+						for (var i = 0; i < response.body.length; i++) {
+							var option = $("<option></option>");
+							$(option).val(response.body[i].key);
+							$(option).html(response.body[i].name);
+							$("#state").append(option);
+						}
+					}
+				},
+				error : function(e) {
+					alert("error");
+				}
+			});
+		} else {
+			$("#state").empty();
+			var option = $("<option></option>");
+			$(option).val(null);
+			$(option).html("Select");
+			$("#state").append(option);
+			$("#district").empty();
+			var option = $("<option></option>");
+			$(option).val(null);
+			$(option).html("Select");
+			$("#district").append(option);
+		}
+	}
+	  
+	  function getDistrict(){
+		  
+		  var empState = $("#state").val();
+
+			if (empState) {
+
+			$("#district").empty();
+			var option = $("<option></option>");
+			$(option).val(null);
+			$(option).html("Select");
+			$("#district").append(option);
+			$.ajax({
+				type : 'GET',
+				url : 'stud-regs-district-ajax?state='+ empState,
+				contentType : false,
+				
+				success : function(response) {
+					if (response.message == "success") {
+						$("#district").empty();
+						console.log("In State")
+						var option = $("<option></option>");
+						$(option).val(null);
+						$(option).html("Select");
+						$("#district").append(option);
+						console.log(response.body)
+						for (var i = 0; i < response.body.length; i++) {
+							var option = $("<option></option>");
+							$(option).val(response.body[i].key);
+							$(option).html(response.body[i].name);
+							$("#district").append(option);
+						}
+					}
+				},
+				error : function(e) {
+					alert("error");
+				}
+			});
+		} else {
+			$("#district").empty();
+			var option = $("<option></option>");
+			$(option).val(null);
+			$(option).html("Select");
+			$("#district").append(option);
+		}
+	  }
+</script>
+
+
+<body>
+	<div layout:fragment="content" class="maincontent">
+
+		<div class="container-fluid">
+			<div class="row">
+				<div class="maincontentsec">
+					<div class="content_padding">
+
+						<div class="row">
+							<div class="col-md-5 buttonsec btn-hs"></div>
+							<div class="col-md-7 buttonsec btn-hs">
+								<button class="btn1" id="add" onclick="add()">Add</button>
+								<button class="btn3" id="delete" onclick="deleteStudent()">Delete</button>
+								 <button class="btn2" type="submit" id="save" form="form"
+									value="add" onclick="addDetails()">Save</button>
+								<button class="btn4" id="cancel" onclick="cancel()">Cancel</button>
+								
+							</div>
+						</div>
+
+						<div class="collapse" id="demo">
+							<input type="hidden" id="studId">
+							<div class="row">
+
+								<div class="col-md-6">
+									<div class="form-group">
+										<label><b>Name</b></label> <input type="text"
+											class="form-control" id="name">
+									</div>
+								</div>
+
+
+								<div class="col-md-6">
+									<div class="form-group">
+										<label><b>Father's Name</b></label> <input type="text"
+											class="form-control" id="fatherName">
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="form-group">
+										<label><b>Mother's Name</b></label> <input type="text"
+											class="form-control" id="motherName">
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="form-group">
+										<label><b>DOB</b></label> <input type="text" id="dob"
+												class="form-control"
+												th:attr="onkeyup=|formatDate('dob','${session.DATEFORMAT_JS}')|">
+												<i class="ti-calendar picker_calendar" id="toDateCalendar"></i>
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="form-group">
+										<label><b>Joining Year</b></label> <input type="text" id="join"
+												class="form-control"
+												th:attr="onkeyup=|formatDate('join','${session.DATEFORMAT_JS}')|">
+												<i class="ti-calendar picker_calendar" id="joinDateCalendar"></i>
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="form-group">
+										<label><b>Passout Year</b></label> <input type="text" id="passout"
+												class="form-control"
+												th:attr="onkeyup=|formatDate('passout','${session.DATEFORMAT_JS}')|">
+												<i class="ti-calendar picker_calendar" id="passDateCalendar"></i>
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="form-group">
+										<label><b>Address</b></label>
+										<textarea class="form-control" id="address"></textarea>
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="form-group">
+										<label><b>Country</b></label>
+										<div class="select">
+											<select id="country" onchange=getState()>
+												<option value="">--Select--</option>
+												<option th:each="c,iter:${countrylist}" th:value="${c.key}"
+													th:text="${c.name}"></option>
+											</select>
+										</div>
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="form-group">
+										<label><b>State</b></label>
+										<div class="select">
+											<select id="state" onchange=getDistrict()>
+												<option value="">--Select--</option>
+												<option th:each="c,iter:${state}" th:value="${c.key}"
+													th:text="${c.name}"></option>
+											</select>
+										</div>
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="form-group">
+										<label><b>District</b></label>
+										<div class="select">
+											<select id="district">
+												<option value="">--Select--</option>
+												<option th:each="c,iter:${district}" th:value="${c.key}"
+													th:text="${c.name}"></option>
+											</select>
+										</div>
+									</div>
+								</div>
+
+								<div class="col-md-6">
+									<div class="form-group">
+										<label><b>Email</b></label> <input type="text"
+											class="form-control" id="email">
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="form-group">
+										<label><b>Mobile No</b></label> <input type="text"
+											class="form-control" id="mobile">
+									</div>
+								</div>
+
+								<div class="col-md-6">
+									<div class="form-group">
+										<label><b>Blood Group</b></label>
+										<div class="select">
+											<select id="bloodgrp">
+												<option value="">--Select--</option>
+												<option th:each="c,iter:${bloodgrplist}" th:value="${c.key}"
+													th:text="${c.name}"></option>
+											</select>
+										</div>
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="form-group">
+										<!-- <label><b>Status</b></label><select id="status">
+											<option value="">--Select--</option>
+											<option value='1'>Active</option>
+											<option value='0'>Inactive</option>
+										</select><br> -->
+									
+									<div class="row">
+									
+									<label><b>Status</b></label>
+									</div>
+									<input type="checkbox" id="status" class="check" name="active" value="1">
+  									<label for="1">Active</label>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div id="myGrid" style="width: 100%; height: 500px;"
+							class="ag-theme-alpine"></div>
+
+					</div>
+				</div>
+			</div>
+		</div>
+		</div>
+		</body>
+	</head>
+</html>

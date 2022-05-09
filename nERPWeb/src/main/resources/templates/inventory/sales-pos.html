@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{/layout/master}">
+<head>
+<style>
+
+	#backpage {
+	    width:370px;
+	    right:10px;
+	    position:absolute;
+	}
+	.mrt_15
+	{
+	/* right:5px;
+	position:absolute; */
+	margin-top:27px;
+	}
+</style>
+<script>
+
+$(document).ready(function() {
+	//gridOptions.api.setRowData([]);
+	var gridDiv = document.querySelector('#myGrid');
+	new agGrid.Grid(gridDiv, gridOptions);
+	
+	gridOptions.api.setRowData([]);
+	
+	agGrid.simpleHttpRequest({
+		url : "sales-pos-view"
+	}).then(function(data) {
+		var len = data.length;
+		$('#totalReq').find('span').html(len);
+			gridOptions.api.setRowData(data);
+		
+	})
+	
+	$('#delete1').attr("disabled", true);
+	$('#delete').attr("disabled", true);
+	$('#transaction').hide();
+	$("#transactionNo").val("");
+	//myGrid1
+	
+	var gridDiv1 = document.querySelector('#myGrid1');
+	new agGrid.Grid(gridDiv1, gridOptions1);
+	var data = [];
+	gridOptions1.api.setRowData(data);
+	//console.log(data);
+		/* if(data.length === 0)
+		{
+			$('#next').attr("disabled", true);
+		}
+		else
+		{
+			$('#next').attr("disabled", false); 
+		} */
+	
+});
+
+/////////////////////////////////////////////////////////////////////////
+function checkNum(fieldId) {
+	var tempVal = $("#" + fieldId).val().replace(/[^0-9\.]/g, '');
+	$("#" + fieldId).val(tempVal);
+}
+    
+    
+function checkAlphabet(fieldId){
+	var tempVal = $("#"+fieldId).val().replace(/[^a-zA-Z]/g,'');
+	$("#"+fieldId).val(tempVal);
+	}
+
+//////////////////////////////////////////////////////////////////////
+/* -------------------search bar for mygrid1------------------------ */
+
+
+	function onQuickFilterChanged() {
+		gridOptions.api
+				.setQuickFilter(document.getElementById('quickFilter').value);
+	}
+
+	function cancelBar() {
+		var id = document.getElementById("closeKey");
+		id.style.display = "block";
+
+		if ($('#quickFilter').val() == null || $('#quickFilter').val() == "") {
+			id.style.display = "none";
+		}
+	}
+
+	$('input,textarea').focus(
+			function() {
+				$(this).data('placeholder', $(this).attr('placeholder')).attr(
+						'placeholder', '');
+			}).blur(function() {
+		$(this).attr('placeholder', $(this).data('placeholder'));
+	});
+
+	var count = 0;
+	function allCheck() {
+		count++;
+
+		if (count == 1) {
+			$('.checkCls').prop("checked", true);
+		} else {
+			count = 0;
+			$('.checkCls').prop("checked", false);
+		}
+	}
+
+	
+	/* -----------------------------ag grid1---------------------------- */
+	
+	const columnDefs = [ {
+		headerCheckboxSelection : true,
+		headerCheckboxSelectionFilteredOnly : true,
+		checkboxSelection : true,
+		width : 10,
+		sortable : false,
+		filter : false,
+		resizable : true
+	}, {
+		headerName : 'Bill No',
+		field : "billNo",
+		cellRenderer : function(params) {
+			return '<a onclick=editSalesPOS("'
+					+ params.data.billNo
+					+ '") href="javascript:void(0)">'
+					+ params.data.billNo + '</a>'; 
+	}
+	}, {
+		headerName : 'Customer Mobile No',
+		field : "custMobile"
+	}, {
+		headerName : 'CustomerName',
+		field : "custName"
+
+	}, {
+		headerName : 'Bill Amount',
+		field : "billAmount"
+	} ];
+
+	const gridOptions = {
+		columnDefs : columnDefs,
+		defaultColDef : {
+			sortable : true,
+			filter : true,
+			resizable : true,
+			width : 298,
+			height : 10
+		},
+		rowSelection : 'multiple',
+	onSelectionChanged : rowSelectSalesPOS,
+	suppressRowClickSelection : true ,
+	getRowNodeId : function(data) {
+	return data.billNo; 
+	}
+
+	};
+	
+	function newButton(){
+		
+		//alert(gridOptions1.api.data);
+		$('#transaction').hide();
+		$('#demo').show();
+		$('#nextpage').show();
+		$('#new1').hide();
+		$('#backpage').hide();
+		$('#delete1').hide();
+		$('#myGrid').hide();
+		$("#myGrid1").show();
+		$('#totalReq').hide();
+		$('#demo1').show();
+		$('#searchRowDiv').hide();
+		$("#suggesstion-box2_").hide;
+		$("#suggesstion-box1_").hide;
+		$("#autosearch-list2").hide;
+		$("#poStatus").prop("checked",true);
+		$('#next').attr("disabled", true);
+		$("#billNo").html("");
+		$("#custMobile").val("");
+		$("#custName").val("");
+		$("#itemId").val("");
+		$("#itemName").val("");
+		$("#quantity").val("");
+		$("#price").val("");
+		$("#billAmount").val("");
+		$("#payamount").val("");
+		$("#paymentMethod").val("");
+		$("#transactionNo").val("");
+		$("#billAmount").val("");
+		
+		$(".formValidation").remove();
+		gridOptions1.api.setRowData([]);
+		
+	}
+	
+	function cancelBtn() {
+		$("#new1").show();
+		$("#totalReq").show();
+		$("#myGrid").show();
+		$("#myGrid1").hide();
+		$("#searchRowDiv").show();
+		$("#demo").hide();
+		$("#demo1").hide();
+		$('#delete1').show();
+		$('#autosearch-list2').hide();
+		$('#autosearch-list1').hide();
+		$('#delete1').attr('disabled', true);
+		
+		$(".formValidation").remove();
+		
+		agGrid.simpleHttpRequest({
+			url : "sales-pos-view"
+		}).then(function(data) {
+			var len = data.length;
+			$('#totalReq').find('span').html(len);
+			gridOptions.api.setRowData(data);
+
+		});
+	}
+	
+	
+/*------------------ ag grid for myGrid1 child table------------------- */
+	
+	const columnDefs1 = [
+			{
+				headerCheckboxSelection : true,
+				headerCheckboxSelectionFilteredOnly : true,
+				checkboxSelection : true,
+				width : 10,
+				sortable : false,
+				filter : false,
+				resizable : true
+			},
+			{
+				headerName : 'Item ID',
+				field : "itemId",
+				cellRenderer : function(params) {
+					return '<a id="a1" onclick=editItemList("' + params.data.rowId
+							+ '") href="javascript:void(0)">'
+							+ params.data.itemId + '</a>';
+				},
+				
+			},
+
+			{
+				headerName : 'Item Name',
+				field : "itemName"
+
+			}, {
+				headerName : 'Quantity',
+				field : "quantity",
+				cellStyle : {
+					textAlign : 'right'
+				}
+			}, {
+				headerName : 'Price',
+				field : "price",
+				cellStyle : {
+					textAlign : 'right'
+				}
+			},{
+				headerName : 'Total Amount',
+				field : "billAmount",
+				cellStyle : {
+					textAlign : 'right'
+				},
+				
+			}
+
+	];
+
+	const gridOptions1 = {
+		columnDefs : columnDefs1,
+		defaultColDef : {
+			sortable : true,
+			filter : true,
+			resizable : true,
+			width : 238,
+			height : 5
+		},
+		rowSelection : 'multiple',
+		onSelectionChanged : rowSelectItemList,
+		suppressRowClickSelection : true,
+		getRowNodeId : function(data) {
+			return data.rowId;
+		},
+		onColumnResized: function (params) {
+			console.log(params);
+		},
+		pinnedBottomRowData: createSlitData(),
+		getRowStyle: function (params) {
+			if (params.node.rowPinned) {
+		   		return { 'font-weight': 'bold', 'color': 'blue', 'background':'#929292' };
+		    }
+		},
+		columnTypes: {
+		    valueColumn: {
+		      editable: true,
+		      aggFunc: 'sum',
+		      valueParser: 'Number(newValue)',
+		      filter: 'agNumberColumnFilter',
+		    },
+		  },
+		  onGridReady: onGridReadySlit,
+	
+	};
+	
+  var paidAmount=0.00;
+  function onGridReadySlit(event) {
+	  gridOptions1.api.setPinnedBottomRowData(createSlitData(gridOptions1.api));
+	}
+  var ttotal = 0.00;
+  function createSlitData(gridApi) {
+	    var result = [];
+
+	    var model;
+	    var visibleRows = [];
+	    if (gridApi) {
+	        model = gridApi.getModel();
+	        visibleRows = model.rowsToDisplay;
+	    }
+	   // console.log(visibleRows)
+	    var ttotal = 0.00;
+	    for (var i = 0; i < visibleRows.length; i++) {
+	        ttotal = ttotal + parseFloat(visibleRows[i].data.billAmount);
+	    }
+
+	    obj = {};
+	    obj.itemId = "Total Bill Amount :";
+	    //obj.billAmount = ttotal.toFixed(2);
+	    paidAmount = ttotal.toFixed(2);
+	    obj.billAmount = Math.round(paidAmount);
+	    result.push(obj)
+	    
+	    return result;
+
+	}
+	
+	/* ----------------auto search item list--------------- */
+
+	function getItemList() {
+		var search = $("#itemName").val();
+
+		if (search == "") {
+			$("#suggesstion-box1_").hide();
+		}
+
+		if (search) {
+
+			$
+					.ajax({
+						type : "POST",
+						url : "sales-pos-itemlist-autosearch",
+						dataType : 'json',
+						contentType : 'application/json',
+						data : search,
+						success : function(response) {
+							if (response.message == "success") {
+								//console.log(response);
+								if (response.body.length != 0) {
+									$("#search").css("background", "#FFF");
+									var content = '<ul id="autosearch-list1" style="margin-left:-40px; font-weight:100; font-size:14px; color:#ccc;">';
+									for (var i = 0; i < response.body.length; i++) {
+										content += '<li class="autocompletedata cp" onClick="selectAutosearchValue1(\''
+												+ response.body[i].itemId
+												+ '\',\''
+												+ response.body[i].itemName
+												+ '\')">'
+												+ response.body[i].itemName
+												+ '</li>';
+									}
+									content += '</ul>';
+									$("#suggesstion-box1_").show();
+									$("#suggesstion-box1_").html(content);
+
+								} else {
+									$("#search").css("background", "#FFF");
+									var content = '<div id="autosearch-list1">';
+									content += '<div onClick="selectAutocompleteValue()">'
+											+ "No Data Found" + '</div>';
+									content += '</div>';
+									$("#suggesstion-box1_").show();
+									$("#suggesstion-box1_").html(content);
+								}
+							}
+						},
+						error : function(data) {
+							console.log(data);
+						}
+					})
+		}
+	}
+
+	function selectAutosearchValue1(itemId, itemName) {
+
+		if (itemId) {
+
+			$("#itemName").val(itemName);
+			$("#itemId").val(itemId);
+			$("#search").val(itemName)
+			$("#search").attr('data-procat', itemId);
+			$("#suggesstion-box1_").hide();
+
+		} else {
+
+			$("#itemName").val("");
+			$("#itemId").val("");
+			$("#search").val("");
+			$("#search").attr('data-procat', "");
+			$("#suggesstion-box1_").hide();
+		}
+	}
+
+	function selectAutocompleteValue() {
+
+		$("#itemName").val("");
+		$("#search").val("");
+		$("#search").attr('data-procat', "");
+		$("#suggesstion-box1_").hide();
+	}
+
+	/* ----------------auto search mobile list--------------- */
+
+	function getMobileList() {
+		var search = $("#custMobile").val();
+
+		if (search == "") {
+			$("#suggesstion-box2_").hide();
+		}
+
+		if (search) {
+
+			$
+					.ajax({
+						type : "POST",
+						url : "sales-pos-mobile-autosearch",
+						dataType : 'json',
+						contentType : 'application/json',
+						data : search,
+						success : function(response) {
+							if (response.message == "success") {
+								//console.log(response);
+								if (response.body.length != 0) {
+									$("#search").css("background", "#FFF");
+									var content = '<ul id="autosearch-list2" style="margin-left:-40px; font-weight:100; font-size:14px; color:#ccc;">';
+									for (var i = 0; i < response.body.length; i++) {
+										content += '<li class="autocompletedata cp" onClick="selectAutosearchValue3(\''
+												+ response.body[i].custMobile
+												+ '\',\''
+												+ response.body[i].custName
+												+ '\')">'
+												+ response.body[i].custMobile
+												+ '</li>';
+									}
+									content += '</ul>';
+									$("#suggesstion-box2_").show();
+									$("#suggesstion-box2_").html(content);
+
+								}	else {
+											$("#search").css("background", "#FFF");
+											/* var content = '<div id="autosearch-list2">';
+											content += '<div onClick="selectAutocompleteValue1()">'
+											+ "No Data Found" + '</div>';
+											content += '</div>'; */
+											$("#suggesstion-box2_").hide();
+											//$("#suggesstion-box2_").html(content);
+									}
+							}
+						},
+						error : function(data) {
+							console.log(data);
+						}
+					})
+		}
+	}
+
+	function selectAutosearchValue3(custMobile, custName) {
+
+		if (custMobile) {
+
+			$("#custMobile").val(custMobile);
+			$("#custName").val(custName);
+			$("#search").val(custMobile)
+			$("#search").attr('data-procat', custMobile);
+			$("#suggesstion-box2_").hide();
+
+		} else {
+
+			$("#custMobile").val("");
+			$("#custName").val("");
+			$("#search").val("");
+			$("#search").attr('data-procat', "");
+			$("#suggesstion-box2_").hide();
+		}
+	}
+
+	function selectAutocompleteValue1() {
+
+		$("#custName").val("");
+		$("#search").val("");
+		$("#search").attr('data-procat', "");
+		$("#suggesstion-box2_").hide();
+	}
+
+	/* -----------------------------------save child table----------------------------------------- */
+
+	var pos = [];
+	function saveChildDetails() {
+		//po=[];
+		var obj = {};
+		var validation = true;
+		var itemID = $("#itemId").val();
+
+		var cnt = 0;
+		gridOptions1.api.forEachNode(function(rowNode, index) {
+			
+			if (rowNode.data.itemId === itemID) {
+				cnt = cnt + 1;
+			}
+		});
+		if (cnt > 0) {
+			
+			var rowId = $("#rowId").val();
+			if (rowId != null && rowId != "") {
+
+				obj.itemId = $("#itemId").val();
+				obj.itemName = $("#itemName").val();
+				obj.quantity = $("#quantity").val();
+				obj.price = $("#price").val();
+				var newprice = $("#price").val();
+				var price = parseFloat(newprice);
+				obj.price=price.toFixed(2);
+				obj.billAmount = $("#billAmount").val();
+				obj.rowId = $("#rowId").val();
+
+				if (obj.itemName == null || obj.itemName == "") {
+					validation = validationUpdated("ItemName Required",
+							"itemName");
+				}
+				if (obj.quantity == null || obj.quantity == "") {
+					validation = validationUpdated("Quantity Required",
+							"quantity");
+				}
+				if (obj.price == null || obj.price == "NaN") {
+					validation = validationUpdated("Price Required", "price");
+				}
+				if (obj.billAmount == null || obj.billAmount == "") {
+					validation = validationUpdated("TotalAmount Required",
+							"billAmount");
+				}
+				updateRowData(obj);
+			} else {
+				$('#alertModal').modal('show');
+			}
+		} else {
+			
+			obj.itemId = $("#itemId").val();
+			obj.itemName = $("#itemName").val();
+			obj.quantity = $("#quantity").val();
+			//obj.price = $("#price").val();
+			var newprice = $("#price").val();
+			var price = parseFloat(newprice);
+			obj.price=price.toFixed(2);
+			obj.billAmount = $("#billAmount").val();
+			obj.rowId = $("#rowId").val();
+
+			if (obj.itemName == null || obj.itemName == "") {
+				validation = validationUpdated("ItemName Required", "itemName");
+			}
+			if (obj.quantity == null || obj.quantity == "") {
+				validation = validationUpdated("Quantity Required", "quantity");
+			}
+			if (obj.price == null || obj.price == "NaN") {
+				validation = validationUpdated("Price Required", "price");
+			}
+			if (obj.billAmount == null || obj.billAmount == "") {
+				validation = validationUpdated("TotalAmount Required",
+						"billAmount");
+			}
+			if (validation) {
+
+				pos = [];
+				var cntt = 0;
+				gridOptions1.api.forEachNode(function(rowNode, index) {
+
+					cntt = cntt + 1;
+					pos.push(rowNode.data);
+					
+				});
+				
+
+				obj.rowId = cntt + 1;
+				pos.push(obj);
+				//console.log(pos);
+				var rowId = $("#rowId").val();
+
+				if (rowId == "" || rowId == null) {
+
+					gridOptions1.api.setRowData(pos);
+					if(pos.length == 0)
+					{
+						//alert("hello")
+						$('#next').attr("disabled", true);
+					}
+					else
+					{
+						$('#next').attr("disabled", false);
+					}
+
+					$("#itemId").val("");
+					$("#itemName").val("");
+					$("#quantity").val("");
+					$("#price").val("");
+					$("#billAmount").val("");
+					$("#rowId").val("");
+
+				} else {
+
+					updateRowData(obj);
+				}
+
+			}
+		}
+
+	gridOptions1.api.setPinnedBottomRowData(createSlitData(gridOptions1.api));
+
+	}
+
+	/* ---------function for getting the data of  parent table---------- */
+
+	function addDetails() {
+
+		var datas = [];
+		gridOptions1.api.forEachNode(function(rowNode, index) {
+
+			var details = rowNode.data;
+
+			details.billNo = $("#billNo").html();
+			details.custName = $("#custName").val();
+			details.custMobile = $("#custMobile").val();
+			details.totalBillAmount = Math.round(paidAmount);
+			details.paidAmount = Math.round(paidAmount);
+			details.paymentMethod = $("#paymentMethod").val();
+			details.transactionNo = $("#transactionNo").val();
+			details.referenceNo = $("#referenceNo").val();
+
+			datas.push(details);
+			console.log(datas);
+		})
+		saveSalesPOS(datas);
+	}
+
+	/* ------------function for main save both parent and child table data---------- */
+
+	function saveSalesPOS(datas) {
+
+		var validation = true;
+
+		obj.custMobile = $("#custMobile").val();
+		obj.custName = $("#custName").val();
+		obj.paymentMethod = $("#paymentMethod").val();
+
+		if (obj.custMobile == null || obj.custMobile == "") {
+			validation = validationUpdated("Mobile Required", "custMobile");
+		}
+		if (obj.custName == null || obj.custName == "") {
+			validation = validationUpdated("Name Required", "custName");
+		}
+		if (obj.paymentMethod == null || obj.paymentMethod == "") {
+			validation = validationUpdated("Payment Method Required",
+					"paymentMethod");
+		}
+
+		if (validation) {
+			$.ajax({
+				type : "POST",
+				url : "sales-pos-save",
+				contentType : "application/json",
+				data : JSON.stringify(datas),
+				success : function(response) {
+					if (response.message == "Success") {
+
+						$("#messageParagraph").text("Data Saved Successfully");
+						$("#msgOkModal").removeClass("btn3");
+						$("#msgOkModal").addClass("btn1");
+						$("#msgModal").modal('show');
+						$("#myGrid").show();
+						$("#demo").hide();
+						$("#suggesstion-box2_").hide();
+						$("#autosearch-list2").hide();
+						$("#new1").show();
+						$("#demo1").hide();
+						$('#delete1').show();
+						agGrid.simpleHttpRequest({
+							url : "sales-pos-view"
+						}).then(function(data) {
+							var len = data.length;
+							$('#totalReq').find('span').html(len);
+							gridOptions.api.setRowData(data);
+						})
+
+						gridOptions1.api.setRowData([]);
+					}
+				},
+				error : function(datas) {
+				}
+			})
+		}
+
+	}
+
+	/*-------------- function for update mygrid1(child table)------------------ */
+
+	function updateRowData(data) {
+
+		var rowNode = gridOptions1.api.getRowNode(data.rowId);
+		
+			
+		rowNode.setDataValue('itemId', data.itemId);
+		rowNode.setDataValue('itemName', data.itemName);
+		rowNode.setDataValue('price', data.price);
+		rowNode.setDataValue('quantity', data.quantity);
+		rowNode.setDataValue('billAmount', data.billAmount);
+
+		$("#itemId").val("");
+		$("#itemName").val("");
+		$("#price").val("");
+		$("#quantity").val("");
+		$("#billAmount").val("");
+		$("#rowId").val("");
+
+	}
+
+	/*----------------------- function for ok button in modal2------------------ */
+
+	function okModalBtnOnclick() {
+		$('#alertModal').modal('hide');
+		$("#itemId").val("");
+		$("#itemName").val("");
+	}
+
+	/* -------------------for closeing modal box for delete---------------- */
+
+	function cancelModalDeleteBtn() {
+		$('#deleteDetails').modal('hide');
+		$('#alertModal').modal('hide');
+
+	}
+	/* -------------------calculation of total amount---------------- */
+
+	function calculationOfTotalPrice() {
+		var quantity = 0;
+		var price = 0.00;
+		var totalAmount = 0.00;
+
+		quantity = $("#quantity").val();
+		price = $("#price").val();
+		totalAmount = quantity * price;
+		var total1 = totalAmount.toFixed(2);
+		$("#billAmount").val(total1);
+
+	}
+
+	/* ----------function for rowselection for parent table----------- */
+
+	var id = "";
+	function rowSelectSalesPOS() {
+
+		var selectedRows = gridOptions.api.getSelectedRows();
+
+		id = "";
+		for (var i = 0; i < selectedRows.length; i++) {
+			id = id + '' + selectedRows[i].billNo + ',';
+			//alert(id);
+
+		}
+		id = id.substring(0, id.length - 1);
+		//alert(id);
+
+		var rowCount = 0;
+		selectedRows.forEach(function(i) {
+			rowCount = rowCount + 1;
+
+		});
+
+		if (rowCount > 0) {
+			$('#delete1').attr("disabled", false);
+
+		} else {
+			$('#delete1').attr("disabled", true);
+
+		}
+
+	}
+
+	/*------------- Function for delete  parent table----------- */
+
+	function deleteSalesPOS() {
+		//alert(id);
+
+		$.ajax({
+			type : "GET",
+			url : "sales-pos-delete?deleteId=" + id,
+			async : false,
+			success : function(response) {
+
+				if (response.message == "Success") {
+
+					$("#messageParagraph").text("Data Deleted Successfully");
+					$("#msgOkModal").removeClass("btn3");
+					$("#msgOkModal").addClass("btn1");
+					$("#msgModal").modal('show');
+
+					agGrid.simpleHttpRequest({
+						url : "sales-pos-view"
+					}).then(function(data) {
+						gridOptions.api.setRowData(data);
+					});
+					$('#delete').attr("disabled", true);
+				}
+			},
+			error : function(data) {
+			}
+		});
+	}
+
+	/*--------------function for row selection for child table-------------- */
+
+	var deleteid = "";
+	function rowSelectItemList() {
+		var selectedRows = gridOptions1.api.getSelectedRows();
+
+		deleteid = "";
+		for (var i = 0; i < selectedRows.length; i++) {
+
+			deleteid = deleteid + '"' + selectedRows[i].itemId + '",';
+
+		}
+		deleteid = deleteid.substring(0, deleteid.length - 1);
+
+		var rowCount = 0;
+		selectedRows.forEach(function() {
+			rowCount = rowCount + 1;
+		});
+		if (rowCount > 0) {
+			$('#delete').attr("disabled", false);
+
+		} else {
+			$('#delete').attr("disabled", true);
+		}
+
+	}
+	/* ------------function for delete modal for my grid1)------------ */
+
+	function deleteDetail() {
+		$('#deleteDetails').modal('show');
+	}
+
+	/* --------delete selected record from my grid1 (child table) through modal-----------  */
+var totaldata = [];
+	function deleteDetailsOnclick() {
+		
+
+		$('.modal').hide();
+		$('.modal-backdrop').hide();
+		
+		var selectedRows = gridOptions1.api.getSelectedRows();
+		gridOptions1.api.applyTransaction({
+			remove : selectedRows,
+		});
+		
+		/* totaldata = [];
+		gridOptions1.api.forEachNode((rowNode, index) => {
+			var obj=rowNode.data;
+			console.log(obj);
+			totaldata.push(obj);
+			console.log(totaldata);
+			
+			if(totaldata.length == 0)
+			{
+				alert("if"+totaldata.length)
+				$('#next').attr("disabled", true);
+			}
+			else
+			{
+				alert("else"+totaldata.length)
+				$('#next').attr("disabled", false); 
+			}
+		});
+		  */
+		
+		/* totaldata = [];
+		gridOptions1.api.forEachNode((rowNode, index) => {
+			
+			var obj=rowNode.data;
+			console.log(obj);
+			totaldata.push(obj);
+			console.log(totaldata);
+			
+			var selectedRows = gridOptions1.api.getSelectedRows();
+			gridOptions1.api.applyTransaction({
+				remove : selectedRows
+			});
+			
+			if(totaldata.length == 1)
+			{
+				alert("if"+totaldata.length)
+				$('#next').attr("disabled", true);
+			}
+			else
+			{
+				alert("else"+totaldata.length)
+				$('#next').attr("disabled", false); 
+			}
+		}); */
+		
+		/* if(rowNode.length == 0)
+		{
+			$('#next').attr("disabled", true);
+		}
+		else
+		{
+			$('#next').attr("disabled", false); 
+		} */
+		cancelModalDeleteBtn();
+	}
+		
+	
+	
+	/* -------------------for closeing modal box for delete---------------- */
+
+	function cancelModalDeleteBtn() {
+		$('#deleteDetails').modal('hide');
+		$('#alertModal').modal('hide');
+
+	}
+
+	/* ---------------edit parent table ---------------*/
+
+	function editSalesPOS(id) {
+
+		var billno = id;
+		$("#billNo").html(billno);
+		agGrid.simpleHttpRequest({
+			url : "sales-pos-edit?id=" + id
+		}).then(function(data) {
+			gridOptions1.api.setRowData(data);
+			if(data.length === 0)
+			{
+				$('#next').attr("disabled", true);
+			}
+			else
+			{
+				$('#next').attr("disabled", false); 
+			}
+			for (var i = 0; i <= data.length; i++) {
+
+				$("#myGrid1").show();
+				$("#demo").show();
+				$("#nextpage").show();
+				$("#backpage").hide();
+				
+				$("#custName").val(data[0].custName);
+				$("#custMobile").val(data[0].custMobile);
+				$("#itemId").val(data[0].itemId);
+				//$("#itemName").val(data[0].itemName);
+				$("#quantity").html(data[0].quantity);
+				$("#price").html(data[0].price);
+				$("#billAmount").html(data[0].billAmount);
+
+			}
+		});
+		$("#myGrid").hide();
+		$("#demo1").show();
+		$("#save").show();
+		$("#demo").show();
+		$("#new1").hide();
+		$("#totalReq1").hide();
+		$("#totalReq").hide();
+		$("#searchRowDiv").hide();
+	}
+
+	/*-------------- Edit data from child table  --------------*/
+
+	function editItemList(id) {
+		var x = parseInt(id);
+		var rowNode = gridOptions1.api.getRowNode(x);
+		var dataNode = rowNode.data;
+
+		$("#itemId").val(dataNode.itemId);
+		$("#itemName").val(dataNode.itemName);
+		$("#quantity").val(dataNode.quantity);
+		$("#price").val(dataNode.price);
+		$("#billAmount").val(dataNode.billAmount);
+		$("#rowId").val(dataNode.rowId);
+	}
+
+	//-------------function for next button---------------
+
+	function nextPage() {
+		$('#nextpage').hide();
+		$('#backpage').show();
+		$("#payamount").val(paidAmount);
+		$("#paymentMethod").val("");
+		$("#transactionNo").val("");
+		$(".formValidation").remove();
+		$("#a1").attr("disabled", true);
+
+		//gridOptions1.api.setRowData([]);
+	}
+	//--------------------function for backbutton---------------------
+
+	function backPage() {
+		$('#nextpage').show();
+		$('#backpage').hide();
+		$("#itemId").val("");
+		$("#itemName").val("");
+		$("#quantity").val("");
+		$("#price").val("");
+		$("#billAmount").val("");
+
+		//gridOptions1.api.setRowData([]);
+	}
+
+	var paymentMode = "";
+	function getTrancactionNo() {
+		paymentMethod = $("#paymentMethod").val();
+
+		if (paymentMethod != "PMOD002") {
+			$('#transaction').show();
+		} else {
+			$('#transaction').hide();
+		}
+	}
+
+	function cancel() {
+		$('#demo').hide();
+		$('#mygrid').show();
+		$('#totalReq').show();
+		$('#searchRowDiv').show();
+
+	}
+</script>
+</head>
+<body>
+	<div layout:fragment="content" class="maincontent">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="maincontentsec">
+
+					<div class="row margin_topbot" id="searchRowDiv">
+						<div class="input-style row">
+							<input type="text" placeholder="Search.." name="search"
+								class="searchboxinput" onkeyup="cancelBar()"
+								oninput="onQuickFilterChanged()" id="quickFilter">
+							<div class="searchicon">
+								<a href="javascript:void(0)"><span
+									style="display: none; border-right: 1px solid #ccc; padding-right: 5px;"
+									id="closeKey"
+									onclick="gridOptions.api.setQuickFilter(null);$('#quickFilter').val('');document.getElementById('closeKey').style.display='none';"
+									class="close_i"><i class="ti-close srchicon"></i></span></a><a
+									href="javascript:void(0)"><i class="ti-search srchicon"></i></a>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-3  btn-hs">
+							<div class="font-design" id="totalReq">
+								SALES POS LIST(<span></span>)
+							</div>
+						</div>
+						<div class="col-md-9 padding-0" align="right">
+							<button class="btn1" id="new1" onclick="newButton()">NEW</button>
+							<button class="btn3" id="delete1" onclick="deleteSalesPOS()">DELETE</button>
+						</div>
+					</div>
+					<div id="myGrid" style="width: 100%; height: 500px;"
+						class="ag-theme-alpine"></div>
+						
+					<div class="collapse" id="demo1">
+						<div class="innercontent">
+							<div class="innerstickybg">
+								<div class="row">
+								<div class="col-md-6" id="idDiv">
+										BILL NO : <span id="billNo"></span>
+									</div>
+								 <div class="col-md-6">
+										<button class="btn4" id="maincancel" onclick="cancelBtn()">Cancel</button>
+										<!-- <button class="btn1" id="mainsave" onclick="addDetails()">Save</button> -->
+										
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>	
+						
+
+					<div class="collapse" id="demo">
+						<div class="row">
+							<div class="col-md-6">
+								
+								<div class="form-group">
+									 <label>Customer Mobile No</label> <input type="text"
+										autocomplete="off" class="form-control" id="custMobile" maxlength="10"
+										onkeyup="getMobileList(); checkNum('custMobile');"/>
+									<div id="suggesstion-box2_" class="sugg-cls"></div>
+								</div>
+								
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>Customer Name</label> <input type="text" class="form-control"
+										id="custName" onkeyup="checkAlphabet('custName');" autocomplete="off" />
+								</div>
+							</div>
+						</div>
+
+						
+						<div class="row">
+							<div class="col-md-3  btn-hs">
+								<div class="font-design" id="totalReq1">ITEM LIST</div>
+							</div>
+						</div>
+
+						<div id="myGrid1" style="width: 100%; height: 250px;"
+							class="ag-theme-alpine"></div>
+						&nbsp;&nbsp;&nbsp;&nbsp;
+						
+						<div class="row" id="nextpage">
+							<div class="col-md-2">
+								<div class="form-group">
+									<input type="hidden" id="rowId" /> <input type="hidden"
+										id="itemId" /> <label>Item Name </label> <input type="text"
+										autocomplete="off" class="form-control" id="itemName"
+										onkeyup="getItemList();" />
+									<div id="suggesstion-box1_" class="sugg-cls"></div>
+								</div>
+							</div>
+							<div class="col-md-2">
+								<div class="form-group">
+									<label>Quantity</label> <input type="text" class="form-control" 
+									onkeyup="calculationOfTotalPrice(); checkNum('quantity');"
+										id="quantity" autocomplete="off" >
+								</div>
+							</div>
+							<div class="col-md-2">
+								<div class="form-group">
+									<label>Price</label> <input type="text" class="form-control" 
+									onkeyup="calculationOfTotalPrice(); checkNum('price');"
+										autocomplete="off" id="price" >
+								</div>
+							</div>
+							<div class="col-md-2">
+								<div class="form-group">
+									<label>Total Amount</label> <input type="text" class="form-control"
+										autocomplete="off" id="billAmount" readonly>
+								</div>
+							</div>
+						
+							<div class="col-md-3 mrt_15">
+
+								<button class="btn3" id="delete" onclick="deleteDetail()">DELETE</button>
+								<button class="btn3" id="next" onclick="nextPage()">Next</button>
+								<button class="btn1" id="save" onclick="saveChildDetails()">Save</button>
+							</div>
+						</div>
+
+						<div class="collapse" id="backpage" >
+							<div class="row">
+								<div class="col-md-12">
+									<div class="form-group">
+										<label>Pay Amount: </label> <input type="text"
+											class="form-control" autocomplete="off" id="payamount">
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-md-12">
+									<div class="form-group ">
+										<label>Payment Method</label>
+										<div class="select" onchange="getTrancactionNo();">
+											<select id="paymentMethod">
+												<option value="">--Select--</option>
+												<option th:each="c,iter:${paymentModelist}"
+													th:value="${c.key}" th:text="${c.name}"></option>
+											</select>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="row" id="transaction">
+								<div class="col-md-12">
+									<div class="form-group">
+										<label>Transaction No.</label> <input type="text"
+											class="form-control" autocomplete="off" id="transactionNo">
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-md-12">
+									<button class="btn4" id="next" onclick="backPage()">Back</button>
+									<button class="btn1" id="pay" onclick="addDetails()()">Pay</button>
+								</div>
+							</div>
+							
+							</div>
+						</div>
+
+					</div>
+					<!-- -------------------second modal----------------------->
+
+					<div id="alertModal" class="modal fade show" aria-modal="true">
+						<div class="modal-dialog modal-confirm">
+							<div class="modal-content">
+								<div class="modal-header flex-column">
+									<button type="button" class="close" data-dismiss="modal"
+										aria-hidden="true" onclick="cancelModalDeleteBtn()">
+										<i class="ti-close modal-close"></i>
+									</button>
+								</div>
+								<div class="modal-body">
+									<p>Same Item Name Can Not Be Choosen</p>
+								</div>
+								<div class="modal-footer justify-content-center"
+									style="margin-top: -30px;">
+									<button type="button" class="btn1"
+										onclick="okModalBtnOnclick()">OK</button>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+					<!------------- delete product modal start -------------------->
+
+					<div id="deleteDetails" class="modal fade show" aria-modal="true">
+						<div class="modal-dialog modal-confirm">
+							<div class="modal-content">
+								<div class="modal-header flex-column">
+									<button type="button" class="close" data-dismiss="modal"
+										aria-hidden="true" onclick="cancelModalDeleteBtn()">
+										<i class="ti-close modal-close"></i>
+									</button>
+								</div>
+								<div class="modal-body">
+									<p>Do you really want to delete these records? This process
+										cannot be undone.</p>
+								</div>
+								<div class="modal-footer justify-content-center"
+									style="margin-top: -30px;">
+
+									<button type="button" class="btn1" data-dismiss="modal"
+										onclick="cancelModalBtn();">Cancel</button>
+									<button type="button" class="btn3"
+										onclick="deleteDetailsOnclick()">Delete</button>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+				</div>
+			</div>
+		</div>
+	</div>
+
+</body>
+</html>

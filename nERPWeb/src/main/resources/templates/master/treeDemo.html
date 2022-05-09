@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/master}">
+<head>
+<style>
+.tr-node-one {
+	padding-top: 12px !important;
+}
+.firstnode {
+	color: #676666;
+	border-top: 1px solid transparent !important;
+	border-left: 1px solid transparent !important;
+	border-bottom: 1px solid transparent !important;
+	width: 320px;
+	font-size: 14px;
+    font-weight: 100;
+}
+
+.simple-tree-table-closed .simple-tree-table-icon:after {
+	content: "\f105" !important;
+	font-family: 'FontAwesome';
+	color: black;
+	display: inline-block;
+	margin-right: 6px;
+	transform: rotate(90deg);
+}
+
+.simple-tree-table-opened .simple-tree-table-icon:after {
+	content: "\f105" !important;
+	font-family: 'FontAwesome';
+	color: black;
+	display: inline-block;
+	margin-right: 6px;
+}
+
+.simple-tree-table-icon {
+	display: inline-block;
+	width: 1.5em;
+	line-height: 1.5em;
+	margin: 0.1em;
+	background-color: transparent;
+	text-align: center;
+	cursor: pointer;
+}
+</style>
+<script type="text/javascript">
+
+$(document).ready(function() {
+	
+	
+	getDemoList();
+    
+    $("#demoSave").click(function(){
+    	data = {};
+    	
+    	data.demoId = $("#demoId").val();
+    	data.demoName = $("#demoName").val();
+     	data.demoStatus = $("input[name='isActive']:checked").val();
+    	
+    	$(".formValidation").remove();
+		allValid = true;
+		if( data.demoName == null || data.demoName == ""){
+			allValid = false;
+			validationModal("Demo Name Required","demoName");
+		} 
+		
+    	
+		if(allValid) {
+			$('.loader').show();
+	    	$("body").removeClass("overlay");
+	    	submitdemo(data);
+		}
+    
+    		
+    })
+    
+    $("#subDemoSave").click(function(){
+    	data = {};
+    	
+    	data.demoId = $("#subDemoId").val();
+    	data.demoName = $("#subDemoName").val();
+        data.demoStatus = $("input[name='isSubCatActive']:checked").val();
+    	data.parentId = $("#parentDemo").val();
+    	
+    	var slno = $("#slnoval").val();
+    	
+    	console.log(data)
+    	
+    	$(".formValidation").remove();
+		allValid1 = true;
+		if( data.demoName == null || data.demoName == ""){
+			allValid1 = false;
+			validationModal("Sub-Demo Name Required","subDemoName");
+		} 
+		
+		
+		if(allValid1) {
+			$('.loader').show();
+	    	$("body").removeClass("overlay");
+	    	submitSubDemo(data,slno);
+		}
+		
+    })
+    
+
+    $("#deleteModalBtn").click(function(){
+    	var data = $("#deleteModalBtn").attr("value");
+    	var slno = $("#deleteModalBtn").attr("slno");
+    	$("#deleteModalBtn").attr("disabled","disabled");
+    	if(data) {
+       			$.ajax({
+    				type : "POST",
+    				url : "demo-delete",
+    				dataType : 'json',
+    				contentType : 'application/json',
+    				data : data,
+    				success : function(response) {
+    					if (response.message == "Success") {
+    						$("#deleteModalBtn").removeAttr("disabled");
+    						$("#"+data).remove();
+    						cancelModalBtn();
+    						closeDemo();
+    					}
+    				}, error : function(data) {
+    					//console.log(data)
+    				}
+    			});
+        	}
+    })
+    
+    
+})
+
+function cancelModalBtn() {
+	$("#delete").modal('hide');
+	$("#deleteModalBtn").attr("value","");
+	$("#deleteModalBtn").removeAttr("disabled");
+}
+
+function deleteDemo(id) {
+	if(id) {
+		$("#delete").modal('show');
+		$("#deleteModalBtn").attr("value",id);
+		
+	} else {
+		$("#delete").modal('hide');
+		$("#deleteModalBtn").attr("value","");
+		$("#deleteModalBtn").removeAttr("disabled");
+		
+	}
+}
+
+
+  function openDemo() {
+	closeNav();
+	$("#demoId").val("");
+	$("#demoName").val("");
+	$('#demoStatus').prop('checked', true);
+	document.getElementById("mySidenavDemo").style.cssText = "width: 270px; position: absolute; right:-45px; overflow: hidden;";
+	document.getElementById("main").style.width = "420px";
+	
+}  
+
+
+	function closeDemo() {
+			
+		$("#demoId").val("");
+		$("#demoName").val("");
+		$('#demoStatus').prop('checked', true);
+			
+			//$("#deleteSlideCat").attr("onclick","");
+			
+		document.getElementById("mySidenavDemo").style.width = "0";
+		document.getElementById("main").style.width = "480px";
+		} 
+	
+	 function openNav(demoId,sl) {
+		closeDemo();
+		var pName = $("#lbl_"+demoId).text();
+		$("#subDemoParent").text(" "+pName);
+		$("#parentDemo").val(demoId);
+		
+		$("#subDemoId").val("");
+		$("#subDemoName").val("");
+		$('#subDemoStatus').prop('checked', true);
+		
+		$("#slnoval").val(sl);
+		
+		//$("#dltSlideSubCat").attr("onclick","");
+		
+		document.getElementById("mySidenavSubDemo").style.cssText = "width: 270px; position: absolute; right:-45px; overflow: hidden;";
+		document.getElementById("main").style.width = "420px";
+	}
+
+	function closeNav() {
+		
+		$("#subDemoParent").text(" ");
+		$("#parentDemo").val("");
+		
+		$("#subDemoId").val("");
+		$("#subDemoName").val("");
+		$('#subDemoStatus').prop('checked', true);
+		
+		$("#slnoval").val("");
+		
+		//$("#dltSlideSubCat").attr("onclick","");
+		
+		document.getElementById("mySidenavSubDemo").style.width = "0";
+		document.getElementById("main").style.width = "480px";
+	}
+ 
+
+		function submitdemo(dataset) {
+			$.ajax({
+		        type: "POST",
+		        url: "demo-save",
+		        dataType: "json",
+		        contentType: "application/json",
+		        data: JSON.stringify(dataset),
+		        success: function(response) {
+		            if (response.message == "Success") {
+		            	//console.log(response.body)
+						closeDemo();
+		            	getDemoList();
+		            	$('.loader').hide();
+		            	$("body").removeClass("overlay");
+		            	$("#messageParagraph").text("Data Saved Successfully");
+			        	$("#msgOkModal").removeClass("btn3");
+			        	$("#msgOkModal").addClass("btn1");
+			        	$("#msgModal").modal('show');
+		            } else {
+		            	getDemoList();
+		            	$('.loader').hide();
+		            	$("body").removeClass("overlay");
+		            	$("#messageParagraph").text("Something Went Wrong");
+			        	$("#msgOkModal").removeClass("btn1");
+			        	$("#msgOkModal").addClass("btn3");
+			        	$("#msgModal").modal('show');
+		            }
+		        },
+		        error: function(response) {
+		            console.log(response);
+		            getDemoList();
+		            $('.loader').hide();
+		        	$("body").removeClass("overlay");
+		        	$("#messageParagraph").text("Something Went Wrong");
+		        	$("#msgOkModal").removeClass("btn1");
+		        	$("#msgOkModal").addClass("btn3");
+		        	$("#msgModal").modal('show');
+		        }
+		    })
+		}
+
+		function editDemo(id) {
+			openDemo();
+			$("#demoId").val(id);
+			if(id) {
+				$.ajax({
+			        type: "POST",
+			        url: "demo-get-dtls-by-id",
+			        dataType: "json",
+			        contentType: "application/json",
+			        data: id,
+			        success: function(response) {
+			            if (response.message == "Success") {
+			            	if(response.body != null && response.body != "") {
+			            		$("#demoName").val(response.body.demoName);
+					        	
+					        	if(response.body.demoStatus == "1") {
+					        		$('#demoStatus').prop('checked', true);
+					        	} else {
+					        		$('#demoStatus').prop('checked', false);
+					        	}
+					        	var onAttr = "deleteDemo('"+response.body.demoId+"')";
+					        	$("#deleteSlideCat").attr("onclick",onAttr);
+			            	}
+			            }
+			        }, error : function(data) {
+			        	console.log(data)
+			        	$("#demoId").val("");
+			        	$("#demoName").val("");
+			        	$('#demoStatus').prop('checked', true);
+			        	$("#deleteSlideCat").attr("onclick","");
+			        }
+				});
+			} else {
+				$("#demoId").val("");
+				$("#demoName").val("");
+				$('#demoStatus').prop('checked', true);
+				$("#deleteSlideCat").attr("onclick","");
+			}
+		}
+		
+		function editSubDemo(id,pId) {
+			openNav(pId,"2");
+			$("#subDemoId").val(id);
+			if(id) {
+				$.ajax({
+			        type: "POST",
+			        url: "demo-get-dtls-by-id",
+			        dataType: "json",
+			        contentType: "application/json",
+			        data: id,
+			        success: function(response) {
+			            if (response.message == "Success") {
+			            	//console.log(response);
+			            	if(response.body != null && response.body != "") {
+			            		$("#subDemoName").val(response.body.demoName);
+					        	
+					        	if(response.body.demoStatus == "1") {
+					        		$('#subDemoStatus').prop('checked', true);
+					        	} else {
+					        		$('#subDemoStatus').prop('checked', false);
+					        	}
+					        	var onAttr = "deleteSubCategory('"+response.body.demoId+"')";
+					        	$("#dltSlideSubCat").attr("onclick",onAttr);
+			            	}
+			            }
+			        }, error : function(data) {
+			        	console.log(data)
+			    		$("#subDemoId").val("");
+			    		$("#subDemoName").val("");
+			    		$('#subDemoStatus').prop('checked', true);
+			    		$("#dltSlideSubCat").attr("onclick","");
+			        }
+				});
+			} else {
+				$("#subDemoId").val("");
+				$("#subDemoName").val("");
+				$('#subDemoStatus').prop('checked', true);
+				$("#dltSlideSubCat").attr("onclick","");
+			}
+		}
+
+		     
+		  
+	function getDemoList() {
+		$('.loader').show();
+		$("body").addClass("overlay");
+		$("#costCeneterCBDiv").empty();
+		$
+				.ajax({
+					type : "POST",
+					url : "demo-get-total-list",
+					dataType : "json",
+					contentType : "application/json",
+					success : function(response) {
+						if (response.message == "Success") {
+							console.log(response.body)
+							
+						if (response.body.length > 0) {
+								for (var i = 0; i < response.body.length; i++) {
+									var row = "";
+									if (response.body[i].demoId == response.body[i].parentId) {
+										row = '<tr data-node-id="'+response.body[i].demoId+'" class="abc" id="'+response.body[i].demoId+'">'
+												+ '<td class="firstnode tr-node-one" id=lbl_'+response.body[i].demoId+'>'
+												+ response.body[i].demoName
+												+ '<label for="check1">&nbsp;&nbsp;<a href="javascript:void(0)"><i title="Add Child" class="ti-plus cbicon" onclick=openNav("'
+												+ response.body[i].demoId
+												+ '","1");></i></a>&nbsp;<a href="javascript:void(0)"><i title="Edit Demo" class="ti-pencil" onclick=editDemo("'
+												+ response.body[i].demoId
+												+ '")></i></a>&nbsp;<a href="javascript:void(0)"><i title="Delete Demo" class="ti-close" onclick=deleteDemo("'
+												+ response.body[i].demoId
+												+ '")></i></a></label>'
+												+ '</td></tr>';
+									} else {
+										row = '<tr data-node-id="'+response.body[i].demoId+'" data-node-pid="'+response.body[i].parentId+'" class="abc" id="'+response.body[i].demoId+'">'
+												+ '<td class="firstnode" id=lbl_'+response.body[i].demoId+'>'
+												+ response.body[i].demoName
+												+ '<label for="check1">&nbsp;&nbsp;<a href="javascript:void(0)"><i title="Add Child" class="ti-plus cbicon" onclick=openNav("'
+												+ response.body[i].demoId
+												+ '","2");></i></a>&nbsp;<a href="javascript:void(0)"><i title="Edit Demo" class="ti-pencil" onclick=editSubDemo("'
+												+ response.body[i].demoId + '","' + response.body[i].parentId 
+												+ '")></i></a>&nbsp;<a href="javascript:void(0)"><i title="Delete Demo" class="ti-close" onclick=deleteDemo("'
+												+ response.body[i].demoId
+												+ '")></i></a></label>'
+												+ '</td></tr>';
+									}
+									$("#costCeneterCBDiv").append(row);
+								}
+
+								$('.loader').hide();
+								$("body").removeClass("overlay");
+
+								$('#basic').simpleTreeTable({
+									expander : $('#expander'),
+									collapser : $('#collapser'),
+									store : 'session',
+									storeKey : 'simple-tree-table-basic'
+								});
+
+							}
+						} else {
+							$('.loader').hide();
+							$("body").removeClass("overlay");
+						}
+					},
+					error : function(response) {
+						console.log(response);
+						$('.loader').hide();
+						$("body").removeClass("overlay");
+					}
+				})
+	}
+
+	function submitSubDemo(dataset, slno) {
+
+		$.ajax({
+			type : "POST",
+			url : "demo-subdemo-save",
+			dataType : "json",
+			contentType : "application/json",
+			data : JSON.stringify(dataset),
+			success : function(response) {
+				if (response.message == "Success") {
+					//console.log(response.body)
+					closeNav();
+					getDemoList();
+					$('.loader').hide();
+					$("body").removeClass("overlay");
+					$("#messageParagraph").text("Data Saved Successfully");
+					$("#msgOkModal").removeClass("btn3");
+					$("#msgOkModal").addClass("btn1");
+					$("#msgModal").modal('show');
+				} else {
+					getDemoList();
+					$('.loader').hide();
+					$("body").removeClass("overlay");
+					$("#messageParagraph").text("Something Went Wrong");
+					$("#msgOkModal").removeClass("btn1");
+					$("#msgOkModal").addClass("btn3");
+					$("#msgModal").modal('show');
+				}
+			},
+			error : function(response) {
+				console.log(response);
+				getDemoList();
+				$('.loader').hide();
+				$("body").removeClass("overlay");
+				$("#messageParagraph").text("Something Went Wrong");
+				$("#msgOkModal").removeClass("btn1");
+				$("#msgOkModal").addClass("btn3");
+				$("#msgModal").modal('show');
+			}
+		})
+	}
+	
+	function saveMultiFile(event) {
+		
+		
+		
+		//var AssignItemQty = event.currentTarget.value;
+		var currentFldId = event.currentTarget.getAttribute('id');
+		var l = currentFldId.split("_");
+		var counter = l[1];
+		var currentFldId = "#" + currentFldId;
+
+		var uFile = $(currentFldId)[0].files[0];
+		var fileName = event.currentTarget.value;
+		var lastIndex = fileName.lastIndexOf("\\");
+		if (lastIndex >= 0) {
+			fileName = fileName.substring(lastIndex + 1);
+		}
+		var extension = fileName.split(".");
+
+		var iURL = URL.createObjectURL(uFile);
+		$("#uploadedBillDiv_" + counter).html("");
+		if (extension[1] == "jpg" || extension[1] == "jpeg" || extension[1] == "png" || extension[1] == "PNG") {
+			var LightImg = "<div class='uploadicon position-l'><a class='example-image-link' href='" + iURL + "' title='" + fileName + "' target='_balnk'><i class='fa fa-file'></i></a></div>";
+		}
+		$("#uploadedBillDiv_" + counter).html(LightImg);
+		//$("#imageName_" + counter).html(fileName); 
+		
+		var data = [];
+		var x = [];
+		if (fileName != '' && fileName != 'undefined' && fileName != null) {
+			var lastIndex = fileName.lastIndexOf("\\");
+			if (lastIndex >= 0) {
+				fileName = fileName.substring(lastIndex + 1);
+			}
+			var reader = new FileReader();
+			reader.readAsDataURL(uFile);
+
+			reader.onload = function() {
+				//console.log(reader.result)
+				data = reader.result.split(",");
+				x.push(data[1]);
+			};
+		} else {
+			x = [];
+		}
+		
+		uploadData = {};
+		uploadData.docName = $("#docnoid_").val();
+		//uploadData['docId'] = $("#docId_"+counter).text();
+		uploadData['file'] = x;
+		uploadData['fileName'] = fileName;
+		//console.log('uploadData ' + uploadData)
+		setTimeout(function() {
+			saveReportTemplates(uploadData);
+		}, 1000)
+	}	
+	
+	function saveReportTemplates(dataset) {
+		$.ajax({
+			type : "POST",
+			url : "demo-document-save",
+			dataType : "json",
+			contentType : "application/json",
+			data : JSON.stringify(dataset),
+			success : function(response) {
+				if (response.message == "Success") {
+										
+					$('.loader').hide();
+					$("#docnoid_").val("");
+					$("#uploadHidden_0").empty();
+					$("body").removeClass("overlay"); 
+				} else {
+
+					$('.loader').hide();
+					$("body").removeClass("overlay");
+				}
+			},
+			error : function(data) {
+				console.log(data);
+				$('.loader').hide();
+				$("body").removeClass("overlay");
+			}
+		})
+	}
+</script>
+</head>
+<body>
+	<div layout:fragment="content" class="maincontent">
+
+		<div class="container-fluid">
+			<div class="row">
+				<div class="maincontentsec">
+					<div class="content_padding">
+						<div class="row margin_topbot" id="searchRowDiv"></div>
+						<div class="row">
+
+							<div class="col-md-10  btn-hs" style="margin-bottom: 15px;">
+								<div class="font-design ft-lt" id="totalReq">Demo</div>
+								<div class="roomdetails2">
+									<div class="cat_plusbtn cp" onclick="openDemo();">+</div>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-8">
+								<div class="flowsection"
+									style="border-right: 0px solid #ccc !important">
+									<table id="basic">
+										<tbody id="costCeneterCBDiv"></tbody>
+									</table>
+								</div>
+							</div>
+							<div class="col-md-4">
+								<div class="roomdetails roomListDiv" id="main"></div>
+								<div class="slidearrow" onclick="openNav()">
+									<i class="ti-arrow-left"></i>
+								</div>
+
+								<div id="mySidenavDemo" class="sidenav">
+									<div class="slidebox">
+										<div class="row">
+											<div class="col-md-10">
+												<div class="edit" id="sectionNavText">Demo</div>
+											</div>
+											<div class="col-md-2">
+												<div class="arrow">
+													<a href="javascript:void(0)" class="closebtn"
+														onclick="closeDemo()"><i class="ti-arrow-right"></i></a>
+												</div>
+											</div>
+											<div class="chartbtnsec">
+												<div class="" align="right">
+													<button class="btn4" onclick="closeDemo()">CANCEL</button>
+
+													<button class="btn1" id="demoSave">SAVE</button>
+												</div>
+											</div>
+											<div class="col-md-12">
+												<div class="form-group">
+													<label>Name</label> <input type="hidden" id="demoId">
+													<input type="text" class="form-control transparenttxtbox"
+														placeholder="" id="demoName">
+												</div>
+											</div>
+											<div class="col-md-12">
+												<div class="form-group">
+													<input type="checkbox" class="loc-chb" name="isActive"
+														id="demoStatus" value="1" checked> <label
+														style="margin-top: 8px;">Active</label>
+												</div>
+											</div>
+
+										</div>
+									</div>
+								</div>
+
+								<div id="mySidenavSubDemo" class="sidenav">
+									<div class="slidebox">
+										<div class="row">
+											<div class="col-md-10">
+												<div class="edit" id="floorNavText">Sub-Demo</div>
+											</div>
+											<div class="col-md-2">
+												<div class="arrow">
+													<a href="javascript:void(0)" class="closebtn"
+														onclick="closeNav()"><i class="ti-arrow-right"></i></a>
+												</div>
+											</div>
+											<div class="chartbtnsec">
+												<div class="" align="right">
+													<button class="btn4" onclick="closeNav()">CANCEL</button>
+													<!-- <button class="btn3" id="dltSlideSubCat" onclick="">DELETE</button> -->
+													<button class="btn1" id="subDemoSave">SAVE</button>
+												</div>
+											</div>
+											<div class="col-md-12">
+												<div class="form-group">
+													<span class="slide-span">Parent:</span><span
+														id="subDemoParent" class="slide-span-text"></span>
+												</div>
+											</div>
+											<div class="col-md-12">
+												<div class="form-group">
+													<label>Name</label> <input type="hidden" id="subDemoId">
+													<input type="text" class="form-control transparenttxtbox"
+														placeholder="" id="subDemoName"
+														onblur="removeValid(event);"> <input type="hidden"
+														id="parentDemo"> <input type="hidden" id="slnoval">
+												</div>
+											</div>
+
+											<div class="col-md-12">
+												<div class="form-group">
+													<input type="checkbox" class="loc-chb"
+														name="isSubCatActive" id="subDemoStatus" value="1" checked>
+													<label style="margin-top: 8px;">Active</label>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="row" style="margin-top: 50px;"></div>
+						<!-- For Demo Document  -->
+						<div class="row">
+							<div class="col-md-10  btn-hs" style="margin-bottom: 15px;">
+								<div class="font-design ft-lt" id="totalReq">Demo Document</div>
+								<!-- <div class="roomdetails2">
+									<div class="cat_plusbtn cp" onclick="openDemo();">+</div>
+								</div> -->
+							</div>
+						</div>
+						<div class="panel panel-default">
+											<div class="panel-heading" role="tab" id="headingNine">
+												<!-- <h4 class="panel-title">
+													<a class="collapsed mainSecond" role="button"
+														data-toggle="collapse" data-parent="#accordion"
+														href="#collapseNine" aria-expanded="true"
+														aria-controls="collapseNine">Attachment</a>
+												</h4> -->
+											</div>
+											<div id="collapseNine" class="panel-collapse collapse show"
+												role="tabpanel" aria-labelledby="headingNine">
+												<div class="row">
+
+													<div class="col-md-5 btn-hs1">
+														<div class="font-design"></div>
+													</div>
+
+													<div class="col-md-12 btn-hs1 padding-7" align="right">
+													<!--<button class="btn4">Upload</button>
+														<button class="btn4">Download</button> -->
+														<!-- <button class="btn1" onclick="checkEmpty();">New</button> -->
+														<button class="btn1" onclick="saveReportTemplates();">Save</button>
+													</div>
+
+
+
+													<table id="docTbl" cellspacing="7" cellpadding="7">
+														<thead>
+															<tr class="tr_clone"> 
+																<th width="320">Document Name</th>
+																<th width="380">Attachment</th>
+
+
+															</tr>
+														</thead>
+														<tbody id="doctbodyData">
+															<tr>
+																<!-- <td style="display: none" align="center" class="pdb-24"><input
+																	class="checkCls" type="checkbox" id="check2"><label
+																	for="check2"></label></td>-->
+																<!-- <td style="display: none"><div class="form-group"> 
+
+
+																		<select class="form-control documentclss" id="docid_0">
+																			<option value="">Select</option>
+																			<option th:each="c,iter:${documentTypeList}"
+																				th:value="${c.key}" th:text="${c.name}"></option>
+																		</select>
+																	</div></td> -->
+																<td><div class="form-group">
+																		<input type="text" value=""
+																			class="form-control docNoclss" id="docnoid_">
+																	</div></td>
+
+																<td>
+																	<div class="control-group position-r">
+																		<label class="custom-file-upload" for="uploadDoc_0"
+																			id="uploadFor_0"> <i class="ti-plus"></i>
+																		</label>
+																		<div class="controls">
+
+																			<input type="file" class="document" id="uploadDoc_0"
+																				name="userImage" accept="image/*"
+																				onchange="saveMultiFile(event)" />
+
+																		</div>
+																	</div> <input type="hidden" id="uploadHidden_0"
+																	class="uploadHidCls">
+																	<div id="uploadedBillDiv_0" align="center"
+																		class="uploadedBillCls"></div>
+																	<div id="imageName_0" class="imageName"></div>
+																</td>
+
+															</tr>
+
+														</tbody>
+													</table>
+
+												</div>
+
+											</div>
+										</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="delete" class="modal fade show" aria-modal="true">
+			<div class="modal-dialog modal-confirm">
+				<div class="modal-content">
+					<div class="modal-header flex-column">
+						<button type="button" class="close" data-dismiss="modal"
+							aria-hidden="true" onclick="cancelModalBtn()">
+							<i class="ti-close modal-close"></i>
+						</button>
+					</div>
+					<div class="modal-body">
+						<p>Do you really want to delete these records? This process
+							cannot be undone.</p>
+					</div>
+					<div class="modal-footer justify-content-center">
+						<button type="button" class="btn1" data-dismiss="modal"
+							onclick="cancelModalBtn();">Cancel</button>
+						<button type="button" class="btn3" id="deleteModalBtn">Delete</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

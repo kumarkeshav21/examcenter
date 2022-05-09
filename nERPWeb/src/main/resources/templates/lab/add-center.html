@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/master}">
+
+<head>
+
+<style type="text/css">
+body {
+	background: #f5f5f5;
+}
+
+.content-wrapper {
+	background: transparent;
+	padding: .75rem 2.25rem;
+}
+
+.btnDisable {
+	color: #ccc !important;
+}
+
+.card-body a {
+	color: #000;
+}
+
+.highcharts-axis-title {
+	display: none;
+}
+/*todaychanges*/
+.card {
+	margin: 8px 0px;
+}
+
+.smlbox {
+	border: 1px solid #ccc;
+	background: #FFF;
+	border-radius: 5px;
+	padding: 10px;
+	margin: 5px;
+	color: #333;
+}
+
+.smlbox1 {
+	border: 1px solid #ccc;
+	background: #FFF;
+	border-radius: 5px;
+	padding: 10px;
+	margin: 11.5px 0px;
+	color: #333;
+}
+
+.smlbox11 {
+	border-radius: 5px;
+	padding: 10px;
+	color: #0071c1;
+}
+
+.smlbox11 .title {
+	width: 100px !important;
+	color: #000;
+	float: left;
+}
+
+.smlbox2 {
+	background: transparent;
+	border-radius: 5px;
+	padding: 5px 10px;
+	margin: 5px 0px;
+	color: #FFF;
+}
+
+.smlbox2 span {
+	float: right;
+	text-align: right;
+}
+
+.mrt_5 {
+	margin-top: 8px;
+}
+
+.text-left {
+	color: #0071c1;
+}
+
+.padding_8 {
+	padding: 0px 8px;
+}
+
+.heading {
+	background: rgba(0, 0, 0, 0.5);
+	padding: 8px;
+}
+
+.card_light {
+	background: #FFF;
+	border: 1px solid #ccc;
+	padding: 10px;
+	border-radius: 10px;
+}
+
+.card_light .card-title {
+	background: #0071c1;
+	color: #FFF;
+	padding: 12px 10px;
+	margin-bottom: 18px;
+}
+
+.cardtitle1 {
+	/*background: #0071c1;*/
+	font-size: 16px;
+	color: #333;
+	padding-top: 10px;
+	padding-left: 10px;
+}
+
+.card_light p {
+	color: #ccc;
+}
+
+.card {
+	margin: 0 !important;
+	margin-bottom: 8px !important;
+}
+
+/*new*/
+.searchsec {
+	background: #dbdbdb;
+	height: 60px;
+	border-bottom: 3px solid #7bd4df;
+	padding: 5px;
+	width: 100%;
+	margin: 0px 5px;
+}
+
+.card-title {
+	padding: 10px 3px;
+	color: #333 !important;
+	font-size: 18px;
+}
+
+.highcharts-figure {
+	width: 100% !important;
+	margin: 0 !important;
+}
+
+.highcharts-drilldown-data-label text {
+	text-decoration: none !important;
+	color: #FFF !important;
+	fill: #FFF !important;
+}
+
+.padding_5 {
+	padding: 0px 5px;
+}
+
+.d-block {
+	display: block !important;
+	width: 100%;
+}
+
+.card-body {
+	padding: 0.5rem 0.5rem;
+	text-align: left;
+}
+
+.highcharts-xaxis-labels text {
+	color: #333 !important;
+	fill: #333 !important;
+}
+
+.highcharts-yaxis-labels text {
+	color: #333 !important;
+	fill: #333 !important;
+}
+
+#sundargarh {
+	height: 500px;
+	min-width: 310px;
+	max-width: 800px;
+	margin: 0 auto;
+}
+
+.loading {
+	margin-top: 10em;
+	text-align: center;
+	color: gray;
+}
+
+#area {
+	height: 200px;
+	position: relative;
+	right: 20px;
+	width: 300px;
+}
+
+.highcharts-a11y-proxy-button {
+	color: #333 !important;
+}
+
+#daywise {
+	height: 150px;
+	width: 150px;
+	position: relative;
+	right: 40px;
+}
+
+#daywise .highcharts-yaxis-labels {
+	display: none;
+}
+
+#chart .highcharts-a11y-proxy-button {
+	color: #333 !important;
+}
+
+.white {
+	color: #FFF;
+}
+
+/* .active {
+	background: #98cb4a;
+	border: 1px solid #FFF;
+} */
+.inactive {
+	background: #f76d3c;
+	color: #333;
+	border: 1px solid #FFF;
+}
+
+.inactive a {
+	color: #FFF;
+}
+
+.ulbar {
+	display: flex;
+	flex-wrap: wrap;
+	margin-right: -15px;
+	margin-left: -15px;
+	margin-bottom: 8px;
+}
+
+.btn-success {
+	color: #fff;
+	background-color: #28a745;
+	border-color: #28a745;
+	margin-top: 8px;
+}
+
+.card a {
+	color: #98cb4a;
+	padding: 0px 7px;
+	position: relative;
+	top: 10px;
+	right: 10px;
+}
+
+.boxicon {
+	position: absolute;
+	bottom: 8px;
+	right: 8px;
+}
+
+.card-body a {
+	color: #FFF !important;
+	padding: 16px;
+	width: 100%;
+	position: relative;
+	top: -20px;
+	left: 0px;
+}
+
+.card-body a .icon {
+	position: relative;
+	top: -20px;
+}
+
+.font-weight-normal {
+	font-family: "ubuntu-regular", sans-serif;
+	font-size: 16px;
+}
+
+.profile {
+	border: 2px solid #ccc;
+	border-radius: 80px;
+	height: 104px;
+	width: 104px;
+	position: relative;
+	left: 33%;
+}
+
+.profile img {
+	height: 100px;
+	width: 100px;
+	border-radius: 50%;
+}
+
+.edit {
+	position: absolute;
+	background: #0071c1;
+	height: 30px;
+	width: 30px;
+	border-radius: 20px;
+	color: #FFF;
+	right: 0;
+	bottom: 0px;
+	padding: 3px 8px;
+}
+
+.card-title2 {
+	/* padding: 10px 3px; */
+	color: #333 !important;
+	font-size: 18px;
+	font-weight: 500;
+}
+
+.card-dsn {
+	box-shadow: 0 1px 6px 0 rgb(32 33 36/ 28%);
+	height: 315px;
+	border-bottom: 5px solid #913ccd;
+	border-radius: 5px;
+	overflow-y: scroll;
+	overflow-x: hidden;
+}
+
+.card-emergency {
+	box-shadow: 0 1px 6px 0 rgb(32 33 36/ 28%);
+	height: 130px;
+	border-bottom: 5px solid #f2b40c;
+	border-radius: 5px;
+}
+
+.card-family {
+	box-shadow: 0 1px 6px 0 rgb(32 33 36/ 28%);
+	height: 130px;
+	border-bottom: 5px solid #f15f74;
+	border-radius: 5px;
+}
+
+.card-profile {
+	box-shadow: 0 1px 6px 0 rgb(32 33 36/ 28%);
+	border-bottom: 5px solid #3000c6;
+	border-radius: 5px;
+}
+
+.mt-8 {
+	margin-top: 8px;
+}
+
+.mb-20 {
+	margin-bottom: 20px;
+}
+
+.tbl-card {
+	background-color: #fff;
+	border-radius: 5px;
+	border-bottom: 5px solid #2ca8c2;
+	margin-bottom: 30px;
+	box-shadow: 0 1px 6px 0 rgb(32 33 36/ 28%);
+	height: 315px;
+}
+
+.tbl-head {
+	font-size: 18px;
+	color: #fff;
+	background-color: #2ca8c2;
+	padding: 5px 10px;
+	border-radius: 5px 5px 0px 0px;
+}
+
+.table thead th {
+	border: none;
+}
+
+/* .table td, .table th {
+	border-top: none;
+	font-family: 'HelveticaNeue';
+	font-size: 16px;
+	font-weight: 100;
+}
+ */
+.inr-tbl {
+	padding: 10px;
+}
+
+.date-clnd {
+	border: 1px solid #2d9f9e;
+	border-radius: 7px;
+	text-align: center;
+	background-color: #fff;
+	font-weight: 700;
+	color: #000;
+}
+
+.btm-txt {
+	background-color: #2d9f9e;
+	border-radius: 0px 0px 7px 7px;
+	color: #fff;
+	font-weight: 500;
+}
+
+.disble-clnd {
+	border: 1px solid #cacaca;
+	border-radius: 7px;
+	text-align: center;
+	background-color: #fff;
+	font-weight: 700;
+	color: #000;
+}
+
+.disble-txt {
+	background-color: #cacaca;
+	border-radius: 0px 0px 7px 7px;
+	font-weight: 500;
+}
+
+.rlt-nm {
+	font-size: 16px;
+	color: #000;
+	border-right: 2px solid #000;
+	width: 165px;
+	float: left;
+}
+
+.rlt {
+	font-size: 16px;
+	color: #000;
+	margin-left: 10px;
+}
+
+.ph-no {
+	font-size: 16px;
+	color: #000;
+}
+
+.ph-no span {
+	color: #056fe2;
+}
+
+.d-flex {
+	display: flex;
+}
+
+.user-dtlhd {
+	font-size: 16px;
+	color: #000;
+	font-weight: 500;
+}
+
+.user-id {
+	font-size: 16px;
+	font-weight: 400;
+	color: #056fe2;
+}
+
+.mb-10 {
+	margin-bottom: 10px;
+}
+
+.mdtbl-scrl {
+	height: 400px;
+	overflow-y: scroll;
+}
+
+.tbl-scrl {
+	height: 380px;
+	overflow-y: scroll;
+}
+
+.since-txt {
+	font-size: 16px;
+	color: #000;
+}
+
+.since-txt span {
+	font-size: 16px;
+	color: #000;
+	margin-left: 10px;
+}
+
+.more {
+	text-align: right;
+	font-size: 16px;
+	color: #000;
+	margin-right: 20px;
+	margin-bottom: 8px;
+}
+
+.rpt-nm {
+	font-size: 16px;
+	color: #000;
+}
+
+.lab-name {
+	font-size: 16px;
+	color: #056fe2;
+}
+
+.btn-book {
+	color: #fff;
+	background-color: #3000c6;
+	border-color: #3000c6;
+}
+
+.btn-book:hover {
+	color: #fff;
+	background-color: #5129ce;
+	border-color: #5129ce;
+}
+
+.prf-ht {
+	height: 600px;
+}
+
+.mecication-head {
+	font-size: 18px;
+	color: #fff;
+	background-color: #117a75;
+	padding: 5px 10px;
+	border-radius: 5px 5px 0px 0px;
+}
+
+.md-tbl td, .md-tbl th {
+	padding: 6px 5px;
+}
+
+.md-tbl td {
+	color: #056fe2;
+	font-size: 16px;
+}
+
+.mecication-card {
+	background-color: #fff;
+	border-radius: 5px;
+	border-bottom: 5px solid #117a75;
+	margin-bottom: 30px;
+	box-shadow: 0 1px 6px 0 rgb(32 33 36/ 28%);
+	height: 454px;
+	margin-top: -30px;
+}
+
+.mb-8 {
+	margin-bottom: 8px;
+}
+
+.grn-btn {
+	background: #00a330;
+	color: #FFF;
+	border: none;
+	outline: none;
+	cursor: pointer;
+	border-radius: 30px;
+	padding: 4px 10px 4px 10px;
+	text-decoration: none;
+	font-family: roboto;
+}
+
+.courseName {
+	margin-bottom: 7px;
+}
+
+select {
+	width: 183px;
+	height: 30px;
+	margin: 0;
+	padding: 0 0 0 0;
+	font-family: 'HelveticaNeue';
+	color: #333;
+	font-weight: 100;
+	cursor: pointer;
+	font-weight: 100;
+	line-height: 30px;
+	font-size: 16px;
+}
+
+input {
+	margin: 0px 3px;
+	width: 172px;
+}
+
+.margin_left {
+	margin-left: 7px !important;
+}
+</style>
+<script>
+	function getCourseList() {
+		//alert("hello")
+		var cenType = $("#examType").val();
+		//var locType= $("#locationName").val();
+		//alert(cenType)
+		if (cenType) {
+			//alert(extype);
+			$("#course_name_").empty();
+			$.ajax({
+				type : 'GET',
+				url : 'add-center-course-list?name=' + cenType,
+				contentType : false,
+				success : function(response) {
+					if (response.message == "success") {
+						for (var i = 0; i < response.body.length; i++) {
+							var option = $("<option></option>");
+							$(option).val(response.body[i].key);
+							$(option).html(response.body[i].name);
+							$("#course_name_").append(option);
+						}
+					}
+				},
+				error : function(e) {
+
+				}
+			});
+		} else {
+			$("#courType").empty();
+			var option = $("<option></option>");
+			$(option).val(null);
+			$(option).html("Select");
+			$("#course_name_").append(option);
+
+		}
+	}
+	/***********for date********/
+	$(document).ready(function() {
+
+		$("#date_").datetimepicker({
+			format : 'd-m-Y',
+			closeOnDateSelect : true,
+			timepicker : false,
+			scriollMonth : false
+		})
+
+	});
+
+	$(document).ready(function() {
+
+		$(".datee").datetimepicker({
+			format : 'd-m-Y',
+			closeOnDateSelect : true,
+			timepicker : false,
+			scriollMonth : false
+		})
+
+	});
+
+	$(document).ready(function() {
+
+		$("#fromDate").datetimepicker({
+			format : 'd-m-Y',
+			closeOnDateSelect : false,
+			timepicker : true,
+			scriollMonth : false
+		})
+
+	});
+
+	$(document).ready(function() {
+
+		$("#toDate").datetimepicker({
+			format : 'd-m-Y',
+			closeOnDateSelect : false,
+			timepicker : true,
+			scriollMonth : false
+		})
+
+	});
+	$(document).ready(function() {
+
+		$("#from_time_").datetimepicker({
+			format : 'h:m',
+			closeOnDateSelect : false,
+			timepicker : true,
+			scriollMonth : false
+		})
+		$("#to_time_").datetimepicker({
+			format : 'h:m',
+			closeOnDateSelect : false,
+			timepicker : true,
+			scriollMonth : false
+		})
+
+	});
+
+	/********************************************add exam center start******************************************/
+	function saveAddress() {
+		//alert("helo exam")
+		var validation = true;
+		data = {};
+		dataAddMore = [];
+
+		data.centerCode = $("#centerCode").val();
+		data.centerName = $("#centerName").val();
+		data.locationName = $("#locationName").val();
+		data.examType = $("#examType").val();
+		data.centerAddress = $("#centerAddress").val();
+		data.status = $("#status").val();
+		data.remarks = $("#remarks").val();
+		data.inchargeName = $("#inchargeName").val();
+		data.mobileNo = $("#mobileNo").val();
+		data.emailId = $("#emailId").val();
+
+		if (data.centerCode == null || data.centerCode == "") {
+			validation = validationUpdated("Center code required", "centerCode");
+		}
+		if (data.centerName == null || data.centerName == "") {
+			validation = validationUpdated("Center Name required", "centerName");
+		}
+		if (data.locationName == null || data.locationName == "") {
+			validation = validationUpdated("Center Location required",
+					"locationName");
+		}
+		if (data.examType == null || data.examType == "") {
+			validation = validationUpdated("Exam Name required", "examType");
+		}
+		if (data.centerAddress == null || data.centerAddress == "") {
+			validation = validationUpdated("center Address required",
+					"centerAddress");
+		}
+		if (data.status == null || data.status == "") {
+			validation = validationUpdated("Status required", "status");
+		}
+		if (data.remarks == null || data.remarks == "") {
+			validation = validationUpdated("Remarks required", "remarks");
+		}
+		if (data.inchargeName == null || data.inchargeName == "") {
+			validation = validationUpdated("Incharge name required",
+					"inchargeName");
+		}
+		if (data.mobileNo == null || data.mobileNo == "") {
+			validation = validationUpdated("Mobile number required", "mobileNo");
+		}
+		if (data.emailId == null || data.emailId == "") {
+			validation = validationUpdated("Email id required", "emailId");
+		}
+
+		var mobValid;
+
+		function mobVal() {
+			var mob = $('#mobileNo').val();
+			var phoneno = /^\d{10}$/;
+
+			if (mob != '') {
+				if (mob.match(phoneno)) {
+					$("#error3").hide();
+					mobValid = true;
+					return true;
+				} else {
+					$("#error3")
+							.html(
+									"please enter  10 digit mobile number  ex:7089451278");
+					mobValid = false;
+					return false;
+				}
+			}
+		}
+		
+		
+		//Email validation
+		var mailValid;
+
+		function mailVal() {
+		    var mail = $('#emailId').val();
+		    var mid = /^[A-Za-z0-9\-_\.]+@+[A-Za-z0-9\-\.]+\.+[A-Za-z]{2,10}$/;
+		    if (mail != '') {
+		        if (mail.match(mid)) {
+		            $("#error2").hide();
+		            mailValid = true;
+		            return true;
+		        } else {
+		            $("#error2").show();
+		            $("#error2").html("Please enter a valid email id.");
+		            mailValid = false;
+		            return false;
+		        }
+
+		    } else {
+		        $("#error2").hide();
+		        mailValid = true;
+		        return true;
+		    }
+
+		}
+
+		$(".input_fields_wrap div").each(function() {
+			data11 = {};
+			data11.courseId = $(this).closest('div').find(".courseName").val();
+			data11.shiftid = $(this).closest('div').find(".shiftName").val();
+			data11.date = $(this).closest('div').find(".datee").val();
+			data11.fDate = $(this).closest('div').find(".fromDate").val();
+			data11.tDate = $(this).closest('div').find(".toDate").val();
+			data11.noOfSeats = $(this).closest('div').find(".noOfSeats").val();
+			console.log(data11)
+			dataAddMore.push(data11);
+		})
+		data.centerDetails = dataAddMore;
+		console.log("hello", data);
+		//dataAddMore.push(data);
+
+		console.log(dataAddMore)
+
+		var id = $("#centerCode").val();
+		console.log(id)
+		if (id != null && id != "") {
+			//alert("hii")
+			$.ajax({
+				type : "POST",
+				url : "add-center-details-save",
+				dataType : "json",
+				contentType : "application/json",
+				data : JSON.stringify(data),
+				success : function(response) {
+					if (response.message == "Success") {
+						
+						if(alert('New Center Added Successfully')){}
+						else    window.location.reload(); 	
+						console.log(response.body)
+
+					} else {
+						swal({
+							title : response.code,
+							text : response.message,
+							type : "warning"
+						})
+					}
+				},
+				error : function(response) {
+					console.log(response);
+				}
+			})
+		} else {
+			swal("Error!", "Data not valid!", "error");
+		}
+	}
+	/************************************add center end************************************/
+	/************************************add more fields************************************/
+
+	$(document)
+			.ready(
+					function() {
+						var max_fields = 2000; //maximum input boxes allowed
+						var wrapper = $(".input_fields_wrap"); //Fields wrapper
+						var add_button = $(".add_field_button"); //Add button ID
+
+						var x = 0; //initlal text box count
+						$(add_button)
+								.click(
+										function(e) { //on add input button click
+											e.preventDefault();
+											if (x < max_fields) { //max input box allowed
+												x++; //text box increment
+												var courseid = "course_name_"
+														+ x;
+												var shiftid = "shift_name_" + x;
+												var date = "date_" + x;
+												var fromDate = "from_time_" + x;
+												var toDate = "to_time_" + x;
+												var noOfSeats = "no_of_seats_"
+														+ x;
+												var cenType = $("#examType")
+														.val();
+												//alert(cenType)
+
+												var option = "";
+												$
+														.ajax({
+
+															type : "GET",
+															url : "add-center-get-course-dropdown-list?name="+ cenType,
+															async : false,
+															success : function(
+																	response) {
+
+																if (response.message == "Success") {
+																	$("#tbodyId").empty();
+																	console.log(response.body)
+
+																	for (var i = 0; i < response.body.length; i++) {
+																		option = option
+																				+ '<option value="'+response.body[i].key+'">'
+																				+ response.body[i].name
+																				+ '</option>';
+																	}
+																}
+
+															}
+														});
+
+												var option1 = "";
+												$
+														.ajax({
+
+															type : "GET",
+															url : "add-center-get-shift-dropdown-list",
+															async : false,
+															success : function(
+																	response) {
+
+																if (response.message == "Success") {
+																	$(
+																			"#tbodyId")
+																			.empty();
+																	console
+																			.log(response.body)
+
+																	for (var i = 0; i < response.body.length; i++) {
+																		option1 = option1
+																				+ '<option value="'+response.body[i].key+'">'
+																				+ response.body[i].name
+																				+ '</option>';
+																	}
+																}
+
+															}
+														});
+
+												$(wrapper)
+														.append(
+																'<div><select class="courseName" id='+courseid+' style="border:solid 1px;"><option th:value="NULL">--Select Course--</option>'
+																		+ option
+																		+
+
+																		'</select><select class="shiftName margin_left" id='+shiftid+' style="border: solid 1px;">	<option th:value="0">--Select Shift--</option>'
+																		+ option1
+																		+ '</select><input type="text" class="datee margin_left" autocomplete="off" name="" placeholder="Date" id='
+																		+ date
+																		+ ' onclick = getDate("'
+																		+ date
+																		+ '")>'
+																		+ '<input type="text" class="fromDate margin_left" name="" autocomplete="off" placeholder="From Time" id='+fromDate+'/><input type="text" autocomplete="off" class="toDate margin_left" name="" placeholder="To Time" id='+toDate+'><input type="text" autocomplete="off" class="noOfSeats margin_left" name="" placeholder="No. of Seats" id='+noOfSeats+'><a href="#" class="btn btn3 remove_field"><i class="ti ti-minus"></i></a></div>'); //add input box
+
+												$(".datee").datetimepicker({
+													format : 'd-m-Y',
+													closeOnDateSelect : true,
+													timepicker : false,
+													scriollMonth : false
+												})
+												$(".fromDate").datetimepicker({
+													format : 'h:m',
+													closeOnDateSelect : false,
+													timepicker : true,
+													scriollMonth : false
+												})
+												$(".toDate").datetimepicker({
+													format : 'h:m',
+													closeOnDateSelect : false,
+													timepicker : true,
+													scriollMonth : false
+												})
+
+											}
+										});
+
+						$(wrapper).on("click", ".remove_field", function(e) { //user click on remove text
+							e.preventDefault();
+							$(this).parent('div').remove();
+							x--;
+						})
+					});
+	
+</script>
+
+</head>
+<body>
+	<div layout:fragment="content" class="maincontent">
+		<div class="container-scroller">
+			<!-- partial -->
+			<div class="container-fluid">
+				<!-- partial -->
+				<div class="main-panel">
+					<div class="content-wrapper">
+
+						<div class="row">
+							<div class="col-md-12">
+
+								<div class="row"></div>
+								<div class="row">
+									<div class="col-lg-12">
+
+										<h4>Add Center</h4>
+
+										<div class="card-body">
+											<div class="basic-elements"></div>
+										</div>
+										<table class="table table-striped table-bordered table-hover">
+
+
+											<tr>
+												<td>Center Code :</td>
+												<td><input class="form-control"
+													placeholder="Enter Center Code" name="centerCode"
+													type="text" id="centerCode" value="" autocomplete="off"></td>
+
+												<td>Center Name :</td>
+												<td><input class="form-control" type="text"
+													placeholder="Enter Center Name" name="centerName"
+													id="centerName" autocomplete="off"></td>
+											</tr>
+
+
+											<tr>
+												<td>Location Name :</td>
+
+
+												<td><select class="form-control" id="locationName">
+														<option th:value="NULL">--Select--</option>
+														<option th:each="c,iter:${locList}" th:value="${c.key}"
+															th:text="${c.name}" th:selected="${c.key==locationName}"></option>
+
+												</select></td>
+
+
+
+												<td>Exam :</td>
+
+												<td><select class="form-control" id="examType"
+													onchange="getCourseList()">
+														<option th:value="0">---Select---</option>
+														<option th:each="c,iter:${examList}" th:value="${c.key}"
+															th:text="${c.name}" th:selected="${c.key==examType}"></option>
+
+												</select></td>
+
+
+											</tr>
+
+
+
+											<tr>
+												<td>Center Address :</td>
+												<td colspan="3"><textarea class="form-control"
+														placeholder="Enter Address" name="centerAddress"
+														id="centerAddress" autocomplete="off"></textarea></td>
+											</tr>
+
+
+
+											<tr>
+												<td>Status :</td>
+												<td><select class="form-control" name="status"
+													id="status" required onChange="tohide(this.value)">
+														<option value="">--Select--</option>
+														<option value="1">Active</option>
+														<option value="2">Inactive</option>
+												</select></td>
+												<td>Remarks :</td>
+												<td><textarea class="form-control"
+														placeholder="Enter Remarks" name="remarks" id="remarks"
+														autocomplete="off"></textarea></td>
+											</tr>
+
+											<tr>
+												<td>Center Incharge Name :</td>
+												<td><input class="form-control"
+													placeholder="Enter Incharger Name" name="inchargeName"
+													type="text" id="inchargeName" value="" autocomplete="off"></td>
+
+												<td>Mobile No. :</td>
+												<td><input class="form-control" type="text"
+													placeholder="Enter Mobile Number" name="mobileNo"
+													id="mobileNo" autocomplete="off" onkeyup="checkNum('mobileNo')" maxLength="10">
+													 <span id="error3" class="formValidation1"></span></td>
+											</tr>
+											<tr>
+												<td>Email Id:</td>
+												<td><input class="form-control"
+													placeholder="Enter Email Id" name="emailId" type="text"
+													id="emailId" value="" autocomplete="off" ><span id="error2" class="formValidation1"></span></td>
+											</tr>
+
+											<!--  <tr>
+
+												<td><input type="submit" value="Submit"
+													class="btn btn-success" onclick="saveAddress();"></td>
+												<td colspan="3"></td>
+											</tr> -->
+
+
+										</table>
+									</div>
+									<!-- ****** -->
+
+									<div class="col-lg-12">
+
+
+
+
+
+										<div class="card-body">
+											<div class="basic-elements"></div>
+										</div>
+
+										<div id="addmoretable">
+
+
+
+											<div class="input_fields_wrap">
+
+
+
+												<div>
+
+													<!-- 	<select class="courseName" id="course_name_"
+														style="border: solid 1px;">
+														<option th:value="NULL">--Select Course--</option>
+														<option th:each="c,iter:${courseList}" th:value="${c.key}"
+															th:text="${c.name}" th:selected="${c.key==course_name_}"></option>
+
+													</select> -->
+													<select class="courseName" id="course_name_"
+														style="border: solid 1px;">
+														<option th:value="NULL">--Select Course--</option>
+														<option></option>
+													</select> <select class="shiftName" id="shift_name_"
+														style="border: solid 1px;">
+														<option th:value="0">--Select Shift--</option>
+														<option th:each="c,iter:${shiftList}" th:value="${c.key}"
+															th:text="${c.name}" th:selected="${c.key==shift_name_}"></option>
+
+
+													</select> <input type="text" class="datee" name=""
+														placeholder="Date" id="date_"> <input type="text"
+														class="fromDate" name="" placeholder="From Time"
+														id="from_time_"> <input type="text" class="toDate"
+														name="" placeholder="To Time" id="to_time_"> <input
+														type="text" class="noOfSeats" name=""
+														placeholder="No. of Seats" id="no_of_seats_">
+													<button class="btn btn1 add_field_button">
+														<i class="ti ti-plus"></i>
+													</button>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="chartbtnsec">
+										<div align="right">
+											<button type="button" class="btn btn-success"
+												id="cancelModalBtn1" onclick="saveAddress();">Submit</button>
+										</div>
+									</div>
+
+
+								</div>
+								<div class="clearfix"></div>
+
+
+
+								<!-- partial -->
+							</div>
+							<!-- main-panel ends -->
+						</div>
+						<!-- page-body-wrapper ends -->
+					</div>
+
+
+
+
+				</div>
+				<!-- container-scroller -->
+				<!-- plugins:js -->
+				<!-- plugins:js -->
+
+				<!-- End custom js for this page -->
+			</div>
+		</div>
+	</div>
+
+</body>
+</html>

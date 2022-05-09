@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Odisha Board Examination Portal</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../assets/css/lib/font-awesome.min.css">
+<link rel="stylesheet" href="../assets/css/extend/themify-icons.css">
+<link rel="stylesheet" href="../assets/css/extend/login.css">
+<link rel="stylesheet" href="../extend/css/bootstrap_min.css">
+<script src="../assets/js/lib/jquery-3.4.1.min.js"></script>
+<script src="../assets/js/lib/bootstrap.min.js"></script>
+<script>
+	$(document).ready(function() {
+		$("#container").show();
+		$("#signupcontainer").hide();
+		$("#packagecontainer").hide();
+		$("#forgetPassContainer").hide();
+		$("#createPassword").hide();
+		//$("#container").show();
+		
+		
+		var dateFormat = localStorage.getItem("dateFormat");
+		//Date fromatter for TO DATE 
+
+		$("#toDateCalendar").datetimepicker({
+			format : dateFormat,
+			closeOnDateSelect : true,
+			timepicker : false,
+		}).on("change", function() {
+			$('#toDate').val($(this).val());
+		})
+		$('#toDate').blur(function(){
+		$("#toDateCalendar").val($(this).val());
+		})
+		
+		//Date fromatter for FROM DATE
+
+		$("#fromDateCalendar").datetimepicker({
+			format : dateFormat,
+			closeOnDateSelect : true,
+			timepicker : false,
+		}).on("change", function() {
+			$('#fromDate').val($(this).val());
+		})
+		$('#fromDate').blur(function(){
+		$("#fromDateCalendar").val($(this).val());
+		})
+	});
+	
+	
+	/* ************forget password***************/
+	
+	function forgetPassword() {
+		///alert("forget password")
+		
+		$("#forgetPassContainer").show();
+		$("#container").hide();
+		$("#signupcontainer").hide();
+		$("#packagecontainer").hide();
+		/* $("#forgetPassContainer").addClass("width1000");
+		  */
+		
+		
+		
+	}
+	 
+	function showSignUp() {
+		
+		$("#UserId").val("");
+		$("#fName").val("");
+		$("#lName").val("");
+		$("#companyName").val("");
+		$("#contactPerson").val("");
+		$("#email").val("");
+		$("#mobileNo").val("");
+		$("#gstNo").val("");
+		$("#address").val("");
+		$("#country").val("");
+		$("#state").val("");
+		$("#pincode").val("");
+		$("#status").val("");
+		$("#passward").val("");
+		
+		$("#signupcontainer").show();
+		$("#container").hide();
+		$("#packagecontainer").hide();
+		$("#forgetPassContainer").hide();
+		
+		$("#signupcontainer").addClass("width1000");
+	}
+	
+	function alreadyHaveAnAccount() {
+		$("#signupcontainer").hide();
+		$("#packagecontainer").hide();
+		$("#forgetPassContainer").hide();
+		$("#container").show();
+		$("#signupcontainer").removeClass("width1000");
+	}
+	
+	
+	function getState(){
+		
+		var empCountry = $("#country").val();
+		if (empCountry) {
+		$("#state").empty();
+		var option = $("<option></option>");
+		$(option).val(null);
+		$(option).html("Select");
+		$("#state").append(option);
+		$.ajax({
+		type : 'GET',
+		url : 'get-state-list?country='+ empCountry,
+		contentType : false,
+		success : function(response) {
+		if (response.message == "success") {
+		$("#state").empty();
+		//console.log("In State")
+		var option = $("<option></option>");
+		$(option).val(null);
+		$(option).html("Select");
+		$("#state").append(option);
+		//console.log(response.body)
+		for (var i = 0; i < response.body.length; i++) {
+		var option = $("<option></option>");
+		$(option).val(response.body[i].key);
+		$(option).html(response.body[i].name);
+		$("#state").append(option);
+		}
+		}
+		},
+		error : function(e) {
+		alert("error");
+		}
+		});
+		} else {
+		$("#state").empty();
+		var option = $("<option></option>");
+		$(option).val(null);
+		$(option).html("Select");
+		$("#state").append(option);
+		var option = $("<option></option>");
+		$(option).val(null);
+		$(option).html("Select");
+		}
+		}
+	
+	//date calculation
+	
+	function addDays(fromdate,validity) {
+		 $("#fromDate").val(fromdate);
+		 var newDate = new Date(Date.now() + validity * 24*60*60*1000);
+		 var result = newDate.toISOString().split('T')[0];
+  		 $("#toDate").val(result);
+	}
+	
+	//get amount and date value
+	
+	function getamount(){
+		var packageName = $("#packageName").val();
+		
+		$.ajax({
+			type : "GET",
+			url : "get-package-amount?packageName=" + packageName,
+			async : false,
+			success : function(response) {
+				
+				if (response.message == "Success") {
+					
+					$("#amount").val(response.body[0].amount);
+					var validity=response.body[0].validityDate;
+					var fromdate = (new Date()).toISOString().split('T')[0];
+					addDays(fromdate,validity);
+				}
+			},
+			error : function(data) {
+			}
+		});
+	}
+
+	function create()
+	{
+		var npass=$("#npassword").val();
+		var cpass=$("#cpassword").val();
+		var userid=$("#uid").val();
+		
+		if(npass==cpass)
+			{
+			//alert("success")
+			$.ajax({
+				type		: "GET",
+				url 		: "update-user-password?pass="+npass+"&uid="+userid,
+				contentType	: "application/json",
+				data		: JSON.stringify(),
+				
+				success		: function(response){
+					//console.log(response);
+					if(response.message == "Success"){
+						alert("success")
+						$("#forgetPassContainer").hide();
+						$("#createPassword").hide();
+						$("#container").show();
+						
+					}
+				},
+				error : function(data){
+					
+					//console.log(data);
+				}
+			});
+			}
+		else
+			{
+			alert("Both password are mismatched")
+			}
+		
+	}
+	
+	
+	
+	function check()
+	{
+	var validation = true;	
+	
+	var mobileno=$("#mobileno").val();
+	var	emailid=$("#emailid").val();
+	
+	if (mobileno == null || mobileno == "") {
+		validation = validationUpdated("Mobile Number required", "mobileno");
+	}
+	if (emailid == null || emailid == "") {
+		validation = validationUpdated("Email Id required", "emailid");
+	}
+	
+	var mobValid;
+
+	function mobVal() {
+		var mob = $('#mobileno').val();
+		var phoneno = /^\d{10}$/;
+
+		if (mob != '') {
+			if (mob.match(phoneno)) {
+				$("#error3").hide();
+				mobValid = true;
+				return true;
+			} else {
+				$("#error3")
+						.html(
+								"please enter  10 digit mobile number  ex:7089451278");
+				mobValid = false;
+				return false;
+			}
+		}
+	}
+	$.ajax({
+					type		: "GET",
+					url 		: "verification-mobile-email?mobile="+mobileno+"&email="+emailid,
+					contentType	: "application/json",
+					data		: JSON.stringify(),
+					
+					success		: function(response){
+						
+						if(response.message == "Success"){
+							//alert("success")
+							$("#uid").val(response.body[0].key);
+							alert(response.body[0].key)
+							$("#forgetPassContainer").hide();
+							$("#createPassword").show();
+							
+						}
+					},
+					error : function(data){
+						
+						
+					}
+				});
+			}
+	
+		function add(){
+		
+		var obj = {};
+		obj.UserId = $("#UserId").val();
+		
+		//obj.lName = $("#lName").val();
+		var firstName= $("#fName").val();
+		var lastName= $("#lName").val();
+		var fullName=firstName+" "+lastName;
+		obj.fName =fullName;
+		obj.companyName =$("#companyName").val();
+		obj.contactPerson = $("#contactPerson").val();
+		obj.passward = $("#passward").val();
+		obj.email = $("#email").val();
+		obj.mobileNo = $("#mobileNo").val();
+		obj.gstNo = $("#gstNo").val();
+		obj.address = $("#address").val();
+		obj.country = $("#country").val();
+		obj.state=$("#state").val();
+		obj.pincode=$("#pincode").val();
+		obj.status=$("#status").val();
+		//obj.status=$("#status:checkbox:checked").val();
+		
+		 if(obj.status=="Active")
+			{
+			obj.status="1";
+			
+			}
+		else
+			{
+			obj.status="0";
+			} 
+		
+			 
+			var validation = true;
+
+		 	if (obj.fName == null || obj.fName == "") {
+			validation = validationUpdated("fName Required", "fName");
+			}
+			/* if (obj.lName == null || obj.lName == "") {
+			validation = validationUpdated("lName Required","lName");
+			} */
+			 if (obj.companyName == null || obj.companyName == "") {
+			validation = validationUpdated("companyName Required", "companyName");
+			} 
+			if (obj.passward == null || obj.passward == "") {
+			validation = validationUpdated("passward Required", "passward");
+			}
+			if (obj.contactPerson == null || obj.contactPerson == "") {
+			validation = validationUpdated("contactPerson Required", "contactPerson");
+			}
+			if (obj.email == null || obj.email == "") {
+			validation = validationUpdated("email Required", "email");
+			}
+			if (obj.mobileNo == null || obj.mobileNo == "") {
+			validation = validationUpdated("mobileNo Required", "mobileNo");
+			}
+			if (obj.gstNo == null || obj.gstNo == "") {
+			validation = validationUpdated("gstNo Required", "gstNo");
+			}
+			if (obj.address == null || obj.address == "") {
+			validation = validationUpdated("address Required", "address");
+			}
+			if (obj.country == null || obj.country == "") {
+			validation = validationUpdated("country Required", "country");
+			}
+			if (obj.state == null || obj.state == "") {
+			validation = validationUpdated("State Required", "state");
+			}
+			if (obj.pincode == null || obj.pincode == "") {
+			validation = validationUpdated("pincode Required", "pincode");
+			}
+			if (obj.status == null || obj.status == "") {
+			validation = validationUpdated("Status Required", "status");
+			} 
+			
+	if(validation){
+		
+		$.ajax({
+			type		: "POST",
+			url 		: "save-signup-details",
+			contentType	: "application/json",
+			data		: JSON.stringify(obj),
+			
+			success		: function(response){
+				//console.log(response);
+				if(response.message == "Success"){
+					var custId=response.body;
+					$("#custId").val(custId);
+					$("#signupcontainer").hide();
+					$("#container").show();
+					$("#packagecontainer").hide();
+				}
+			},
+			error : function(data){
+				
+				//console.log(data);
+			}
+		});
+	}
+	}
+			
+	function payAmount(){
+		
+		var obj = {};
+		obj.rechargeId = $("#rechargeId").val();
+		obj.custId = $("#custId").val();
+		obj.packageId = $("#packageName").val();
+		obj.amount= $("#amount").val();
+		obj.fromDate= $("#fromDate").val();
+		obj.toDate= $("#toDate").val();
+		//console.log(obj);
+		var validation = true;
+		
+		if (obj.packageId == null || obj.packageId == "") {
+			validation = validationUpdated("packageId Required", "packageId");
+			}
+			if (obj.amount == null || obj.amount == "") {
+			validation = validationUpdated("amount Required", "amount");
+			}
+			if (obj.fromDate == null || obj.fromDate == "") {
+			validation = validationUpdated("fromDate Required", "fromDate");
+			}
+			if (obj.toDate == null || obj.toDate == "") {
+			validation = validationUpdated("toDate Required", "toDate");
+			}
+	if(validation){
+		
+			$.ajax({
+			
+			type		: "POST",
+			url 		: "save-packagess-details",
+			contentType	: "application/json",
+			data		: JSON.stringify(obj), 
+			success		: function(response){
+				//console.log(JSON.stringify(response));
+				if(response.message == "Success"){
+					$("#signupcontainer").hide();
+					$("#packagecontainer").hide();
+					$("#forgetPassContainer").hide();
+					$("#container").show();
+					
+				}
+			},
+			error : function(data){
+				console.log(data);
+			}
+			});
+		}
+	}
+	
+</script>
+<style>
+.sign-up1-container {
+	left: 0;
+	width: 100%;
+	z-index: 2;
+}
+
+.width1000 {
+	width: 1000px !important;
+	min-height: 600px !important;
+}
+
+label {
+	display: inline-block;
+	margin-bottom: .5rem;
+	float: left;
+	color: #929292 !important;
+	font-size: 14px;
+}
+
+.logo {
+	height: 100px;
+	width: 120px;
+	text-align: center;
+	margin: 30px 0px;
+}
+
+.form-control {
+	display: block;
+	width: 100%;
+	padding: .375rem .75rem;
+	font-size: 1rem;
+	line-height: 1.5;
+	color: #495057;
+	background-color: #fff;
+	background-clip: padding-box;
+	border: 1px solid #ced4da;
+	border-radius: .25rem;
+	transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+}
+
+
+
+</style>
+</head>
+<script type="text/javascript">
+
+$.getJSON("https://api.ipify.org?format=json",
+        function(data) {
+
+// Setting text of element P with id gfg
+$("#gfg").html(data.ip);
+})
+
+
+
+</script>
+<body>
+
+	<!-- <h2>Weekly Coding Challenge #1: Sign in/up Form</h2> -->
+	<div class="container" id="container">
+
+		<div class="form-container sign-in-container">
+			<form th:action="@{/login}" method="post">
+				<div>
+					<img src="assets/images/login_img/odisha-lg.png" class="logo">
+				</div>
+				<div class="heading">Sign in</div>
+
+				<div class="input-box sigincls">
+					<input type="text" name="username" id="username"
+						class="form-control1" placeholder="Mobile No">
+				</div>
+				<div class="input-box sigincls">
+					<input type="password" name="password" id="password"
+						class="form-control1" placeholder="Passsword">
+				</div>
+				<a href="javascript:void(0)" onclick="forgetPassword();"><b>Forgot
+						your password?</b></a>
+				<!-- <a href="javascript:void(0)"
+					onclick="showSignUp();">New User ?</a>  -->
+				<button>Sign In</button>
+			</form>
+		</div>
+		<div class="overlay-container">
+			<div class="overlay">
+				<div class="overlay-panel overlay-right">
+					<div class="heading">Hello, Friend!</div>
+					<p>Enter your personal details and start journey with us</p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Sign Up Part Start -->
+
+	<div class="container" id="signupcontainer">
+
+		<div class="form-container sign-up1-container">
+			<form>
+				<div>
+					<img src="../assets/images/NTA_logo.png" class="logo">
+				</div>
+				<div class="heading">Sign Up</div>
+				<div class="row">&nbsp;</div>
+				<!-- <div class="container-fluid">
+					<div class="maincontentsec">
+						<div class="content_padding"> -->
+				<div class="row">
+					<div class="col-lg-3">
+						<div class="form-group">
+							<label>First Name</label><input type="text" autocomplete="off"
+								id="fName" class="form-control1">
+						</div>
+					</div>
+
+					<div class="col-lg-3">
+						<div class="form-group">
+							<label>Last Name</label><input type="text" autocomplete="off"
+								id="lName" class="form-control1">
+						</div>
+					</div>
+					<div class="col-lg-3">
+						<div class="form-group">
+							<label>Company Name</label><input type="text" autocomplete="off"
+								id="companyName" class="form-control1">
+						</div>
+					</div>
+					<div class="col-lg-3">
+						<div class="form-group">
+							<label>Contact Person Name</label><input type="text"
+								autocomplete="off" id="contactPerson" class="form-control1">
+						</div>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-lg-3">
+						<div class="form-group">
+							<label>Password</label><input type="text" autocomplete="off"
+								id="passward" class="form-control1">
+						</div>
+					</div>
+					<div class="col-lg-3">
+						<div class="form-group">
+							<label>Email</label><input type="text" autocomplete="off"
+								id="email" class="form-control1">
+						</div>
+					</div>
+					<div class="col-lg-3">
+						<div class="form-group">
+							<label>Mobile Number</label><input type="text" autocomplete="off"
+								id="mobileNo" class="form-control1">
+						</div>
+					</div>
+					<div class="col-lg-3">
+						<div class="form-group">
+							<label>GST Number</label><input type="text" autocomplete="off"
+								id="gstNo" class="form-control1">
+						</div>
+					</div>
+				</div>
+				<div class="row" style="width: 100%;">
+					<div class="col-lg-9">
+						<div class="form-group">
+							<label>Address</label>
+							<textarea autocomplete="off" id="address" class="form-control"></textarea>
+						</div>
+					</div>
+					<div class="col-lg-3">
+						<div class="form-group">
+							<label>Pin Code</label> <input type="text" autocomplete="off"
+								id="pincode" class="form-control1">
+						</div>
+					</div>
+				</div>
+				<div class="row" style="width: 100%;">
+					<div class="col-lg-4">
+						<div class="form-group">
+							<label>Country</label> <select id="country" class="form-control"
+								onchange=getState()>
+								<option value="">--Select--</option>
+								<option th:each="c,iter:${countrylist}" th:value="${c.key}"
+									th:text="${c.name}"></option>
+							</select>
+						</div>
+					</div>
+
+					<div class="col-lg-4">
+						<div class="form-group">
+							<label>State</label> <select id="state" class="form-control">
+								<option>--Select--</option>
+							</select>
+						</div>
+					</div>
+					<div class="col-lg-4">
+						<div class="form-group">
+							<label>Status</label> <select id="status" class="form-control">
+								<option>Active</option>
+								<option>Inactive</option>
+							</select>
+						</div>
+					</div>
+				</div>
+				<!-- </div>
+					</div>
+				</div> -->
+				<a href="javascript:void(0)" onclick="alreadyHaveAnAccount();">Already
+					have an account ?</a>
+				<!-- <button>Sign Up</button> -->
+				<button type="button" onclick="add()">Sign UP</button>
+			</form>
+		</div>
+	</div>
+	<!-- Sign Up Part End -->
+	<!-- ---forget password part start---- -->
+
+
+	<div class="container" id="forgetPassContainer">
+
+		<div class="form-container sign-up1-container">
+			<form>
+
+				<div class="heading">Forget Password</div>
+				<div class="row">&nbsp;</div>
+				<div class="container-fluid">
+					<div class="maincontentsec">
+						<div class="content_padding">
+							<div class="row">
+								<div class="col-lg-6">
+									<div class="form-group">
+										<label>Enter Valid Mobile Number</label> <input type="text"
+											autocomplete="off" id="mobileno" class="form-control1"
+											onkeyup="checkNum('mobileno')" maxLength="10"> <span
+											id="error3" class="formValidation1"></span>
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-lg-6">
+									<div class="form-group">
+										<label>Enter Valid Email Id</label> <input type="text"
+											autocomplete="off" id="emailid" class="form-control1">
+									</div>
+								</div>
+							</div>
+
+							<div>
+								<button type="button" onclick="check()">Proceed</button>
+							</div>
+
+						</div>
+					</div>
+				</div>
+
+			</form>
+		</div>
+	</div>
+	<!--  forget password part end-->
+	<!-- Confirm Password start -->
+
+
+	<div class="container" id="createPassword">
+
+		<div class="form-container sign-up1-container">
+			<form>
+
+				<div class="heading">Create New Password</div>
+				<div class="row">&nbsp;</div>
+				<div class="container-fluid">
+					<div class="maincontentsec">
+						<div class="content_padding">
+							<div class="row">
+
+								<div class="form-group">
+									<input type="hidden" autocomplete="off" id="uid"
+										class="form-control1">
+								</div>
+
+							</div>
+							<div class="row">
+								<div class="col-lg-6">
+									<div class="form-group">
+										<label>Enter New Password</label> <input type="password"
+											autocomplete="off" id="npassword" class="form-control1">
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-lg-6">
+									<div class="form-group">
+										<label>Re-Enter Password</label> <input type="password"
+											autocomplete="off" id="cpassword" class="form-control1">
+									</div>
+								</div>
+							</div>
+
+							<div>
+								<button type="button" onclick="create();">Save</button>
+							</div>
+
+						</div>
+					</div>
+				</div>
+
+			</form>
+		</div>
+	</div>
+	<!-- Confirm Password End -->
+
+	<div class="container" id="packagecontainer">
+
+		<div class="form-container sign-up1-container">
+			<form>
+				<div>
+					<img src="assets/images/login_img/logo.png" class="logo">
+				</div>
+
+				<!-- <div class="container-fluid">
+					<div class="maincontentsec">
+						<div class="content_padding"> -->
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="form-group">
+							<input type="hidden" id="custId" /> <input type="hidden"
+								id="packageId" /> <label>Package</label> <select
+								id="packageName" class="form-control" onchange=getamount()>
+								<option value="">--Select--</option>
+								<option th:each="c,iter:${packagelist}" th:value="${c.key}"
+									th:text="${c.name}"></option>
+							</select>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="form-group">
+							<label>Amount</label><input type="text" autocomplete="off"
+								id="amount" readonly class="form-control1">
+						</div>
+					</div>
+				</div>
+				<!-- <div class="row">
+								<div class="col-lg-12">
+									<div class="form-group">
+										<label>From Date</label><input type="text" autocomplete="off" id=fromDate
+											readonly class="form-control1">
+									</div>
+								</div>
+							</div> -->
+
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="form-group">
+							<label>From Date</label> <input type="text" id="fromDate"
+								autocomplete="off" class="form-control1"
+								th:attr="onkeyup=|formatDate('fromDate','${session.DATEFORMAT_JS}')|">
+							<!-- <i class="ti-calendar picker_calendar" id="fromDateCalendar"></i> -->
+						</div>
+					</div>
+				</div>
+				<!-- <div class="row">
+								<div class="col-lg-12">
+									<div class="form-group">
+										<label>To Date</label><input type="text" autocomplete="off"
+											id="toDate" readonly class="form-control1">
+									</div>
+								</div>
+							</div> -->
+
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="form-group">
+							<label>To Date</label> <input type="text" id="toDate"
+								autocomplete="off" class="form-control1"
+								th:attr="onkeyup=|formatDate('toDate','${session.DATEFORMAT_JS}')|">
+							<!-- <i class="ti-calendar picker_calendar" id="toDateCalendar"></i> -->
+						</div>
+					</div>
+				</div>
+
+				<!-- </div>
+					</div>
+				</div> -->
+
+				<!-- <button>Sign Up</button> -->
+				<button type="button" onclick="payAmount()">Pay</button>
+			</form>
+		</div>
+	</div>
+
+</body>
+</html>

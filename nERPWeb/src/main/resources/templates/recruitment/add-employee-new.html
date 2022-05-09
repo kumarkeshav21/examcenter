@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/master}">
+<head>
+<meta charset="ISO-8859-1">
+<title></title>
+
+
+<script type="text/javascript" charset="utf-8">
+		// specify the columns
+		
+		
+		$(document).ready(function(){
+			
+			$("#cancel").hide();
+			$("#save").hide();
+			$("#demo").hide();
+			/* $("#lname").hide();
+			$("#gender").hide();
+			$("#maritalsts").hide();
+			$("#age").hide(); */
+			
+			
+			
+		});
+		
+		const columnDefs = [
+			{  headerName: 'FirstName',field: "fname"},
+			{  headerName: 'LastName',field: "lname"},
+			{  headerName: 'Gender',field: "gender"},
+			{  headerName: 'Marital Status',field: "maritalsts"},
+			{  headerName: 'Age',field: "age"}];
+			
+
+		
+		const gridOptions = {
+			    columnDefs: columnDefs};
+		 var obj = {};
+		var dataset = [];
+		
+		function addDetails(){
+		obj = {};
+		obj.fname = $("#fname").val();
+		obj.lname = $("#lname").val();
+		obj.gender =$("#gender").val();
+		obj.maritalsts = $("#maritalsts").val();
+		obj.age = $("#age").val();
+		dataset.push(obj);
+		gridOptions.api.setRowData(dataset);
+		
+		$("#add").hide();
+		$("#myGrid").show();
+		$("#cancel").hide();
+		$("#save").hide();
+		$("#demo").hide();
+		}
+		 
+		function add(){
+				 
+			$("#add").hide();
+			$("#myGrid").hide();
+			$("#cancel").show();
+			$("#save").show();
+			$("#demo").show();
+		
+			 }	
+			 
+		function cancel(){
+			
+		$("#add").show();
+		$("#myGrid").show();
+		$("#cancel").hide();
+		$("#save").hide();
+		$("#demo").hide();
+		}
+			 
+			 
+		
+		document.addEventListener('DOMContentLoaded', function() {
+		    var gridDiv = document.querySelector('#myGrid');
+		    new agGrid.Grid(gridDiv, gridOptions);
+		});
+	
+    
+    
+ </script>
+ 
+  
+<body>
+	<div layout:fragment="content" class="maincontent">
+
+		<div class="container-fluid">
+			<div class="row">
+				<div class="maincontentsec">
+					<div class="content_padding">
+
+						<div class="collapse" id="demo">
+
+
+							<div class="col-md-4">
+								<div class="form-group">
+									<label><b>First Name</b></label> <input type="text"
+										class="form-control" id="fname">
+								</div>
+							</div>
+
+
+							<div class="col-md-4">
+								<div class="form-group">
+									<label><b>Last Name</b></label> <input type="text"
+										class="form-control" id="lname">
+								</div>
+							</div>
+
+							<div class="col-md-4">
+								<div class="form-group">
+									<label><b>Gender</b></label>
+									<div class="select">
+										<select id="gender">
+											<option value="null">--Select--</option>
+											<option value='Male'>Male</option>
+											<option value='Female'>Female</option>
+										</select>
+									</div>
+								</div>
+							</div>
+
+
+							<div class="col-md-4">
+								<div class="form-group">
+									<label><b>Marital Status</b></label>
+									<div class="select">
+										<select id="maritalsts">
+											<option value="null">--Select--</option>
+											<option value='Married'>Married</option>
+											<option value='Unmarried'>Unmarried</option>
+										</select>
+									</div>
+								</div>
+							</div>
+
+							<div class="col-md-4">
+								<div class="form-group">
+									<label><b>Age</b></label> <input type="text"
+										class="form-control" id="age">
+								</div>
+							</div>
+						</div>
+
+
+						<button id="add" onclick="add()">Add</button>
+						<button id="cancel" onclick="cancel()">Cancel</button>
+						<button type="submit" id="save" form="form" value="add"
+							onclick="addDetails()">Save</button>
+						<div id="myGrid" style="width: 100%; height: 500px;"
+							class="ag-theme-alpine"></div>
+
+
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+</body>
+
+</head>
+</html>

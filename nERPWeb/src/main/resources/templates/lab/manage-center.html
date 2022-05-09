@@ -1,0 +1,1414 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/master}">
+
+<head>
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<style type="text/css">
+body {
+	background: #f5f5f5;
+}
+
+.content-wrapper {
+	background: transparent;
+	padding: .75rem 2.25rem;
+}
+
+.btnDisable {
+	color: #ccc !important;
+}
+
+.card-body a {
+	color: #000;
+}
+
+.table thead th {
+	vertical-align: bottom;
+	border-bottom: 1px solid #dee2e6;
+	background: transparent;
+	font-size: 18px !important;
+	color: #757373;
+	text-align: center;
+	font-weight: 100;
+	font-family: 'BOLD';
+	letter-spacing: .5px;
+}
+
+.highcharts-axis-title {
+	display: none;
+}
+/*todaychanges*/
+.card {
+	margin: 8px 0px;
+}
+
+.smlbox {
+	border: 1px solid #ccc;
+	background: #FFF;
+	border-radius: 5px;
+	padding: 10px;
+	margin: 5px;
+	color: #333;
+}
+
+.smlbox1 {
+	border: 1px solid #ccc;
+	background: #FFF;
+	border-radius: 5px;
+	padding: 10px;
+	margin: 11.5px 0px;
+	color: #333;
+}
+
+.smlbox11 {
+	border-radius: 5px;
+	padding: 10px;
+	color: #0071c1;
+}
+
+.smlbox11 .title {
+	width: 100px !important;
+	color: #000;
+	float: left;
+}
+
+.smlbox2 {
+	background: transparent;
+	border-radius: 5px;
+	padding: 5px 10px;
+	margin: 5px 0px;
+	color: #FFF;
+}
+
+.smlbox2 span {
+	float: right;
+	text-align: right;
+}
+
+.mrt_5 {
+	margin-top: 8px;
+}
+
+.text-left {
+	color: #0071c1;
+}
+
+.padding_8 {
+	padding: 0px 8px;
+}
+
+.heading {
+	background: rgba(0, 0, 0, 0.5);
+	padding: 8px;
+}
+
+.card_light {
+	background: #FFF;
+	border: 1px solid #ccc;
+	padding: 10px;
+	border-radius: 10px;
+}
+
+.card_light .card-title {
+	background: #0071c1;
+	color: #FFF;
+	padding: 12px 10px;
+	margin-bottom: 18px;
+}
+
+.cardtitle1 {
+	/*background: #0071c1;*/
+	font-size: 16px;
+	color: #333;
+	padding-top: 10px;
+	padding-left: 10px;
+}
+
+.card_light p {
+	color: #ccc;
+}
+
+.card {
+	margin: 0 !important;
+	margin-bottom: 8px !important;
+}
+
+/*new*/
+.searchsec {
+	background: #dbdbdb;
+	height: 60px;
+	border-bottom: 3px solid #7bd4df;
+	padding: 5px;
+	width: 100%;
+	margin: 0px 5px;
+}
+
+.card-title {
+	padding: 10px 3px;
+	color: #333 !important;
+	font-size: 18px;
+}
+
+.highcharts-figure {
+	width: 100% !important;
+	margin: 0 !important;
+}
+
+.highcharts-drilldown-data-label text {
+	text-decoration: none !important;
+	color: #FFF !important;
+	fill: #FFF !important;
+}
+
+.padding_5 {
+	padding: 0px 5px;
+}
+
+.d-block {
+	display: block !important;
+	width: 100%;
+}
+
+.card-body {
+	padding: 0.5rem 0.5rem;
+	text-align: left;
+}
+
+.highcharts-xaxis-labels text {
+	color: #333 !important;
+	fill: #333 !important;
+}
+
+.highcharts-yaxis-labels text {
+	color: #333 !important;
+	fill: #333 !important;
+}
+
+#sundargarh {
+	height: 500px;
+	min-width: 310px;
+	max-width: 800px;
+	margin: 0 auto;
+}
+
+.loading {
+	margin-top: 10em;
+	text-align: center;
+	color: gray;
+}
+
+#area {
+	height: 200px;
+	position: relative;
+	right: 20px;
+	width: 300px;
+}
+
+.highcharts-a11y-proxy-button {
+	color: #333 !important;
+}
+
+#daywise {
+	height: 150px;
+	width: 150px;
+	position: relative;
+	right: 40px;
+}
+
+#daywise .highcharts-yaxis-labels {
+	display: none;
+}
+
+#chart .highcharts-a11y-proxy-button {
+	color: #333 !important;
+}
+
+.white {
+	color: #FFF;
+}
+
+/* .active {
+	background: #98cb4a;
+	border: 1px solid #FFF;
+} */
+.inactive {
+	background: #f76d3c;
+	color: #333;
+	border: 1px solid #FFF;
+}
+
+.inactive a {
+	color: #FFF;
+}
+
+.ulbar {
+	display: flex;
+	flex-wrap: wrap;
+	margin-right: -15px;
+	margin-left: -15px;
+	margin-bottom: 8px;
+}
+
+.card a {
+	color: #98cb4a;
+	padding: 0px 7px;
+	position: relative;
+	top: 10px;
+	right: 10px;
+}
+
+.boxicon {
+	position: absolute;
+	bottom: 8px;
+	right: 8px;
+}
+
+.card-body a {
+	color: #FFF !important;
+	padding: 16px;
+	width: 100%;
+	position: relative;
+	top: -20px;
+	left: 0px;
+}
+
+.card-body a .icon {
+	position: relative;
+	top: -20px;
+}
+
+.font-weight-normal {
+	font-family: "ubuntu-regular", sans-serif;
+	font-size: 16px;
+}
+
+.profile {
+	border: 2px solid #ccc;
+	border-radius: 80px;
+	height: 104px;
+	width: 104px;
+	position: relative;
+	left: 33%;
+}
+
+.profile img {
+	height: 100px;
+	width: 100px;
+	border-radius: 50%;
+}
+
+.edit {
+	position: absolute;
+	background: #0071c1;
+	height: 30px;
+	width: 30px;
+	border-radius: 20px;
+	color: #FFF;
+	right: 0;
+	bottom: 0px;
+	padding: 3px 8px;
+}
+
+.card-title2 {
+	/* padding: 10px 3px; */
+	color: #333 !important;
+	font-size: 18px;
+	font-weight: 500;
+}
+
+.card-dsn {
+	box-shadow: 0 1px 6px 0 rgb(32 33 36/ 28%);
+	height: 315px;
+	border-bottom: 5px solid #913ccd;
+	border-radius: 5px;
+	overflow-y: scroll;
+	overflow-x: hidden;
+}
+
+#addmoreManage {
+	overflow-y: scroll;
+	overflow-x: hidden;
+}
+
+.card-emergency {
+	box-shadow: 0 1px 6px 0 rgb(32 33 36/ 28%);
+	height: 130px;
+	border-bottom: 5px solid #f2b40c;
+	border-radius: 5px;
+}
+
+.card-family {
+	box-shadow: 0 1px 6px 0 rgb(32 33 36/ 28%);
+	height: 130px;
+	border-bottom: 5px solid #f15f74;
+	border-radius: 5px;
+}
+
+.card-profile {
+	box-shadow: 0 1px 6px 0 rgb(32 33 36/ 28%);
+	border-bottom: 5px solid #3000c6;
+	border-radius: 5px;
+}
+
+.mt-8 {
+	margin-top: 8px;
+}
+
+.mb-20 {
+	margin-bottom: 20px;
+}
+
+.tbl-card {
+	background-color: #fff;
+	border-radius: 5px;
+	border-bottom: 5px solid #2ca8c2;
+	margin-bottom: 30px;
+	box-shadow: 0 1px 6px 0 rgb(32 33 36/ 28%);
+	height: 315px;
+}
+
+.tbl-head {
+	font-size: 18px;
+	color: #fff;
+	background-color: #2ca8c2;
+	padding: 5px 10px;
+	border-radius: 5px 5px 0px 0px;
+}
+
+.table thead th {
+	border-top: none;
+	font-family: 'HelveticaNeue';
+	font-size: 16px;
+	font-weight: 100;
+}
+
+.table td, .table th {
+	border-top: none;
+	font-family: 'HelveticaNeue';
+	font-size: 16px;
+	font-weight: 100;
+}
+
+.inr-tbl {
+	padding: 10px;
+}
+
+.date-clnd {
+	border: 1px solid #2d9f9e;
+	border-radius: 7px;
+	text-align: center;
+	background-color: #fff;
+	font-weight: 700;
+	color: #000;
+}
+
+.btm-txt {
+	background-color: #2d9f9e;
+	border-radius: 0px 0px 7px 7px;
+	color: #fff;
+	font-weight: 500;
+}
+
+.disble-clnd {
+	border: 1px solid #cacaca;
+	border-radius: 7px;
+	text-align: center;
+	background-color: #fff;
+	font-weight: 700;
+	color: #000;
+}
+
+.disble-txt {
+	background-color: #cacaca;
+	border-radius: 0px 0px 7px 7px;
+	font-weight: 500;
+}
+
+.rlt-nm {
+	font-size: 16px;
+	color: #000;
+	border-right: 2px solid #000;
+	width: 165px;
+	float: left;
+}
+
+.rlt {
+	font-size: 16px;
+	color: #000;
+	margin-left: 10px;
+}
+
+.ph-no {
+	font-size: 16px;
+	color: #000;
+}
+
+.ph-no span {
+	color: #056fe2;
+}
+
+.d-flex {
+	display: flex;
+}
+
+.user-dtlhd {
+	font-size: 16px;
+	color: #000;
+	font-weight: 500;
+}
+
+.user-id {
+	font-size: 16px;
+	font-weight: 400;
+	color: #056fe2;
+}
+
+.mb-10 {
+	margin-bottom: 10px;
+}
+
+.mdtbl-scrl {
+	height: 400px;
+	overflow-y: scroll;
+}
+
+.tbl-scrl {
+	height: 380px;
+	overflow-y: scroll;
+}
+
+.since-txt {
+	font-size: 16px;
+	color: #000;
+}
+
+.since-txt span {
+	font-size: 16px;
+	color: #000;
+	margin-left: 10px;
+}
+
+.more {
+	text-align: right;
+	font-size: 16px;
+	color: #000;
+	margin-right: 20px;
+	margin-bottom: 8px;
+}
+
+.rpt-nm {
+	font-size: 16px;
+	color: #000;
+}
+
+.lab-name {
+	font-size: 16px;
+	color: #056fe2;
+}
+
+.btn-book {
+	color: #fff;
+	background-color: #3000c6;
+	border-color: #3000c6;
+}
+
+.btn-book:hover {
+	color: #fff;
+	background-color: #5129ce;
+	border-color: #5129ce;
+}
+
+.prf-ht {
+	height: 600px;
+}
+
+.mecication-head {
+	font-size: 18px;
+	color: #fff;
+	background-color: #117a75;
+	padding: 5px 10px;
+	border-radius: 5px 5px 0px 0px;
+}
+
+.md-tbl td, .md-tbl th {
+	padding: 6px 5px;
+}
+
+.md-tbl td {
+	color: #056fe2;
+	font-size: 16px;
+}
+
+.mecication-card {
+	background-color: #fff;
+	border-radius: 5px;
+	border-bottom: 5px solid #117a75;
+	margin-bottom: 30px;
+	box-shadow: 0 1px 6px 0 rgb(32 33 36/ 28%);
+	height: 454px;
+	margin-top: -30px;
+}
+
+.mb-8 {
+	margin-bottom: 8px;
+}
+
+.grn-btn {
+	background: #00a330;
+	color: #FFF;
+	border: none;
+	outline: none;
+	cursor: pointer;
+	border-radius: 30px;
+	padding: 4px 10px 4px 10px;
+	text-decoration: none;
+	font-family: roboto;
+}
+
+.modal-link {
+	color: #333 !important;
+	padding: 10px;
+}
+
+table td input {
+	width: 108px;
+}
+
+button, input {
+	overflow: visible;
+	width: 102px;
+	height: 32px;
+}
+
+select {
+	width: 143px;
+	height: 30px;
+	margin: 0;
+	padding: 0 0 0 0;
+	font-family: 'HelveticaNeue';
+	color: #333;
+	font-weight: 100;
+	cursor: pointer;
+	font-weight: 100;
+	line-height: 30px;
+	font-size: 16px;
+}
+</style>
+
+<script>
+
+/*******************************************************************************************/
+function getCourseList() {
+		//alert("hello")
+		var cenType = $("#examType").val();
+		//var locType= $("#locationName").val();
+		//alert(cenType)
+		if (cenType) {
+			//alert(extype);
+			$("#courseId_").empty();
+			$.ajax({
+				type : 'GET',
+				url : 'manage-center-course-list?name=' + cenType,
+				contentType : false,
+				success : function(response) {
+					if (response.message == "success") {
+						for (var i = 0; i < response.body.length; i++) {
+							var option = $("<option></option>");
+							$(option).val(response.body[i].key);
+							$(option).html(response.body[i].name);
+							$("#courseId_").append(option);
+						}
+					}
+				},
+				error : function(e) {
+
+				}
+			});
+		} else {
+			$("#courseId_").empty();
+			var option = $("<option></option>");
+			$(option).val(null);
+			$(option).html("Select");
+			$("#courseId_").append(option);
+
+		}
+	}
+
+//function viewDateDetails(date)
+
+	$(document).ready(
+			function()
+
+			{
+				//alert("hello")
+
+				$.ajax({
+
+					type : "GET",
+					url : "manage-center-table",
+
+					success : function(response) {
+
+						if (response.message == "Success") {
+							$("#tbodyId").empty();
+							console.log(response.body)
+							var k=1;
+
+							for (var i = 0; i < response.body.length; i++) {
+
+								var div2 = '<tr><td align="center">'
+							        + k
+									+ '</td>' 
+									+ '<td align="center">'
+									+ response.body[i].centerCode
+									+ '</td>'
+									+ '<td align="center">'
+									+ response.body[i].centerName
+									+ '</td>'
+									+ '<td align="center">'
+									+ response.body[i].locationName
+									+ '</td>'
+									+ '<td align="center">'
+									+ response.body[i].examType
+									+ '</td>'
+									+ '<td align="center">'
+									+ response.body[i].address
+									+ '</td>'
+									+ '<td align="center">'
+									+ response.body[i].inChargeName
+									+ '</td>' 
+									+ '<td align="center">'
+									+ response.body[i].mobile 
+									+ '</td>'
+									+ '<td align="center">'
+									+ response.body[i].email 
+									+ '</td>'
+									+ '<td align="center">' + response.body[i].status
+									+ '</td>'
+                                    + '<td>' 
+                                    + '<a data-toggle="modal" data-target="#myModal" onclick="editCenter(\''+response.body[i].sId+'\',\''+response.body[i].centerCode+'\',\''+ response.body[i].centerName+'\',\''+ response.body[i].locid+'\',\''+ response.body[i].examid+'\',\''+response.body[i].address+'\',\''+response.body[i].inChargeName+'\',\''+response.body[i].mobile +'\',\''+response.body[i].email+'\',\''+response.body[i].status+'\')" ><i class="fa fa-pencil-square-o modal-link" aria-hidden="true"> </i></a>' 
+                                    + '<a data-toggle="modal" data-target="#myModal1" onclick="deleteCenter(\''+response.body[i].sId+'\')" ><i class="fa fa-trash  modal-link" aria-hidden="true" ></i></a>' 
+     								+ '</td>'
+								$("#tbodyId").append(div2);
+     								k++;
+							}
+
+						}
+					},
+				});
+
+			});
+			
+			
+	function editCenter(sId,centerCode,centerName,locid,examid,address,inChargeName,mobile,email,status){
+		//alert(locationName);
+		$("#sId").val(sId)
+		$("#centerCode").val(centerCode)
+		$("#centerName").val(centerName)
+		$("#locationName").val(locid)
+		$("#examType").val(examid);
+		$("#address").val(address)
+		$("#inChargeName").val(inChargeName)
+		$("#mobile").val(mobile)
+		$("#email").val(email)
+		$("#status").val(1)
+		//getCourseList()
+		
+
+		/****************************edit add more sectionn**********************/
+		//alert(sId)	
+	
+	$.ajax({
+
+			type : "GET",
+			url : "manage-center-addmore?id=" + sId,
+			dataType : "json",
+			contentType : "application/json",
+			success : function(response) {
+				if (response.message == "Success") {
+					$("#addMoreTable").empty();
+					
+					for (var i = 0; i < response.body.length; i++) {
+						
+						var option = "";
+						
+						for(var j = 0; j < response.body[i].courseList.length; j++) {
+							
+							if(response.body[i].courseId == response.body[i].courseList[j].key) {
+								option = option + "<option value='"+response.body[i].courseList[j].key+"' selected=selected>"+response.body[i].courseList[j].name+"</option>";
+							} else {
+								option = option + "<option value='"+response.body[i].courseList[j].key+"'>"+response.body[i].courseList[j].name+"</option>";
+							}
+							
+						}
+						
+						var shift = "";
+						
+						for(var k = 0; k < response.body[i].getshiftList.length; k++) {
+							
+							if(response.body[i].shiftid == response.body[i].getshiftList[k].key) {
+								shift = shift + "<option value='"+response.body[i].getshiftList[k].key+"' selected=selected>"+response.body[i].getshiftList[k].name+"</option>";
+							} else {
+								shift = shift + "<option value='"+response.body[i].getshiftList[k].key+"'>"+response.body[i].getshiftList[k].name+"</option>";
+							}
+							
+						}
+
+						var div5 =  response.body[i].cid
+								+'<tr><td><select  class="form-control" id="courseId_'+i+'" >'+option+'</select></td>'
+								+ '<td><select  class="form-control" id="shiftId_'+i+'" >'+shift+'</select></td>'
+								+ '<td align="center" width="50"><input type="text" id="dateId_'+i+'" value="'+ response.body[i].date +'"></td>'
+								+ '<td align="center" width="50"><input type="text" id="fDate_'+i+'" value="'+ response.body[i].fDate +'"></td>'
+								+ '<td align="center" width="50"><input type="text" id="tDate_'+i+'" value="'+ response.body[i].tDate +'"></td>'
+								+ '<td align="center" width="50"><input type="text" id="noOfSeats_'+i+'" value="'+ response.body[i].noOfSeats+'"></td>'
+								
+						$("#addMoreTable").append(div5);
+						
+					}
+
+				}
+			},
+			error : function(response) {
+				console.log(response);
+			}
+		})
+	}
+	
+	
+	function deleteCenter(sId) {
+		
+		$("#centerId").val(sId);
+	}
+
+	function deleteCenterData() {
+
+		var centerId = $("#centerId").val();
+
+	
+
+		$
+				.ajax({
+					type : "GET",
+					url : "manage-center-delete?id=" + centerId,
+					dataType : "json",
+					contentType : "application/json",
+					success : function(response) {
+						if (response.message == "Success") {
+
+							$.ajax({
+								type : "GET",
+										url : "manage-center-table",
+											success : function(response) {
+
+											if (response.message == "Success") {
+												$("#tbodyId").empty();
+												console.log(response.body)
+												var k=1;
+
+												for (var i = 0; i < response.body.length; i++) {
+
+													var div2 = '<tr><td align="center">'
+															+ k
+															+ '</td>'
+															+ '<td align="center">'
+															+ response.body[i].centerCode
+															+ '</td>'
+															+ '<td align="center">'
+															+ response.body[i].centerName
+															+ '</td>'
+															+ '<td align="center">'
+															+ response.body[i].locationName
+															+ '</td>'
+															+ '<td align="center">'
+															+ response.body[i].examType
+															+ '</td>'
+															+ '<td align="center">'
+															+ response.body[i].address
+															+ '</td>'
+															+ '<td align="center">'
+															+ response.body[i].inChargeName
+															+ '</td>'
+															+ '<td align="center">'
+															+ response.body[i].mobile
+															+ '</td>'
+															+ '<td align="center">'
+															+ response.body[i].email
+															+ '</td>'
+															+ '<td align="center">'
+															+ response.body[i].status
+															+ '</td>'
+															+ '<td>'
+															+ '<a data-toggle="modal" data-target="#myModal" onclick="editCenter(\''
+															+ response.body[i].sId
+															+ '\',\''
+															+ response.body[i].centerCode
+															+ '\',\''
+															+ response.body[i].centerName
+															+ '\',\''
+															+ response.body[i].locid
+															+ '\',\''
+															+ response.body[i].address
+															+ '\',\''
+															+ response.body[i].inChargeName
+															+ '\',\''
+															+ response.body[i].mobile
+															+ '\',\''
+															+ response.body[i].email
+															+ '\',\''
+															+ response.body[i].status
+															+ '\')" ><i class="fa fa-pencil-square-o modal-link" aria-hidden="true"> </i></a>'
+															+ '<a data-toggle="modal" data-target="#myModal1" onclick="deleteCenter(\''
+															+ response.body[i].sId
+															+ '\')" ><i class="fa fa-trash  modal-link" aria-hidden="true" ></i></a>'
+															+ '</td>'
+													$("#tbodyId").append(div2);
+															k++;
+												}
+
+											}
+										},
+									});
+
+						}
+					},
+					error : function(response) {
+						console.log(response);
+					}
+				})
+	}
+
+	function saveEditedData() {
+		
+			listitem =[];
+			
+			var rowCount = document.getElementById('addMoreTable').rows.length;
+		for(i=0; i<rowCount;i++){
+			item ={};
+ 
+			 var course = "#courseId_"+i; 
+			 var shift = "#shiftId_"+i; 
+			 var date = "#dateId_"+i;
+			 var frDate ="#fDate_"+i;
+			 var toDate ="#tDate_"+i;
+			 var noofdate="#noOfSeats_"+i;
+			 item.courseId=$(course).val();
+			 item.shiftid = $(shift).val();
+			 item.date = $(date).val();
+			 item.fDate = $(frDate).val();
+			 item.tDate = $(toDate).val();
+			 item.noOfSeats = $(noofdate).val();
+			 listitem.push(item);
+		}		
+		
+		data = {};
+		
+		data.sId = $("#sId").val();
+		data.centerCode = $("#centerCode").val();
+		data.centerName = $("#centerName").val();
+		data.locationName = $("#locationName").val();
+		data.examType = $("#examType").val();
+		data.address = $("#address").val();
+		data.inChargeName = $("#inChargeName").val();
+		data.mobile = $("#mobile").val();
+		data.email = $("#email").val();
+		data.status = $("#status").val();
+		data.centerDetails=listitem;
+		
+		console.log(data)
+
+		$.ajax({
+					type : "POST",
+					url : "manage-center-edit-details-save",
+					dataType : "json",
+					contentType : "application/json",
+					data : JSON.stringify(data),
+					success : function(response) {
+						if (response.message == "Success") {
+							alert('Center updated Successfully')
+							
+							$
+									.ajax({
+
+										type : "GET",
+										url : "manage-center-table",
+
+										success : function(response) {
+
+											if (response.message == "Success") {
+												
+												
+												$("#tbodyId").empty();
+												console.log(response.body)
+												var k=1;
+
+												for (var i = 0; i < response.body.length; i++) {
+
+													var div2 = '<tr><td align="center">'
+															+ k
+															+ '</td>'
+															+ '<td align="center">'
+															+ response.body[i].centerCode
+															+ '</td>'
+															+ '<td align="center">'
+															+ response.body[i].centerName
+															+ '</td>'
+															+ '<td align="center">'
+															+ response.body[i].locationName
+															+ '</td>'
+															+ '<td align="center">'
+															+ response.body[i].examType
+															+ '</td>'
+															+ '<td align="center">'
+															+ response.body[i].address
+															+ '</td>'
+															+ '<td align="center">'
+															+ response.body[i].inChargeName
+															+ '</td>'
+															+ '<td align="center">'
+															+ response.body[i].mobile
+															+ '</td>'
+															+ '<td align="center">'
+															+ response.body[i].email
+															+ '</td>'
+															+ '<td align="center">'
+															+ response.body[i].status
+															+ '</td>'
+															+ '<td>'
+															+ '<a data-toggle="modal" data-target="#myModal" onclick="editCenter(\''
+															+ response.body[i].sId
+															+ '\',\''
+															+ response.body[i].centerCode
+															+ '\',\''
+															+ response.body[i].centerName
+															+ '\',\''
+															+ response.body[i].locid
+															+ '\',\''
+															+ response.body[i].examid
+															+ '\',\''
+															+ response.body[i].address
+															+ '\',\''
+															+ response.body[i].inChargeName
+															+ '\',\''
+															+ response.body[i].mobile
+															+ '\',\''
+															+ response.body[i].email
+															+ '\',\''
+															+ response.body[i].status
+															+ '\')" ><i class="fa fa-pencil-square-o modal-link" aria-hidden="true"> </i></a>'
+															+ '<a data-toggle="modal" data-target="#myModal1" onclick="deleteCenter(\''
+															+ response.body[i].sId
+															+ '\')" ><i class="fa fa-trash  modal-link" aria-hidden="true" ></i></a>'
+															+ '</td>'
+													$("#tbodyId").append(div2);
+															k++;
+												}
+
+											}
+										},
+									});
+						} else {
+							console.log(response.message)
+						}
+					},
+					error : function(response) {
+						console.log(response);
+					}
+				})
+	}
+	
+	function saveAddMoreData(){
+		
+		
+		data1 = {};
+		data1.stId = $("#shiftId_").val();
+		
+		data1.shiftid = $("#shiftid").val();
+		data1.date = $("#date").val();
+		data1.fDate = $("#fDate").val();
+		data1.tDate = $("#tDate").val();
+	}
+	
+	
+	
+/************************************add more fields************************************/
+	
+	$(document).ready(function() {
+	var max_fields      = 2000; //maximum input boxes allowed
+	var wrapper   		= $(".input_fields_wrap"); //Fields wrapper
+	var add_button      = $(".add_field_button"); //Add button ID
+	
+	var x = 0; //initlal text box count
+	$(add_button).click(function(e){ //on add input button click
+		e.preventDefault();
+		if(x < max_fields){ //max input box allowed
+			x++; //text box increment
+			var courseid = "course_name_"+x;
+			var shiftid="shift_name_"+x;
+			var date = "date_"+x;
+			var fromDate = "from_time_"+x;
+			var toDate = "to_time_"+x;
+			var noOfSeats = "no_of_seats_"+x;
+			var option = "";
+			$.ajax({
+				type : "GET",
+						url : "manage-center-get-course-dropdown-list",
+						async : false,
+						success : function(response) {
+
+							if (response.message == "Success") {
+								$("#tbodyId").empty();
+								console.log(response.body)
+
+								for (var i = 0; i < response.body.length; i++) {
+									option = option+'<option value="'+response.body[i].key+'">'+response.body[i].name+'</option>';
+								}
+							}
+
+						}
+				});
+			
+			 var option1 = "";
+			$.ajax({
+				
+				type : "GET",
+						url : "manage-center-get-shift-dropdown-list",
+						async : false,
+						success : function(response) {
+
+							if (response.message == "Success") {
+								$("#tbodyId").empty();
+								console.log(response.body)
+
+								for (var i = 0; i < response.body.length; i++) {
+									option1 = option1+'<option value="'+response.body[i].key+'">'+response.body[i].name+'</option>';
+								}
+							}
+
+						}
+				});
+			 
+			$(wrapper).append('<div><select class="courseName" id='+courseid+' style="border:solid 1px;"><option th:value="NULL">--Select Course--</option>'+option+
+
+							'</select><select class="shiftName margin_left" id='+shiftid+' style="border: solid 1px;">	<option th:value="0">--Select Shift--</option>'+option1+'</select><input type="text" class="datee margin_left" autocomplete="off" name="" placeholder="Date" id='+date+' onclick = getDate("'+date+'")>'+
+							'<input type="text" class="fromDate margin_left" name="" autocomplete="off" placeholder="From Time" id='+fromDate+'/><input type="text" autocomplete="off" class="toDate margin_left" name="" placeholder="To Time" id='+toDate+'><input type="text" autocomplete="off" class="noOfSeats margin_left" name="" placeholder="No. of Seats" id='+noOfSeats+'><a href="#" class="btn btn3 remove_field"><i class="ti ti-minus"></i></a></div>'); //add input box
+							$(".datee").datetimepicker({
+								format : 'd-m-Y',
+								closeOnDateSelect : true,
+								timepicker : false,
+								scriollMonth : false
+							})
+							$(".fromDate").datetimepicker({
+								format : 'h:m',
+								closeOnDateSelect : false,
+								timepicker : true,
+								scriollMonth : false
+							})
+							$(".toDate").datetimepicker({
+								format : 'h:m',
+								closeOnDateSelect : false,
+								timepicker : true,
+								scriollMonth : false
+							})
+		
+		}
+	});
+	
+	$(wrapper).on("click",".remove_field", function(e){ //user click on remove text
+		e.preventDefault(); $(this).parent('div').remove(); x--;
+	})
+});			
+</script>
+
+</head>
+<body>
+	<div layout:fragment="content" class="maincontent">
+		<div class="container-scroller">
+			<!-- partial -->
+			<div class="container-fluid">
+				<!-- partial -->
+				<div class="main-panel">
+					<div class="content-wrapper">
+
+						<div class="row">
+							<div class="col-md-12">
+
+								<div class="row"></div>
+								<div class="card">
+									<div class="table-responsive">
+
+										<div align="center" style="color: red"></div>
+
+										<table class="table table-striped table-bordered" id="example"
+											width="100%" cellspacing="0">
+											<thead>
+												<tr>
+													<th>Sl No.</th>
+													<th>Center Code</th>
+													<th>Center Name</th>
+													<th>Location Name</th>
+													<th>Exam</th>
+													<th>Address</th>
+													<th>Incharge Name</th>
+													<th>Mobile</th>
+													<th>Email</th>
+													<th>Status</th>
+													<th>Action</th>
+												</tr>
+											</thead>
+
+
+											<tbody class="tbodyCls" id="tbodyId">
+
+											</tbody>
+										</table>
+									</div>
+								</div>
+								<div class="clearfix"></div>
+
+
+
+								<!-- partial -->
+							</div>
+							<!-- main-panel ends -->
+						</div>
+						<!-- page-body-wrapper ends -->
+					</div>
+
+					<div id="myModal" class="modal fade" role="dialog">
+						<div class="modal-dialog modal-lg">
+
+							<!-- Modal content-->
+							<div class="modal-content">
+								<div class="modal-header">
+									<!-- <button type="button" class="close" data-dismiss="modal">&times;</button> -->
+									<h4 class="modal-title">Edit Center</h4>
+									<button type="button" class="close" data-dismiss="modal">&times;</button>
+								</div>
+								<div class="modal-body">
+									<!-- <!-- text input -->
+									<input class="form-control" type="hidden"
+										placeholder="Enter Exam Name" autocomplete="off" name="sId"
+										id="sId">
+									<div class="row">
+
+										<div class="col-md-6">
+											<label>Center Code :</label> <input class="form-control"
+												type="text" placeholder="Enter Center Name"
+												autocomplete="off" name="centerCode" id="centerCode">
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<label>Center Name :</label> <input class="form-control"
+													placeholder="Enter Exam Date" name="centerName" type="text"
+													id="centerName" value="">
+											</div>
+										</div>
+									</div>
+									<div class="row"></div>
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label>Location Name :</label>
+												<div class="select">
+													<select class="form-control" id="locationName">
+														<option th:each="c,iter:${locList}" th:value="${c.key}"
+															th:text="${c.name}" th:selected="${c.key==locationName}"></option>
+													</select>
+												</div>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<label>Exam :</label>
+												<div class="select">
+													<select class="form-control" id="examType"
+														onchange="getCourseList()">
+														<option th:each="c,iter:${examList}" th:value="${c.key}"
+															th:text="${c.name}" th:selected="${c.key==examType}"></option>
+													</select>
+												</div>
+											</div>
+										</div>
+									</div>
+
+
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label>Address :</label> <input class="form-control"
+													placeholder="To Time" name="address" type="text"
+													id="address" value="" required>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<label>Incharge Name :</label> <input class="form-control"
+													placeholder="Enter Incharge Name" name="incharge"
+													type="text" id="inChargeName" value="" required>
+											</div>
+										</div>
+									</div>
+
+
+
+
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label>Mobile :</label> <input class="form-control"
+													type="text" placeholder="Enter Mobile number"
+													autocomplete="off" name="mobile" id="mobile">
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<label>Email :</label> <input class="form-control"
+													placeholder="Enter Email" name="email" type="text"
+													id="email" value="" required>
+											</div>
+										</div>
+									</div>
+
+
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label>Status:</label>
+												<div class="select">
+													<select class="form-control" name="selectutype" id="status">
+														<option value="">--Select--</option>
+														<option value="1">Active</option>
+														<option value="2">Inactive</option>
+													</select>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<label>EDIT ADD MORE SECTION</label>
+
+								<div class="row">
+
+									<table class="table table-bordered">
+										<thead>
+
+											<tr>
+												<th>Course</th>
+												<th>Shift</th>
+												<th>Date</th>
+												<th>From Time</th>
+												<th>To Time</th>
+												<th>Seats</th>
+
+
+											</tr>
+										</thead>
+
+
+										<tbody class="tbodyCls" id="addMoreTable">
+
+										</tbody>
+									</table>
+								</div>
+								<!-- /******************************/ -->
+
+								<!-- <div class="row">
+									
+										<table class="table table-bordered">
+												<div id="addmoretable">
+
+
+
+											<div class="input_fields_wrap">
+
+
+
+												<div>
+
+													<select class="courseName" id="course_name_"
+														style="border: solid 1px;">
+														<option th:value="NULL">--Select Course--</option>
+														<option th:each="c,iter:${courseList}" th:value="${c.key}"
+															th:text="${c.name}" th:selected="${c.key==course_name_}"></option>
+
+													</select> 
+													<select class="shiftName" id="shift_name_"
+														style="border: solid 1px;">
+														<option th:value="0">--Select Shift--</option>
+														<option th:each="c,iter:${shiftList}" th:value="${c.key}"
+															th:text="${c.name}" th:selected="${c.key==shift_name_}"></option>
+														
+
+													</select> <input type="text" class="datee" name=""
+														placeholder="Date" id="date_"> <input type="text"
+														class="fromDate" name="" placeholder="From Time"
+														id="from_time_"> <input type="text" class="toDate"
+														name="" placeholder="To Time" id="to_time_"> <input
+														type="text" class="noOfSeats" name=""
+														placeholder="No. of Seats" id="no_of_seats_">
+													    <button class="btn btn1 add_field_button">
+														<i class="ti ti-plus"></i>
+													</button>
+												</div>
+											</div>
+										</div>
+
+										
+											
+										</table>
+									</div>  -->
+
+
+
+								<div class="modal-footer">
+									<button type="button" class="btn btn-default"
+										data-dismiss="modal" onclick="saveEditedData()">Save</button>
+									<button type="button" class="btn btn-default"
+										data-dismiss="modal">Close</button>
+								</div>
+							</div>
+
+						</div>
+					</div>
+					<div id="myModal1" class="modal fade" role="dialog">
+						<div class="modal-dialog">
+
+							<!-- Modal content-->
+							<div class="modal-content">
+								<div class="modal-header">
+									<!-- <button type="button" class="close" data-dismiss="modal">&times;</button> -->
+									<h4 class="modal-title">Are you sure to Delete Examination</h4>
+									<button type="button" class="close" data-dismiss="modal">&times;</button>
+								</div>
+								<input type="hidden" id="centerId">
+								<div class="modal-footer">
+									<button type="button" class="btn btn-default"
+										data-dismiss="modal" onclick="deleteCenterData()">Yes</button>
+									<button type="button" class="btn btn-default"
+										data-dismiss="modal">No</button>
+								</div>
+							</div>
+
+						</div>
+					</div>
+
+
+
+
+
+				</div>
+				<!-- container-scroller -->
+				<!-- plugins:js -->
+				<!-- plugins:js -->
+
+				<!-- End custom js for this page -->
+			</div>
+		</div>
+	</div>
+
+</body>
+</html>

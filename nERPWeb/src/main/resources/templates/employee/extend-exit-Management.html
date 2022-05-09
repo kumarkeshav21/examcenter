@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/master}">
+<head>
+<meta charset="ISO-8859-1">
+<title></title>
+
+<script type="text/javascript" charset="utf-8">
+	// specify the columns
+
+	$(document).ready(function() {
+
+		var dateFormat = localStorage.getItem("dateFormat");
+		//resign
+		$("#toDateCalendar").datetimepicker({
+			format : dateFormat,
+			closeOnDateSelect : true,
+			timepicker : false,
+		}).on("change", function() {
+			$('#resignDate').val($(this).val());
+		})
+
+		$('#resignDate').blur(function() {
+			$("#toDateCalendar").val($(this).val());
+		})
+
+		var dateFormat = localStorage.getItem("dateFormat");
+		//release
+		$("#DateCalendar").datetimepicker({
+			format : dateFormat,
+			closeOnDateSelect : true,
+			timepicker : false,
+		}).on("change", function() {
+			$('#releaseDate').val($(this).val());
+		})
+
+		$('#releaseDate').blur(function() {
+			$("#DateCalendar").val($(this).val());
+		})
+
+		var gridDiv = document.querySelector('#myGrid');
+		new agGrid.Grid(gridDiv, gridOptions);
+
+		$("#form").hide();
+		$("#cancel").hide();
+		$("#save").hide();
+		$('#delete').attr("disabled", true);
+		$("#initiate").attr("disabled", true);
+		$("#finance").attr("disabled", true);
+
+		agGrid.simpleHttpRequest({
+			url : "exit-view-through-ajax"
+		}).then(function(data) {
+			gridOptions.api.setRowData(data);
+		});
+
+		/ $("#myGrid").show(); /
+	});
+
+	const columnDefs = [
+			{
+				headerCheckboxSelection : true,
+				checkboxSelection : true,
+				width : 10,
+				sortable : false,
+				filter : false,
+				resizable : true
+			},
+
+			{
+
+				headerName : 'Employee Id',
+				field : "empID",
+				cellRenderer : function(params) {
+					return '<a id="editId" onclick=editPage("'
+							+ params.data.empID
+							+ '") href="javascript:void(0)">'
+							+ params.data.empID + '</a>';
+				}
+
+			}, {
+				headerName : 'Employee Name',
+				field : "empName"
+			}, {
+				headerName : 'Designation',
+				field : "designation"
+			}, {
+				headerName : 'Notice Period',
+				field : "noticePeriod"
+			}, {
+				headerName : 'Salary',
+				field : "salary"
+			}, {
+				headerName : 'Resign Date',
+				field : "resignDate"
+			}, {
+				headerName : 'Release Date',
+				field : "releaseDate"
+			}, {
+				headerName : 'Bonus',
+				field : "bonus"
+			}, {
+				headerName : 'Reason',
+				field : "reason"
+			}, {
+				headerName : 'Employee status',
+				field : "empStatus"
+			}, {
+				headerName : 'Finanace Status',
+				field : "financeStatus"
+			}, ];
+
+	const gridOptions = {
+		columnDefs : columnDefs,
+	/* defaultColDef: {
+	 sortable: true,
+	 filter: true,
+	 resizable: true,
+	 width: 251,
+	 height: 10
+	 },
+	 rowSelection : 'single',
+	 onSelectionChanged: rowSelect,
+	 suppressRowClickSelection: true,
+	 getRowNodeId : function(data) {
+	 return data.empId; }*/
+
+	};
+
+	var obj = {};
+
+	function addDetails() {
+
+		obj = {};
+		obj.empID = $("#empID").val();
+		obj.empName = $("#empName").val();
+		obj.designation = $("#designation").val();
+		obj.noticePeriod = $("#noticePeriod").val();
+		obj.salary = $("#salary").val();
+		obj.resignDate = $("#resignDate").val();
+		obj.releaseDate = $("#releaseDate").val();
+		obj.bonus = $("#bonus").val();
+		obj.reason = $("#reason").val();
+		obj.status = $("#status").val();
+
+		var validation = true;
+
+		if (obj.empName == null || obj.empName == "") {
+			validation = validationUpdated("Employee Name Required", "empName");
+		}
+		if (obj.designation == null || obj.designation == "") {
+			validation = validationUpdated("Designation Required",
+					"designation");
+		}
+		if (obj.noticePeriod == null || obj.noticePeriod == "") {
+			validation = validationUpdated("Notice Period Required",
+					"noticePeriod");
+		}
+		if (obj.salary == null || obj.salary == "") {
+			validation = validationUpdated("Salary Required", "salary");
+		}
+		if (obj.resignDate == null || obj.resignDate == "") {
+			validation = validationUpdated("Resign Date Required", "resignDate");
+		}
+		if (obj.releaseDate == null || obj.releaseDate == "") {
+
+			validation = validationUpdated("Release Date Required",
+					"releaseDate");
+		}
+		if (obj.bonus == null || obj.bonus == "") {
+
+			validation = validationUpdated("Bonus Required", "bonus");
+		}
+		if (obj.reason == null || obj.reason == "") {
+
+			validation = validationUpdated("Reason Required", "reason");
+		}
+
+		if (obj.status == null || obj.status == "") {
+
+			validation = validationUpdated("Status Required", "status");
+		}
+
+		if (validation) {
+			$.ajax({
+				type : "POST",
+				url : "exit-add-details",
+				contentType : "application/json",
+				data : JSON.stringify(obj),
+				success : function(response) {
+					console.log(response);
+					if (response.message == "Success") {
+						$("#add").show();
+						$("#myGrid").show();
+						$("#cancel").hide();
+						$("#save").hide();
+						$("#form").hide();
+						$("#new").show();
+						$("#initiate").attr("disabled", false);
+
+						agGrid.simpleHttpRequest({
+							url : "exit-view-through-ajax"
+						}).then(function(data) {
+							gridOptions.api.setRowData(data);
+						});
+
+					}
+				},
+				error : function(data) {
+				}
+			})
+		}
+	}
+
+	/*
+	 *Get Designation List
+	 */
+
+	function getDesignation(designation) {
+		var empName = $("#empName").val();
+
+		if (empName) {
+
+			$("#designation").empty();
+			/* var option = $("<option></option>");
+			$(option).val(null);
+			$(option).html("Select");
+			$("#designation").append(option); */
+			$.ajax({
+				type : 'GET',
+				url : 'exit-emp-job-ajax?name=' + empName,
+				contentType : false,
+				success : function(response) {
+					if (response.message == "success") {
+						/* $("#designation").empty();
+						var option = $("<option></option>");
+						//$(option).val(null);
+						//$(option).html("Select");
+						$("#designation").append(option);
+						console.log(response.body) */
+						for (var i = 0; i < response.body.length; i++) {
+							var option = $("<option></option>");
+							$(option).val(response.body[i].key);
+							$(option).html(response.body[i].name);
+							$("#designation").append(option);
+						}
+
+					}
+				},
+				error : function(e) {
+					alert("error");
+				}
+			});
+		} else {
+			$("#designation").empty();
+			var option = $("<option></option>");
+			$(option).val(null);
+			$(option).html("Select");
+			$("#designation").append(option);
+			/* $("#designation").empty();
+			 var option = $("<option></option>");
+			 $(option).val(null);
+			 $(option).html("Select");
+			 $("#designation").append(option); */
+		}
+
+	}
+
+	function openNav() {
+		document.getElementById("mySidenav").style.cssText = "width: 350px; position: absolute; right:-30px; overflow: hidden; height:auto; top:360px;";
+
+		document.getElementById("main_content").style.width = "72%";
+		$('#invoiceCancelBtn').attr('disabled', true);
+		$('#saveInv').attr('disabled', true);
+	}
+
+	function closeNav() {
+		document.getElementById("mySidenav").style.width = "0";
+		document.getElementById("main_content").style.width = "100%";
+	}
+
+	function add() {
+
+		$("#empID").val("");
+		$("#empName").val("");
+		$("#designation").val("");
+		$("#noticePeriod").val("");
+		$("#salary").val("");
+		$("#resignDate").val("");
+		$("#releaseDate").val("");
+		$("#bonus").val("");
+		$("#reason").val("");
+		$("#status").val("");
+
+		$("#add").hide();
+		$("#myGrid").hide();
+		$("#cancel").show();
+		$("#save").show();
+		$("#form").show();
+		$("#delete").hide();
+
+	}
+
+	function cancel() {
+		$("#initiate").hide();
+		$("#add").show();
+		$("#myGrid").show();
+		$("#cancel").hide();
+		$("#save").hide();
+		$("#form").hide();
+		$("#delete").show();
+
+	}
+
+	function initiate() {
+
+	}
+</script>
+<body>
+	<div layout:fragment="content" class="maincontent">
+		<div class="container-fluid">
+			<div class="maincontentsec">
+				<div class="content_padding">
+
+
+					<div class="row">
+
+						<div class="col-md-12 buttonsec btn-hs">
+							<button class="btn3" id="add" onclick="add()">New</button>
+							<!-- <button class="btn1" type="submit" id="save" form="form"
+								value="add" onclick="addDetails()">Save</button>
+							<button class="btn2" id="cancel" onclick="cancel()">Cancel</button>
+							<button class="btn1" id="delete" onclick="DeleteDetails()">Delete</button> -->
+							<button class="btn1" id="initiate" onclick="Initiate()">Initiate</button>
+							<button class="btn1" id="finance" onclick="finance()">Finance</button>
+						</div>
+					</div>
+					<div class="collapse" id="form">
+						<input type="hidden" id="empID">
+						<div class="row">
+
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>Employee Name</label>
+									<div class="select">
+										<select id="empName" onchange="getDesignation()">
+											<option value="">--Select--</option>
+											<option th:each="c,iter:${namelist}" th:value="${c.key}"
+												th:text="${c.name}"></option>
+										</select>
+									</div>
+								</div>
+							</div>
+							<!--<input type="text" id="designation">
+<input type="hidden" id=""> -->
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>Designation</label>
+									<div class="select">
+										<select id="designation">
+											<option value="">--Select--</option>
+											<option th:each="c,iter:${designationList}"
+												th:value="${c.key}" th:text="${c.name}"></option>
+										</select>
+									</div>
+								</div>
+							</div>
+
+							<div class="col-md-6">
+								<div class="form-group">
+									<label><b>Notice Period</b></label> <input type="text"
+										class="form-control" id="noticePeriod">
+								</div>
+							</div>
+
+							<div class="col-md-6">
+								<div class="form-group">
+									<label><b>Salary</b></label> <input type="text"
+										class="form-control" id="salary">
+								</div>
+							</div>
+
+							<div class="col-md-6">
+								<label>Resign Date</label> <input type="text" id="resignDate"
+									class="form-control"
+									th:attr="onkeyup=|formatDate('resignDate','${session.DATEFORMAT_JS}')|">
+								<i class="ti-calendar picker_calendar" id="toDateCalendar"></i>
+							</div>
+
+							<div class="col-md-6">
+								<label>Release Date</label> <input type="text" id="releaseDate"
+									class="form-control"
+									th:attr="onkeyup=|formatDate('releaseDate','${session.DATEFORMAT_JS}')|">
+								<i class="ti-calendar picker_calendar" id="DateCalendar"></i>
+							</div>
+
+							<div class="col-md-6">
+								<div class="form-group">
+									<label><b>Bonus</b></label> <input type="text"
+										class="form-control" id="bonus">
+								</div>
+							</div>
+
+							<div class="col-md-6">
+								<div class="form-group">
+									<label><b>Reason</b></label>
+									<textarea class="form-control" id="reason"></textarea>
+
+								</div>
+							</div>
+
+							<div class="col-md-6">
+								<div class="form-group">
+									<label><b>Status</b></label>
+									<div class="select">
+										<select id="status">
+											<option value="">--Select--</option>
+											<option value='1'>Active</option>
+											<option value='0'>Inactive</option>
+										</select>
+									</div>
+								</div>
+							</div>
+						</div>
+
+
+					</div>
+
+					<div id="myGrid" style="width: 100%; height: 500px;"
+						class="ag-theme-alpine"></div>
+
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

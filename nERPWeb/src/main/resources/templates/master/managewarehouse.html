@@ -1,0 +1,1621 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/master}">
+<head>
+<link rel="stylesheet" href="../assets/css/extend/style-extend.css">
+
+<script>
+	function openZoneNav(event) {
+		var zoneNavText = $("#warehouseDetailsId").text();
+
+		$("#zoneNavText").text("");
+
+		$("#zoneCode").val("");
+		$("#zoneDBVal").val("");
+		$("#zoneName").val("");
+		$("#zoneSlNoDBVal").val("");
+
+		$("#zoneNavText").text(zoneNavText);
+		document.getElementById("mySidenavZone").style.cssText = "width: 270px; position: absolute; right:-37px; overflow: hidden;";
+		document.getElementById("main").style.width = "420px";
+	}
+	/* function openNav(event) {
+		
+		document.getElementById("mySidenav").style.cssText = "width: 270px; position: absolute; right:-37px; overflow: hidden;";
+		document.getElementById("main").style.width = "420px";
+		var value = event.currentTarget.value;
+		var currentFldId = event.currentTarget.getAttribute('id');
+		if(currentFldId=='warehouse'){
+			
+			$("#binData").hide()
+		}else{
+			$("#binData").show()
+		}
+		
+	} */
+
+	function closeZoneNav() {
+		/* $("#floorSection").val(""); */
+		$("#zoneCode").val("");
+		$("#zoneDBVal").val("");
+		$("#zoneName").val("");
+		$("#zoneSlNoDBVal").val("");
+		document.getElementById("mySidenavZone").style.width = "0";
+		document.getElementById("main").style.width = "480px";
+	}
+</script>
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		$("#ranking").click(function() {
+			$('#myModal').modal('show');
+
+		});
+		//code for zone details
+		//zone dataset start
+		$("#zoneSave").click(function() {
+
+			data = {};
+
+			data.warehouseId = $("#warehouseId").val();
+			data.zoneCode = $("#zoneCode").val();
+			data.zoneName = $("#zoneName").val();
+			data.zoneId = $("#zoneDBVal").val();
+			data.zoneSlNo = $("#zoneSlNoDBVal").val();
+
+			submitZone(data);
+
+		})
+		//rack datset start
+		$("#rackSave").click(function() {
+
+			data = {};
+
+			data.warehouseId = $("#warehouseId").val();
+			data.rackCode = $("#rackCode").val();
+			data.rackName = $("#rackName").val();
+			data.rackId = $("#rackDBVal").val();
+			data.rackSlNo = $("#rackSerialNo").val();
+			data.zoneId = $("#zoneRack").val();
+
+			submitRack(data);
+
+		})
+
+		//zone dataset end here
+		//get 
+		/*  	$.ajax({
+		 type : "POST",
+		 url : "manage-location-get-loc-floor-details",
+		 dataType : 'json',
+		 contentType : 'application/json',
+		 data : id,
+		 success : function(response) {
+		 if (response.message == "success") {
+		 console.log(response);
+		
+		 for(var i = 0; i < response.body.length; i++) {
+		
+		
+		 var tbl = 	'<li id="floorLI_'+response.body[i].floorSlNo+'">'+
+		 '<i class="indicator fa fa-angle-right "></i>'+
+		 '<div class="mainclass">'+
+		 '<input type="checkbox" id="check1" class="pc1-box">'+response.body[i].locationCode+' - '+response.body[i].locationName+' (0)'+
+		 '<label for="check1">&nbsp;<a href="javascript:void(0)"><i class="ti-plus" onclick="openSectionNav();"></i></a>'+
+		 '&nbsp;<a href="javascript:void(0)"><i class="ti-pencil" onclick=editFloor('+response.body[i].floorSlNo+',"'+response.body[i].floorId+'");></i></a>&nbsp;<a href="javascript:void(0)"><i class="ti-close" value="'+response.body[i].floorId+'" id="removeFloor_'+response.body[i].floorSlNo+'" onclick=removeFloor('+response.body[i].floorSlNo+',"'+response.body[i].floorId+'");></i></a></label>'+
+		 '</div>'+
+		 '<ul class="secondstep">'+
+		
+		 '</ul>'+
+		 '</li>';
+		 $("#liFloor").append(tbl);
+		 } 
+		 }
+		 }, error : function(data) {
+		 console.log(data)
+		 $("#liFloor").empty();
+		 }
+		 });  */
+
+	});//code for save a zone
+	//code for edit zone
+	function editZone(i, id) {
+		$("#zoneDBVal").val("");
+		$("#zoneDBVal").val(id);
+		$("#zoneNavText").text("");
+
+		var zoneNavText = $("#warehouseDetailsId").text();
+		/* zoneNavText = zoneNavText + "-" + i; */
+
+		$("#zoneNavText").text(zoneNavText);
+		document.getElementById("mySidenavZone").style.cssText = "width: 270px; position: absolute; right:-37px; overflow: hidden;";
+		document.getElementById("main").style.width = "420px";
+
+		/* closeSectionNav(); */
+		/* closeNav(); */
+
+		if (id) {
+			$.ajax({
+				type : "POST",
+				url : "manage-warehouse-zone-edit",
+				dataType : 'json',
+				contentType : 'application/json',
+				data : id,
+				success : function(response) {
+					if (response.message == "success") {
+						console.log("edit", response.body)
+						$("#zoneCode").val(response.body.zoneCode);
+						$("#zoneName").val(response.body.zoneName);
+						$("#zoneSlNoDBVal").val(response.body.zoneSlNo);
+					}
+				},
+				error : function(data) {
+					console.log(data)
+				}
+			});
+		}
+	}
+	///code for edit zone end
+	function submitZone(dataset) {
+		console.log(dataset)
+		$
+				.ajax({
+					type : "POST",
+					url : "manage-warehouse-zone-save",
+					dataType : "json",
+					contentType : "application/json",
+					data : JSON.stringify(dataset),
+					success : function(response) {
+						if (response.message == "Success") {
+
+							console.log("data")
+
+							closeZoneNav();
+
+							var tbl = '<li id="zoneLI_'+response.body.zoneSlNo+'"><span class="caret"></span>'
+									+
+
+									'<input type="checkbox" id="check1" class="pc1-box">'
+									+ response.body.zoneCode
+									+ ' - '
+									+ response.body.zoneName
+									+ ' (0)'
+									+ '&nbsp;<label for="check1"><a href="javascript:void(0)"><i class="ti-plus" onclick="openSectionNav();"></i></a>'
+									+ '<a href="#"><i class="ti-pencil"onclick=editZone("'
+									+ response.body.warehouseId
+									+ '","'
+									+ response.body.zoneId
+									+ '");></i></a> <a href="javascript:void(0)"><i class="ti-close" value="'
+									+ response.body.zoneId
+									+ '" id="removeZone_'
+									+ response.body.zoneSlNo
+									+ '" onclick=removeZone("'
+									+ response.body.zoneSlNo
+									+ '","'
+									+ response.body.zoneId
+									+ '");></i></a></label>' +
+
+									'</li>';
+							console.log("function call")
+							/* $("#liFloor").append(tbl); */
+							var zoneDBVal = $("#zoneDBVal").val();
+
+							if (zoneDBVal) {
+								console.log("edit done")
+								openDetails(response.body.warehouseId);
+
+							} else {
+								console.log("add done")
+								$("#liFloor").append(tbl);
+							}
+
+							/* var tbl = '<li id="floorLI_'+response.body[i].floorSlNo+'"><span class="caret"></span> <input type="checkbox" id="check2" class="pc1-box"> '+response.body[i].locationCode+' - '+response.body[i].locationName+' (0) '+
+							'<label for="check2"><a href="javascript:void(0)"><i class="ti-plus" onclick="openSectionNav();"></i></a>'+
+							'<a href="javascript:void(0)"><i class="ti-pencil" onclick=editFloor("'+response.body[i].locationCode+'","'+response.body[i].floorId+'");></i></a> <a href="javascript:void(0)"><i class="ti-close" value="'+response.body[i].floorId+'" id="removeFloor_'+response.body[i].floorSlNo+'" onclick=removeFloor("'+response.body[i].floorSlNo+'","'+response.body[i].floorId+'");></i></a></label>'+
+							'<ul class="nested">'+
+							div +
+							'</ul></li>'; */
+
+						} else {
+							swal({
+								title : response.code,
+								text : response.message,
+								type : "warning"
+							})
+						}
+					},
+					error : function(data) {
+						console.log(data);
+					}
+				})
+	}
+	//code for save zone is end
+	//code for zone details end
+	$(document)
+			.ready(
+					function() {
+						$.fn
+								.extend({
+									treed : function(o) {
+
+										/*var openedClass = 'fa-minus-circle';
+										var closedClass = 'fa-plus-circle';*/
+										var openedClass = 'fa fa-angle-down';
+										var closedClass = 'fa fa-angle-right ';
+
+										if (typeof o != 'undefined') {
+											if (typeof o.openedClass != 'undefined') {
+												openedClass = o.openedClass;
+											}
+											if (typeof o.closedClass != 'undefined') {
+												closedClass = o.closedClass;
+											}
+										}
+										;
+
+										//initialize each of the top levels
+										var tree = $(this);
+										tree.addClass("tree");
+										tree
+												.find('li')
+												.has("ul")
+												.each(
+														function() {
+															var branch = $(this); //li with children ul
+															branch
+																	.prepend("<i class='indicator fa " + closedClass + "'></i>");
+															branch
+																	.addClass('branch');
+															branch
+																	.on(
+																			'click',
+																			function(
+																					e) {
+																				if (this == e.target) {
+																					var icon = $(
+																							this)
+																							.children(
+																									'i:first');
+																					icon
+																							.toggleClass(openedClass
+																									+ " "
+																									+ closedClass);
+																					$(
+																							this)
+																							.children()
+																							.children()
+																							.toggle();
+																				}
+																			})
+															branch.children()
+																	.children()
+																	.toggle();
+														});
+
+										//fire event from the dynamically added icon
+										tree
+												.find('.branch .indicator')
+												.each(
+														function() {
+															$(this)
+																	.on(
+																			'click',
+																			function() {
+																				$(
+																						this)
+																						.closest(
+																								'li')
+																						.click();
+																			});
+														});
+
+										//fire event to open branch if the li contains an anchor instead of text
+										tree.find('.branch>a').each(function() {
+											$(this).on('click', function(e) {
+												$(this).closest('li').click();
+												e.preventDefault();
+											});
+										});
+
+										//fire event to open branch if the li contains a button instead of text
+										tree
+												.find('.branch>button')
+												.each(
+														function() {
+															$(this)
+																	.on(
+																			'click',
+																			function(
+																					e) {
+																				$(
+																						this)
+																						.closest(
+																								'li')
+																						.click();
+																				e
+																						.preventDefault();
+																			});
+														});
+									}
+								});
+
+						$('#tree1').treed();
+
+						$('#tree2').treed({
+							openedClass : 'glyphicon-folder-open',
+							closedClass : 'glyphicon-folder-close'
+						});
+
+						$('#tree3').treed({
+							openedClass : 'glyphicon-chevron-right',
+							closedClass : 'glyphicon-chevron-down'
+						});
+					})
+</script>
+<script type="text/javascript">
+	$(document)
+			.ready(
+					function() {
+
+						//select all checkbox
+						$(".pc-box").click(
+								function() {
+									if (this.checked) {
+										$(this).closest("li").find(".pc-box")
+												.prop("checked", true);
+										$(this).closest("li").find(".pc1-box")
+												.prop("checked", true);
+										$(this).closest("li").find(".pc2-box")
+												.prop("checked", true);
+										$(this).closest("li").find(
+												".activityCls").prop("checked",
+												true);
+										$(this).parent();
+									}
+								});
+						$(".pc-box").click(
+								function() {
+									if (!this.checked) {
+										$(this).closest("li").find(".pc1-box")
+												.prop("checked", false);
+										$(this).closest("li").find(".pc2-box")
+												.prop("checked", false);
+										$(this).closest("li").find(
+												".activityCls").prop("checked",
+												false);
+										$(this).parent();
+									}
+								});
+						$(".pc1-box").click(
+								function() {
+									if (this.checked) {
+										$(this).closest("li").find(".pc1-box")
+												.prop("checked", true);
+										$(this).closest("li").find(".pc2-box")
+												.prop("checked", true);
+										$(this).closest("li").find(
+												".activityCls").prop("checked",
+												true);
+										$(this).parent();
+									}
+								});
+						$(".pc1-box").click(
+								function() {
+									if (!this.checked) {
+										$(this).closest("li").find(".pc2-box")
+												.prop("checked", false);
+										$(this).closest("li").find(
+												".activityCls").prop("checked",
+												false);
+										$(this).parent();
+									}
+								});
+
+						$(".pc2-box").click(
+								function() {
+									if (this.checked) {
+										$(this).closest("li").find(".pc2-box")
+												.prop("checked", true);
+										$(this).closest("li").find(
+												".activityCls").prop("checked",
+												true);
+										$(this).parent();
+									}
+								});
+						$(".pc2-box").click(
+								function() {
+									if (!this.checked) {
+										$(this).closest("li").find(
+												".activityCls").prop("checked",
+												false);
+										$(this).parent();
+									}
+								});
+
+						$(".activityCls").click(
+								function() {
+									if (!this.checked)
+										$(this).closest("ul").prev().find(
+												".pc-box").prop("checked",
+												false);
+								});
+						//select all checkbox end
+
+						//SELECT BOX CUSTOM
+						jQuery(document)
+								.delegate(
+										'a.add-record',
+										'click',
+										function(e) {
+											e.preventDefault();
+											var content = jQuery('#append_table tr'), size = jQuery('#myTbl >tbody >tr').length + 1, element = null, element = content
+													.clone();
+											element.attr('id', 'rec-' + size);
+											element.find('.delete-record')
+													.attr('data-id', size);
+											element.appendTo('#myTbl_body');
+											element.find('.sn').html(size);
+										});
+						jQuery(document)
+								.delegate(
+										'a.delete-record',
+										'click',
+										function(e) {
+											e.preventDefault();
+											var didConfirm = confirm("Are you sure You want to delete");
+											if (didConfirm == true) {
+												var id = jQuery(this).attr(
+														'data-id');
+												var targetDiv = jQuery(this)
+														.attr('targetDiv');
+												jQuery('#rec-' + id).remove();
+
+												//regnerate index number on table
+												$('#myTbl_body tr')
+														.each(
+																function(index) {
+																	$(this)
+																			.find(
+																					'span.sn')
+																			.html(
+																					index + 1);
+																});
+												return true;
+											} else {
+												return false;
+											}
+
+											$('#closeKey').on('click',
+													function() {
+														alert()
+													});
+										});
+
+						$('input,textarea').focus(
+								function() {
+									$(this).data('placeholder',
+											$(this).attr('placeholder')).attr(
+											'placeholder', '');
+								}).blur(
+								function() {
+									$(this).attr('placeholder',
+											$(this).data('placeholder'));
+								});
+
+						//New Friday
+
+						var x, i, j, l, ll, selElmnt, a, b, c;
+						/*look for any elements with the class "custom-select":*/
+						x = document.getElementsByClassName("selectbox");
+						l = x.length;
+						for (i = 0; i < l; i++) {
+							selElmnt = x[i].getElementsByTagName("select")[0];
+							ll = selElmnt.length;
+							/*for each element, create a new DIV that will act as the selected item:*/
+							a = document.createElement("DIV");
+							a.setAttribute("class", "select-selected");
+							a.innerHTML = selElmnt.options[selElmnt.selectedIndex].innerHTML;
+							x[i].appendChild(a);
+							/*for each element, create a new DIV that will contain the option list:*/
+							b = document.createElement("DIV");
+							b.setAttribute("class", "select-items select-hide");
+							for (j = 1; j < ll; j++) {
+								/*for each option in the original select element,
+								create a new DIV that will act as an option item:*/
+								c = document.createElement("DIV");
+								c.innerHTML = selElmnt.options[j].innerHTML;
+								c
+										.addEventListener(
+												"click",
+												function(e) {
+													/*when an item is clicked, update the original select box,
+													and the selected item:*/
+													var y, i, k, s, h, sl, yl;
+													s = this.parentNode.parentNode
+															.getElementsByTagName("select")[0];
+													sl = s.length;
+													h = this.parentNode.previousSibling;
+													for (i = 0; i < sl; i++) {
+														if (s.options[i].innerHTML == this.innerHTML) {
+															s.selectedIndex = i;
+															h.innerHTML = this.innerHTML;
+															y = this.parentNode
+																	.getElementsByClassName("same-as-selected");
+															yl = y.length;
+															for (k = 0; k < yl; k++) {
+																y[k]
+																		.removeAttribute("class");
+															}
+															this
+																	.setAttribute(
+																			"class",
+																			"same-as-selected");
+															break;
+														}
+													}
+													h.click();
+												});
+								b.appendChild(c);
+							}
+							x[i].appendChild(b);
+							a.addEventListener("click", function(e) {
+								/*when the select box is clicked, close any other select boxes,
+								and open/close the current select box:*/
+								e.stopPropagation();
+								closeAllSelect(this);
+								this.nextSibling.classList
+										.toggle("select-hide");
+								this.classList.toggle("select-arrow-active");
+							});
+						}
+
+						function closeAllSelect(elmnt) {
+							/*a function that will close all select boxes in the document,
+							except the current select box:*/
+							var x, y, i, xl, yl, arrNo = [];
+							x = document.getElementsByClassName("select-items");
+							y = document
+									.getElementsByClassName("select-selected");
+							xl = x.length;
+							yl = y.length;
+							for (i = 0; i < yl; i++) {
+								if (elmnt == y[i]) {
+									arrNo.push(i)
+								} else {
+									y[i].classList
+											.remove("select-arrow-active");
+								}
+							}
+							for (i = 0; i < xl; i++) {
+								if (arrNo.indexOf(i)) {
+									x[i].classList.add("select-hide");
+								}
+							}
+						}
+						/*if the user clicks anywhere outside the select box,
+						then close all select boxes:*/
+						document.addEventListener("click", closeAllSelect);
+						//SELECT BOX CUSTOM ENDS
+
+						$("#newBtn").click(function() {
+							$("#myTbl").hide();
+							$(".btn-hs").hide();
+							$("#demo").show();
+						})
+
+						$("#cancelBtn").click(function() {
+							$("#myTbl").show();
+							$(".btn-hs").show();
+							$("#demo").hide();
+						});
+						$("#quarter").click(function() {
+							$("#myTbl").hide();
+							$(".btn-hs").hide();
+							$("#demo").show();
+						})
+
+						$("#cancelBtn").click(function() {
+							$("#myTbl").show();
+							$(".btn-hs").show();
+							$("#demo").hide();
+						});
+
+						$("input[class='myCheckbox']")
+								.click(
+										function() {
+											if ($("#formID input:checkbox:checked").length > 0) {
+
+												$(".checkSubmit").addClass(
+														'active');
+											} else {
+												$(".checkSubmit").removeClass(
+														'active');
+											}
+										});
+
+						$("#saveLocation").click(
+								function() {
+
+									data = {};
+
+									data.locationId = $("#locationId").val();
+									data.locationName = $("#locationName")
+											.val();
+									data.locationCode = $("#locationCode")
+											.val();
+									data.locationType = $("#locationType")
+											.val();
+									data.locCountry = $("#locCountry").val();
+									data.locState = $("#locState").val();
+									data.locCity = $("#locCity").val();
+									data.locStreet = $("#locStreet").val();
+									data.locVirtual = $(
+											"input[name='isVirtual']:checked")
+											.val();
+									data.locStatus = $(
+											"input[name='isActive']:checked")
+											.val();
+
+									submitLocation(data);
+
+								})
+						//code for delete zone
+						$("#deleteModalBtn")
+								.click(
+										function() {
+
+											var data = $("#deleteModalBtn")
+													.attr("value");
+											var slNo = $("#deleteModalBtn")
+													.attr("slNo");
+
+											$("#deleteModalBtn").attr(
+													"disabled", "disabled");
+
+											if (data) {
+												$
+														.ajax({
+															type : "POST",
+															url : "manage-warehouse-zone-delete",
+															dataType : 'json',
+															contentType : 'application/json',
+															data : data,
+															success : function(
+																	response) {
+																console
+																		.log("not sucesssss")
+																if (response.message == "success") {
+
+																	$(
+																			"#deleteModalBtn")
+																			.removeAttr(
+																					"disabled");
+
+																	$(
+																			"#zoneLI_"
+																					+ slNo)
+																			.remove();
+
+																	cancelModalBtn();
+
+																	$("#delete")
+																			.modal(
+																					'hide');
+
+																	closeZoneNav();
+																}
+															},
+															error : function(
+																	data) {
+																console
+																		.log(data)
+															}
+														});
+											}
+
+										})
+					});
+
+	function cancelBar() {
+		var id = document.getElementById("closeKey");
+		id.style.display = "block";
+		if ($('#searchBar').val() == null || $('#searchBar').val() == "") {
+			id.style.display = "none";
+		}
+	}
+</script>
+<script>
+	$(document).ready(
+			function() {
+				var toggler = document.getElementsByClassName("caret");
+				var i;
+
+				for (i = 0; i < toggler.length; i++) {
+					toggler[i].addEventListener("click", function() {
+						this.parentElement.querySelector(".nested").classList
+								.toggle("active");
+						this.classList.toggle("caret-down");
+					});
+				}
+			});
+	function closeNav() {
+		document.getElementById("mySidenav").style.width = "0";
+		document.getElementById("main").style.width = "480px";
+	}
+
+	function openDetails(id) {
+
+		if (id == "warehouseId") {
+			var warehouseId = $('#' + id).val();
+		} else {
+			var warehouseId = id;
+		}
+
+		$("#liFloor").empty();
+
+		if (warehouseId) {
+			$.ajax({
+				type : "POST",
+				url : "manage-warehouse-get-location",
+				dataType : 'json',
+				contentType : 'application/json',
+				data : warehouseId,
+				success : function(response) {
+					if (response.message == "success") {
+						console.log(response);
+						$("#locationId").empty();
+						$("#locationCode").empty();
+
+						$("#locationId").text(response.body[0].locationId);
+						$("#locationCode").text(response.body[0].locationCode);
+						$("#warehouseDetailsId").text("");
+						var labeltxt = response.body[0].locationCode + " - "
+								+ response.body[0].locationName + " (0)";
+						$("#warehouseDetailsId").text(labeltxt);
+
+					}
+				},
+				error : function(data) {
+					console.log(data);
+					$("#locationId").empty();
+
+					$("#locationCode").empty();
+
+				}
+			})
+			$
+					.ajax({
+						type : "POST",
+						url : "manage-warehouse-get-warehouse-zone-details",
+						dataType : 'json',
+						contentType : 'application/json',
+						data : warehouseId,
+						success : function(response) {
+							if (response.message == "success") {
+								console.log(response);
+
+								for (var i = 0; i < response.body.length; i++) {
+
+									var div = "";
+									if (response.body[i].rackList.length > 0) {
+										console.log(response.body[i].rackList)
+										for (var j = 0; j < response.body[i].rackList.length; j++) {
+											div = div
+													+ '<li><span class="caret-remove"></span><input type="checkbox" id="check3" class="pc2-box"> '
+													+ response.body[i].rackList[j].rackCode
+													+ ' - '
+													+ response.body[i].rackList[j].rackName
+													+ '<label for="check3">&nbsp;<a href="javascript:void(0)"><i class="ti-plus"></i></a>'
+													+ '<a href="javascript:void(0)"><i class="ti-pencil"></i></a> <a href="javascript:void(0)"><i class="ti-close"></i></a></label></li>';
+										}
+									}
+
+									var tbl = '<li id="zoneLI_'+response.body[i].zoneSlNo+'"><span class="caret"  id="spanRack_'
+											+ response.body[i].zoneSlNo
+											+ '" onclick=showRack("'
+											+ response.body[i].zoneSlNo
+											+ '") value="0"></span>'
+											+
+
+											'<input type="checkbox" id="check1" class="pc1-box">'
+											+ response.body[i].zoneCode
+											+ ' - '
+											+ response.body[i].zoneName
+											+ ' (0)'
+											+ '&nbsp;<label for="check1"><a href="javascript:void(0)"><i class="ti-plus cbicon1 checkIcon2_'
+											+ response.body[i].zoneSlNo
+											+ '" id=""  onclick=openRackNav("'
+											+ response.body[i].zoneCode
+											+ '","'
+											+ response.body[i].zoneId
+											+ '");></i></a>'
+											+ '<a href="#"><i class="ti-pencil" onclick=editZone("'
+											+ response.body[i].warehouseId
+											+ '","'
+											+ response.body[i].zoneId
+											+ '");></i></a> <a href="javascript:void(0)"><i class="ti-close" value="'
+											+ response.body[i].zoneId
+											+ '" id="removeZone_'
+											+ response.body[i].zoneSlNo
+											+ '" onclick=removeZone("'
+											+ response.body[i].zoneSlNo
+											+ '","'
+											+ response.body[i].zoneId
+											+ '");></i></a></label>'
+											+ '<ul class="nested" id="lastUl_'+response.body[i].zoneSlNo+'">'
+											+ div + '</ul></li>';
+									$("#liFloor").append(tbl);
+								}
+
+							}
+						},
+						error : function(data) {
+							console.log(data);
+							$("#locationId").empty();
+
+							$("#locationCode").empty();
+
+						}
+					})
+		} else {
+			$("#locationId").empty();
+
+			$("#locationCode").empty();
+
+		}
+
+		/* }) */
+
+	}
+	function removeZone(i, id) {
+
+		$("#deleteModalBtn").attr("value", "");
+		$("#deleteModalBtn").attr("slNo", "");
+		$("#delete").modal('show');
+		$("#deleteModalBtn").attr("value", id);
+		$("#deleteModalBtn").attr("slNo", i);
+		//$("#floorLI_"+i).remove();
+	}
+	function cancelModalBtn() {
+		$("#deleteModalBtn").attr("value", "");
+		$("#deleteModalBtn").attr("slNo", "");
+		$("#deleteModalBtn").removeAttr("disabled");
+	}
+
+	function showRack(i) {
+		var value = $("#spanRack_" + i).attr('value');
+		if (value == "0") {
+			$("#lastUl_" + i).addClass("active");
+			$("#spanRack_" + i).addClass("caret-down");
+			$("#spanRack_" + i).attr('value', '1');
+		} else {
+			$("#lastUl_" + i).removeClass("active");
+			$("#spanRack_" + i).removeClass("caret-down");
+			$("#spanRack_" + i).attr('value', '0');
+		}
+
+	}
+	function openRackNav(code, zone) {
+
+		/* closeNav(); */
+		closeZoneNav();
+
+		$("#zoneRack").val("");
+		$("#zoneRack").val(zone);
+		var rackNavText = $("#warehouseDetailsId").text();
+		$("#rackNavText").text("");
+		$("#rackId").val("");
+		$("#rackDBVal").val("");
+		$("#rackName").val("");
+		$("#rackNavText").text(rackNavText + "-" + code);
+		document.getElementById("mySidenavRack").style.cssText = "width: 270px; position: absolute; right:-37px; overflow: hidden;";
+		document.getElementById("main").style.width = "420px";
+	}
+	function submitRack(dataset) {
+		console.log(dataset)
+		$
+				.ajax({
+					type : "POST",
+					url : "manage-warehouse-save-rack",
+					dataType : "json",
+					contentType : "application/json",
+					data : JSON.stringify(dataset),
+					success : function(response) {
+						if (response.message == "Success") {
+
+							console.log(response.body)
+							var tbl = '<li id="sectionLI_'+response.body.floorSlNo+'_'+response.body.secSlNo+'"><span class="caret-remove"></span><input type="checkbox" id="" name="check_'
+									+ response.body.floorSlNo
+									+ '_'
+									+ response.body.secSlNo
+									+ '" onchange=checkSec(this,"'
+									+ response.body.floorSlNo
+									+ '","'
+									+ response.body.secSlNo
+									+ '") class="pc2-box check_'
+									+ response.body.floorSlNo
+									+ '" checked="checked"> <span class="leveltxt">'
+									+ response.body.sectionCode
+									+ ' - '
+									+ response.body.sectionName
+									+ ' (0)</span>'
+									+ '<label for="check3">&nbsp;<a href="javascript:void(0)"><i id="check_'+response.body.floorSlNo+'_'+response.body.secSlNo+'" class="ti-plus cbicon2 checkIcon_'+response.body.floorSlNo+' sectionCB_'+response.body.floorSlNo+'_'+response.body.secSlNo+'"></i></a>'
+									+ '&nbsp;<a href="javascript:void(0)"><i id="check_'
+									+ response.body.floorSlNo
+									+ '_'
+									+ response.body.secSlNo
+									+ '" class="ti-pencil cbicon2 checkIcon_'
+									+ response.body.floorSlNo
+									+ ' sectionCB_'
+									+ response.body.floorSlNo
+									+ '_'
+									+ response.body.secSlNo
+									+ '" onclick=editSection("'
+									+ response.body.sectionCode
+									+ '","'
+									+ response.body.sectionId
+									+ '","'
+									+ response.body.floorCode
+									+ '");></i></a>&nbsp;<a href="javascript:void(0)"><i id="check_'
+									+ response.body.floorSlNo
+									+ '_'
+									+ response.body.secSlNo
+									+ '" class="ti-close cbicon2 checkIcon_'
+									+ response.body.floorSlNo
+									+ ' sectionCB_'
+									+ response.body.floorSlNo
+									+ '_'
+									+ response.body.secSlNo
+									+ '" onclick=removeSection("'
+									+ response.body.secSlNo
+									+ '","'
+									+ response.body.sectionId
+									+ '","'
+									+ response.body.floorSlNo
+									+ '");></i></a></label></li>';
+
+							var sectionDBVal = $("#sectionDBVal").val();
+
+							if (sectionDBVal) {
+								openDetails(response.body.locationId);
+							} else {
+								$("#lastUl_" + response.body.floorSlNo).append(
+										tbl);
+								$(
+										".sectionCB_" + response.body.floorSlNo
+												+ "_" + response.body.secSlNo)
+										.addClass("green-cls");
+							}
+
+							closeSectionNav();
+
+						} else {
+							swal({
+								title : response.code,
+								text : response.message,
+								type : "warning"
+							})
+						}
+					},
+					error : function(data) {
+						console.log(data);
+					}
+				})
+	}
+</script>
+</head>
+<body>
+	<div layout:fragment="content" class="maincontent">
+
+		<div class="container-fluid">
+			<div class="row">
+				<div class="maincontentsec">
+					<div class="content_padding">
+						<div class="row">
+							<div class="col-md-9"></div>
+							<div class="col-md-1">
+								<button class="btn2" id="ranking">Ranking</button>
+							</div>
+							<div class="col-md-2">
+								<button class="btn4">Cancel</button>
+								<button class="btn1">Save</button>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-1">
+								<label>Warehouse</label>
+							</div>
+							<div class="col-md-3">
+								<!-- <div class="selectbox"> -->
+								<select class="form-control" th:id="warehouseId"
+									style="height: 20px" onchange="openDetails(this.id)">
+									<option>--Select--</option>
+									<option th:each="c:${locationList}" th:value='${c.key}'
+										th:text="${c.name}" th:name='${c.name}'
+										th:selected="${c.key==locationList}"></option>
+								</select>
+								<!-- </div> -->
+							</div>
+							<div class="col-md-3">
+								<label>Location ID</label>&nbsp;&nbsp;<span th:id="locationId"
+									class="datatxt"></span>
+							</div>
+
+							<div class="col-md-3">
+								<label>Location Code</label>&nbsp;&nbsp;<span
+									th:id="locationCode" class="datatxt"></span>
+							</div>
+
+						</div>
+
+
+						<div class="row">
+							<div class="col-md-12">
+								<div class="headingbar">
+									<a href="#" data-toggle="collapse" data-target="#demo_11"
+										style="color: #333; text-decoration: none;">Layout</a> <a
+										href="#" data-toggle="collapse" data-target="#demo_11"
+										style="float: right; color: #333; text-decoration: none;"><i
+										class="ti-angle-down"></i></a>
+								</div>
+							</div>
+						</div>
+						<div id="demo_11">
+							<!-- show -->
+							<div class="row">
+								<div class="col-md-4 layout-header">
+									<div class="level_breadcrumb">
+										Location <i class="ti-arrow-right"></i> Zone <i
+											class="ti-arrow-right"></i> Rack <i class="ti-arrow-right"></i>
+										Shelve <i class="ti-arrow-right"></i> Bin
+									</div>
+								
+										<div class="flowsection">
+											<ul id="#myUL" class="level">
+												<li><span class="caret"></span><input type="checkbox"
+													id="checkData" class="pc-box"><span
+													id="warehouseDetailsId">Warehouse(0)</span> <label
+													for="checkData"><a href="javascript:void(0)"><i
+															class="ti-plus" onclick="openZoneNav(id);"></i></a> </label>
+													<ul class="nested" id="liFloor">
+
+														<!-- <li><span class="caret"></span> <input type="checkbox"
+														id="check2"> Tea <label for="check2"><a
+															href="#"><i class="ti-plus"></i></a> <a href="#"><i
+																class="ti-pencil"></i></a> <a href="#"><i
+																class="ti-close"></i></a></label>
+														<ul class="nested">
+															
+															<li><span class="caret"></span> <input
+																type="checkbox" id="check3"> Green Tea <label
+																for="check3"><a href="#"><i class="ti-plus"></i></a>
+																	<a href="#"><i class="ti-pencil"></i></a> <a href="#"><i
+																		class="ti-close"></i></a></label>
+																<ul class="nested">
+																	<li><input type="checkbox" id="check6">
+																		Sencha <label for="check6"><a href="#"><i
+																				class="ti-plus"></i></a> <a href="#"><i
+																				class="ti-pencil"></i></a> <a href="#"><i
+																				class="ti-close"></i></a></label></li>
+																	
+																</ul></li>
+														</ul></li> -->
+													</ul></li>
+											</ul>
+										</div>
+									</div>
+									<!-- code end for second tree -->
+
+
+
+									<!-- <ul id="tree1"  >
+											<li style="padding-left: 70px;">
+												
+												<input type="checkbox" id="checkData" class="pc-box" ><span id="warehouseDetailsId">Warehouse(0)</span>
+															<label for="checkData"><a  href="javascript:void(0)"><i class="ti-plus" onclick="openZoneNav(event);"></i></a>
+															</label>
+												
+												zone start here
+											 <ul id="liFloor"> -->
+									<!-- 		<li>
+													 <div class="mainclass">   
+														<input type="checkbox" id="check1" class="pc1-box">
+															 A - Zone A (0)
+															 <label for="check1"><a href="#"><i class="ti-plus" onclick="openNav(event);"></i></a>
+															
+															 <a href="#"><i class="ti-pencil"></i></a> 
+															 <a href="#"><i class="ti-close"></i> </a></label> 
+												 </div>
+														<ul class="secondstep">
+															<li>
+																<div class="subclass">
+																	<input type="checkbox" id="check2" class="pc2-box"> 10 -
+																	Rack (10) <label for="check2"> 
+																	 <a href="#"><i class="ti-plus" onclick="openNav(event);"></i></a> <a href="#"><i
+																			class="ti-pencil"></i></a> <a href="#"><i
+																			class="ti-close"></i></a></label>
+																</div>
+																
+																<ul class="thirdstep">
+															<li>
+																<div class="subsubclass">
+																	<input type="checkbox" id="check2"  class="activityCls"> 1 -
+																	Floor 1(4) <label for="check2"><a
+																		href="#"><i class="ti-plus" onclick="openNav(event);"></i></a> <a href="#"><i
+																			class="ti-pencil"></i></a> <a href="#"><i
+																			class="ti-close"></i></a></label>
+																</div>
+															</li>
+															<li>
+																<div class="subsubclass">
+																	<input type="checkbox" id="check3"  class="activityCls"> 2 -
+																	Floor 2 (4) <label for="check3"><a
+																		href="#"><i class="ti-plus" onclick="openNav(event);"></i></a> <a href="#"><i
+																			class="ti-pencil"></i></a> <a href="#"><i
+																			class="ti-close"></i></a></label>
+																</div>
+																
+															</li>
+															<li>
+																<div class="subsubclass">
+																	<input type="checkbox" id="check4"  class="activityCls"> 3 - Floor 3 (4) <label for="check4"><a href="#"><i
+																			class="ti-plus" onclick="openNav(event);"></i></a> <a href="#"><i
+																			class="ti-pencil"></i></a> <a href="#"><i
+																			class="ti-close"></i></a></label>
+																</div>
+															</li>
+														<li>
+																<div class="subsubclass">
+																	<input type="checkbox" id="check5"  class="activityCls"> 4 - Floor 4 (4) <label for="check4"><a href="#"><i
+																			class="ti-plus" onclick="openNav(event);"></i></a> <a href="#"><i
+																			class="ti-pencil"></i></a> <a href="#"><i
+																			class="ti-close"></i></a></label>
+																</div>
+															</li>
+														 </ul>
+														</li>
+															<li>
+																<div class="subclass">
+																	<input type="checkbox" id="check3" class="pc2-box"> 20 -
+																	Rack 20(12) <label for="check3"><a
+																		href="#"><i class="ti-plus" onclick="openNav(event);"></i></a> <a href="#"><i
+																			class="ti-pencil"></i></a> <a href="#"><i
+																			class="ti-close"></i></a></label>
+																</div>
+																		<ul class="secondstep">
+															<li>
+																<div class="subsubclass">
+																	<input type="checkbox" id="check2" class="activityCls"> 1 -
+																	Floor 1(4) <label for="check2"><a
+																		href="#"><i class="ti-plus" onclick="openNav(event);"></i></a> <a href="#"><i
+																			class="ti-pencil"></i></a> <a href="#"><i
+																			class="ti-close"></i></a></label>
+																</div>
+															</li>
+															<li>
+																<div class="subsubclass">
+																	<input type="checkbox" id="check3" class="activityCls"> 2 -
+																	Floor 2 (4) <label for="check3"><a
+																		href="#"><i class="ti-plus" onclick="openNav(event);"></i></a> <a href="#"><i
+																			class="ti-pencil"></i></a> <a href="#"><i
+																			class="ti-close"></i></a></label>
+																</div>
+															</li>
+															<li>
+																<div class="subsubclass">
+																	<input type="checkbox" id="check4" class="activityCls"> 3 - Floor 3 (4) <label for="check4"><a href="#"><i
+																			class="ti-plus" onclick="openNav(event);"></i></a> <a href="#"><i
+																			class="ti-pencil"></i></a> <a href="#"><i
+																			class="ti-close"></i></a></label>
+																</div>
+															</li>
+														<li>
+																<div class="subsubclass">
+																	<input type="checkbox" id="check5" class="activityCls"> 4 - Floor 4 (4) <label for="check4"><a href="#"><i
+																			class="ti-plus" onclick="openNav(event);"></i></a> <a href="#"><i
+																			class="ti-pencil"></i></a> <a href="#"><i
+																			class="ti-close"></i></a></label>
+																</div>
+															</li>
+														</ul>
+															</li>
+														
+														</ul>
+													</li>
+													<li>
+														<div class="mainclass">
+															<input type="checkbox" id="check7" class="pc1-box"> B - Zone B (28)
+															 <label for="check7"><a href="#"><i
+																	class="ti-plus" onclick="openNav(event);"></i></a> <a href="#"><i
+																	class="ti-pencil"></i></a> <a href="#"><i
+																	class="ti-close"></i></a></label>
+														</div>
+														<ul class="secondstep">
+															<li>
+																<div class="subclass">
+																	<input type="checkbox" id="check8" class="pc2-box"> S -
+																	Storage (4) <label for="check8"><a
+																		href="#"><i class="ti-plus" onclick="openNav(event);"></i></a> <a href="#"><i
+																			class="ti-pencil"></i></a> <a href="#"><i
+																			class="ti-close"></i></a></label>
+																</div>
+																<ul class="thirdstep">
+															<li>
+																<div class="subsubclass">
+																	<input type="checkbox" id="check8" class="activityCls"> S -
+																	Palette (4) <label for="check8"><a
+																		href="#"><i class="ti-plus" onclick="openNav(event);"></i></a> <a href="#"><i
+																			class="ti-pencil"></i></a> <a href="#"><i
+																			class="ti-close"></i></a></label>
+																</div>
+																
+															</li>
+														
+														</ul>
+															</li>
+														
+														</ul>
+													</li>
+													<li>
+														<div class="mainclass">
+															<input type="checkbox" id="check8"  class="pc1-box"> C - Zone C (4) <label for="check8"> <a
+																href="#"><i class="ti-plus" onclick="openNav(event);"></i></a> <a href="#"><i
+																class="ti-pencil"></i></a> <a href="#"><i
+																class="ti-close"></i></a></label>
+														</div>
+														<ul class="secondstep">
+															<li>
+																<div class="subclass">
+																	<input type="checkbox" id="check8" class="pc2-box"> S -
+																	Storage (5) <label for="check8"><a
+																		href="#"><i class="ti-plus" onclick="openNav(event);"></i></a> <a href="#"><i
+																			class="ti-pencil"></i></a> <a href="#"><i
+																			class="ti-close"></i></a></label>
+																</div>
+																<ul class="thirdstep">
+															<li>
+																<div class="subsubclass">
+																	<input type="checkbox" id="check8"  class="activityCls"> S -
+																	Palette (5) <label for="check8"><a
+																		href="#"><i class="ti-plus" onclick="openNav(event);"></i></a> <a href="#"><i
+																			class="ti-pencil"></i></a> <a href="#"><i
+																			class="ti-close"></i></a></label>
+																</div>
+																
+															</li>
+														
+														</ul>
+															</li>
+														
+														</ul>
+													
+													</li> -->
+									<!-- </ul> -->
+									<!-- 	zone end here -->
+									<!-- </li>
+
+									</ul> -->
+							<!-- 	</div>
+							</div> -->
+
+							<div class="col-md-8">
+								<div class="roomdetails" id="main">
+									<h3>CW-B-10-1: Zone A - Rack 10 - Floor 1 (4)</h3>
+									<div class="row">
+										<div class="col-md-2">
+											<div class="plusbtn">+</div>
+										</div>
+
+										<div class="col-md-10 roomsection">
+											<div class="roombtn roombtnactive">Bin 101</div>
+											<div class="roombtn">Bin 102</div>
+											<div class="roombtn">Bin 103</div>
+											<div class="roombtn">Bin 104</div>
+										</div>
+									</div>
+									<h3>CW-B-10-2: Zone A - Rack 10 - Floor 2 (4)</h3>
+									<div class="row">
+										<div class="col-md-2">
+											<div class="plusbtn">+</div>
+										</div>
+
+										<div class="col-md-10 roomsection">
+											<div class="roombtn">Bin 201</div>
+											<div class="roombtn">Bin 202</div>
+											<div class="roombtn">Bin 203</div>
+											<div class="roombtn">Bin 204</div>
+										</div>
+									</div>
+									<h3>CW-B-10-2: Zone A - Rack 10 - Floor 3 (4)</h3>
+									<div class="row">
+										<div class="col-md-2">
+											<div class="plusbtn">+</div>
+										</div>
+
+										<div class="col-md-10 roomsection">
+											<div class="roombtn">Bin 301</div>
+											<div class="roombtn">Bin 302</div>
+											<div class="roombtn">Bin 303</div>
+											<div class="roombtn">Bin 304</div>
+										</div>
+									</div>
+									<h3>CW-C-S-S: Zone C - Storage - Palette(4)</h3>
+									<div class="row">
+										<div class="col-md-2">
+											<div class="plusbtn">+</div>
+										</div>
+
+										<div class="col-md-10 roomsection">
+											<div class="roombtn">1</div>
+											<div class="roombtn">2</div>
+											<div class="roombtn">3</div>
+											<div class="roombtn">4</div>
+										</div>
+									</div>
+								</div>
+								<!-- </div>
+ <div class="col-md-3">  -->
+								<div class="slidearrow" onclick="openNav(event)">
+									<i class="ti-arrow-left"></i>
+								</div>
+								<!-- code for zone entry -->
+								<div id="mySidenavZone" class="sidenav">
+									<div class="slidebox">
+										<div class="row">
+											<div class="col-md-10">
+												<div class="edit" id="zoneNavText">>CW - B - 10 - 1 -
+													101(Rank 57)</div>
+											</div>
+											<div class="col-md-2">
+												<div class="arrow">
+													<a href="javascript:void(0)" class="closebtn"
+														onclick="closeZoneNav()"><i class="ti-arrow-right"></i></a>
+												</div>
+											</div>
+
+											<div class="chartbtnsec">
+												<div class="row">
+													<button class="btn4" onclick="closeZoneNav()">CANCEL</button>
+													<button class="btn3">DELETE</button>
+													<button class="btn1" id="zoneSave">SAVE</button>
+												</div>
+											</div>
+											<div class="col-md-12 mt-15">
+												<div class="form-group">
+													<label>ID</label> <input type="text"
+														class="form-control transparenttxtbox" id="zoneCode"
+														placeholder="101"> <input type="hidden"
+														id="zoneDBVal"> <input type="hidden"
+														id="zoneSlNoDBVal">
+												</div>
+											</div>
+
+											<div class="col-md-12 mt-15">
+												<div class="form-group">
+													<label>Name</label> <input type="text" id="zoneName"
+														class="form-control transparenttxtbox"
+														placeholder="Bin 101">
+												</div>
+											</div>
+											<!-- 	<div id="binData">
+												<div class="col-md-12 mt-15">
+													<div class="form-group">
+													<input type="checkbox" id="checkBin"> Bin <label for="checkBin"></label>
+													<input type="checkbox" id="checkBin"> Storage <label for="checkBin"></label>
+													</div>
+												</div>
+											
+												<div class="col-md-12 mt-15">
+													<div class="form-group">
+														<label>Dimension(inches)</label> <select
+															class="form-control transparenttxtbox">
+
+															<option>Damage</option>
+															<option>Exception</option>
+															<option>Hold</option>
+															<option>Inventory</option>
+															<option>Manufacturing</option>
+															<option>Over Stock</option>
+															<option>QA</option>
+															<option>Receiving</option>
+															<option>Wip</option>
+															
+														</select>
+													</div>
+												</div>
+													<div class="col-md-12 mt-15">
+													<div class="form-group">
+														<label>L</label><span>6</span>
+														<label>W</label><span>10</span>
+														<label>H</label><span>18</span>
+													</div>
+												</div>
+												<div class="col-md-12 mt-15">
+													<div class="form-group">
+														<label>Volume(Cubic inches)</label><span>1080</span>
+													
+													</div>
+												</div>
+													<div class="col-md-12 mt-15">
+													<div class="form-group">
+														<label>Max Weight (Ibs)</label><span>300</span>
+													
+													</div>
+												</div>
+												
+												</div> -->
+
+										</div>
+									</div>
+								</div>
+								<!-- code for zone entry end -->
+								<!-- code for rack entry start -->
+								<!-- Add Rack -->
+								<div id="mySidenavRack" class="sidenav">
+									<div class="slidebox">
+										<div class="row">
+											<div class="col-md-10">
+												<div class="edit" id="rackNavText">Rack</div>
+											</div>
+											<div class="col-md-2">
+												<div class="arrow">
+													<a href="javascript:void(0)" class="closebtn"
+														onclick="closeRackNav()"><i class="ti-arrow-right"></i></a>
+												</div>
+											</div>
+											<div class="chartbtnsec">
+												<div class="row">
+													<button class="btn4" onclick="closeRackNav()">CANCEL</button>
+													<button class="btn3" onclick="deleteRack()">DELETE</button>
+													<button class="btn1" id="rackSave">SAVE</button>
+												</div>
+											</div>
+											<div class="col-md-12">
+												<div class="form-group">
+													<label>Code</label> <input type="text" id="rackCode"
+														class="form-control transparenttxtbox" placeholder="Code">
+													<input type="hidden" id="rackDBVal"> <input
+														type="hidden" id="zoneRack"> <input type="hidden"
+														id="zoneSerialNo"> <input type="hidden"
+														id="rackSerialNo">
+												</div>
+											</div>
+											<div class="col-md-12">
+												<div class="form-group">
+													<label>Name</label> <input type="text"
+														class="form-control transparenttxtbox"
+														placeholder="Rack Name" id="rackName">
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<!-- code for rack entry  end -->
+							</div>
+
+						</div>
+
+					</div>
+
+
+				</div>
+				<!-- HR DETAILS PART END -->
+
+			</div>
+		</div>
+		<!-- Modal Start-->
+		<!-- 	<div id="myModal" class="modal fade" role="dialog">
+		<div class="modal-dialog">
+			Modal content
+			<div class="modal-content" style="width: 750px;">
+				<div class="modal-header">
+					<h4 class="modal-title">Bin Ranking:Chicago WareHouse</h4>
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+				</div>
+				<div class="modal-body">
+					<table style="width: 100%; border: 0;" id="table1">
+					</table>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div> -->
+		<div class="modal fade" id="myModal">
+			<div class="modal-dialog modal-lg" style="max-width: 1100px">
+				<div class="modal-content" style="width: 100%">
+
+					<!-- Modal Header -->
+					<div class="modal-header">
+						<h4 class="modal-title" style="font-size: 16px">
+							<b>Bin Ranking:Chicago WareHouse</b>
+						</h4>
+						<button type="button" class="close" data-dismiss="modal"
+							style="font-size: 25px">×</button>
+					</div>
+					<!-- Modal body -->
+					<div class="modal-body" style="height: 600px; overflow-y: scroll;">
+						<div class="row">
+							<div class="col-md-12 mrt_btm" align="right">
+								<button class="btn3">AutoBank</button>
+								<button class="btn1">Save</button>
+								<button class="btn4">Cancel</button>
+							</div>
+						</div>
+						<div class="vertical-line">
+
+
+							<div class="row">
+								<div class="col-md-12">
+									<table class="newtbl">
+										<thead>
+											<tr>
+												<th align="center">Rank</th>
+												<th align="center">Code</th>
+												<th align="center">Name</th>
+												<th align="center">Bin or storage</th>
+												<th align="center">Type</th>
+												<th align="center">Dimensions</th>
+												<th align="center">Volume</th>
+												<th align="center">Max weight</th>
+
+											</tr>
+										</thead>
+										<tbody>
+											<tr>
+												<td align="center">1</td>
+												<td align="left">CW-B-10-1-101</td>
+												<td align="center">Zone A- Rack- 10 Floor- 1 Bin- 101</td>
+												<td align="left">Bin</td>
+												<td align="left">Damage</td>
+												<td align="left">6 * 10 * 18</td>
+												<td align="center">1080</td>
+												<td align="right">300</td>
+
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+
+
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- Modal End-->
+	</div>
+	<div id="delete" class="modal fade show" aria-modal="true">
+		<div class="modal-dialog modal-confirm">
+			<div class="modal-content">
+				<div class="modal-header flex-column">
+					<div class="icon-box">
+						<i class="ti-close"></i>
+					</div>
+					<h4 class="modal-title w-100">Are you sure?</h4>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-hidden="true" onclick="cancelModalBtn()">
+						<i class="ti-close modal-close"></i>
+					</button>
+				</div>
+				<div class="modal-body">
+					<p>Do you really want to delete these records? This process
+						cannot be undone.</p>
+				</div>
+				<div class="modal-footer justify-content-center">
+					<button type="button" class="btn1" data-dismiss="modal"
+						onclick="cancelModalBtn();">Cancel</button>
+					<button type="button" class="btn3" id="deleteModalBtn">Delete</button>
+					<!-- <img src="../assets/gif/loader.gif">  -->
+				</div>
+			</div>
+		</div>
+	</div>
+	</div>
+
+</body>
+</html>

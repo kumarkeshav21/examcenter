@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{/layout/master}">
+<head>
+<script>
+$(document).ready(function() {
+	
+	var gridDiv = document.querySelector('#myGrid');
+	new agGrid.Grid(gridDiv, gridOptions);
+	
+	//gridOptions.api.setRowData([]);
+	$('#delete1').attr("disabled", true);
+	
+});
+
+/* -------------------search bar for mygrid1------------------------ */
+
+
+function onQuickFilterChanged() {
+	gridOptions.api
+			.setQuickFilter(document.getElementById('quickFilter').value);
+}
+
+function cancelBar() {
+	var id = document.getElementById("closeKey");
+	id.style.display = "block";
+
+	if ($('#quickFilter').val() == null || $('#quickFilter').val() == "") {
+		id.style.display = "none";
+	}
+}
+
+$('input,textarea').focus(
+		function() {
+			$(this).data('placeholder', $(this).attr('placeholder')).attr(
+					'placeholder', '');
+		}).blur(function() {
+	$(this).attr('placeholder', $(this).data('placeholder'));
+});
+
+var count = 0;
+function allCheck() {
+	count++;
+
+	if (count == 1) {
+		$('.checkCls').prop("checked", true);
+	} else {
+		count = 0;
+		$('.checkCls').prop("checked", false);
+	}
+}
+
+function newButton(){
+	 $("#myGrid").hide();
+	 $("#new1").hide();
+	 $("#delete1").hide();
+	 $("#totalReq").hide();
+	 $("#searchRowDiv").hide();
+	 $("#demo").show();
+	 $("#demo1").show();
+}
+function cancelBtn(){
+	$("#myGrid").show();
+	 $("#new1").show();
+	 $("#delete1").show();
+	 $("#totalReq").show();
+	 $("#searchRowDiv").show();
+	 $("#demo").hide();
+	 $("#demo1").hide();
+}
+function addDetails(){
+	 
+	$("#myGrid").show();
+	 $("#new1").show();
+	 $("#delete1").show();
+	 $("#totalReq").show();
+	 $("#searchRowDiv").show();
+	 $("#demo").hide();
+	 $("#demo1").hide();
+}	
+
+	const columnDefs = [ {
+		headerCheckboxSelection : true,
+		headerCheckboxSelectionFilteredOnly : true,
+		checkboxSelection : true,
+		width : 10,
+		sortable : false,
+		filter : false,
+		resizable : true
+	},/*  {
+		headerName : 'Guest ID',
+		field : "guestId",
+		cellRenderer : function(params) {
+			return '<a onclick=editSalesPOS("'
+					+ params.data.guestId
+					+ '") href="javascript:void(0)">'
+					+ params.data.guestId + '</a>'; 
+	}
+	}, */ {
+		headerName : 'Property Category Name',
+		field : "propertyCategoryName"
+	}, {
+		headerName : 'Property Name',
+		field : "propertyName"
+	
+	}, {
+		headerName : 'BookingId',
+		field : "bookingId"
+	},{
+		headerName : 'Payment Purpose',
+		field : "paymentPurpose"
+	
+	},{
+		headerName : 'Reference No',
+		field : "referenceNo",
+		cellStyle : {
+			textAlign : 'right'
+		}
+	
+	},{
+		headerName : 'Total Amount',
+		field : "totalAmount",
+		cellStyle : {
+			textAlign : 'right'
+		}
+	
+	},{
+		headerName : 'Status',
+		field : "status",
+		cellStyle : {
+			textAlign : 'right'
+		}
+	
+	}
+	];
+	
+	const rowData = [
+	      { propertyCategoryName: "Room", propertyName: "room11", bookingId: "PBK000001",paymentPurpose: "Restaurant Service", referenceNo: "2211221", totalAmount: 35000,status:1 },
+	      { propertyCategoryName: "Room", propertyName: "room111", bookingId: "PBK000002",paymentPurpose: "Banquet Hall", referenceNo: "2200008", totalAmount: 50000,status:1 },
+	      { propertyCategoryName: "Room", propertyName: "room91", bookingId: "PBK000003",paymentPurpose: "Clinic", referenceNo: "2211221", totalAmount: 20000,status:1 }
+	    ];
+	
+	const gridOptions = {
+		columnDefs : columnDefs,
+		rowData: rowData,
+		defaultColDef : {
+			sortable : true,
+			filter : true,
+			resizable : true,
+			width :170,
+			height : 10
+		},
+		rowSelection : 'multiple',
+		onSelectionChanged : rowSelectTransactionList,
+		suppressRowClickSelection : true
+	/* onSelectionChanged : rowSelectSalesPOS,
+	suppressRowClickSelection : true ,
+	getRowNodeId : function(data) {
+	return data.billNo; 
+	} */
+	
+	};
+	
+	/*--------------function for row selection for child table-------------- */
+
+	var deleteid = "";
+	function rowSelectTransactionList() {
+		var selectedRows = gridOptions.api.getSelectedRows();
+
+		deleteid = "";
+		for (var i = 0; i < selectedRows.length; i++) {
+
+			deleteid = deleteid + '"' + selectedRows[i].bookingId + '",';
+
+		}
+		deleteid = deleteid.substring(0, deleteid.length - 1);
+
+		var rowCount = 0;
+		selectedRows.forEach(function() {
+			rowCount = rowCount + 1;
+		});
+		if (rowCount > 0) {
+			$('#delete1').attr("disabled", false);
+
+		} else {
+			$('#delete1').attr("disabled", true);
+		}
+
+	}
+	
+function deleteDetailsOnclick() {
+		
+
+		$('.modal').hide();
+		$('.modal-backdrop').hide();
+		
+		var selectedRows = gridOptions.api.getSelectedRows();
+		gridOptions.api.applyTransaction({
+			remove : selectedRows,
+		});
+	
+		cancelModalDeleteBtn();
+	}
+
+function deleteDetail() {
+	
+	$('#deleteDetails').modal('show');
+}
+	
+
+</script>
+</head>
+<body>
+	<div layout:fragment="content" class="maincontent">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="maincontentsec">
+				<div class="row margin_topbot" id="searchRowDiv">
+						<div class="input-style row">
+							<input type="text" placeholder="Search.." name="search"
+								class="searchboxinput" onkeyup="cancelBar()"
+								oninput="onQuickFilterChanged()" id="quickFilter">
+							<div class="searchicon">
+								<a href="javascript:void(0)"><span
+									style="display: none; border-right: 1px solid #ccc; padding-right: 5px;"
+									id="closeKey"
+									onclick="gridOptions.api.setQuickFilter(null);$('#quickFilter').val('');document.getElementById('closeKey').style.display='none';"
+									class="close_i"><i class="ti-close srchicon"></i></span></a><a
+									href="javascript:void(0)"><i class="ti-search srchicon"></i></a>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-3  btn-hs">
+							<div class="font-design" id="totalReq">
+								Property Transaction Details(<span></span>)
+							</div>
+						</div>
+						<div class="col-md-9 padding-0" align="right">
+							<button class="btn1" id="new1" onclick="newButton()">NEW</button>
+							<button class="btn3" id="delete1" onclick="deleteDetail();">DELETE</button>
+						</div>
+					</div>
+				<div id="myGrid" style="width: 100%; height: 500px;"
+						class="ag-theme-alpine"></div>
+					<div class="collapse" id="demo1">
+						<div class="innercontent">
+							<div class="innerstickybg">
+								<div class="row">
+								
+								 <div class="col-md-12">
+										<button class="btn4" id="maincancel" onclick="cancelBtn()">Cancel</button>
+										<button class="btn1" id="mainsave" onclick="addDetails()">Save</button>
+										
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>	
+
+					<div class="collapse" id="demo">
+						
+						<div class="row">
+
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>Property Category</label><select id="propertyCategoryName">
+										<option value="">--Select--</option>
+										<option value='1'></option>
+										<option value='0'></option>
+									</select><br>
+								</div>
+							</div>
+
+
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>Payment Purpose</label><select id="paymentPurpose">
+										<option value="">--Select--</option>
+										<option value='1'></option>
+										<option value='0'></option>
+									</select><br>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>Property Name</label><select id="propertyName">
+										<option value="">--Select--</option>
+										<option value='1'></option>
+										<option value='0'></option>
+									</select><br>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>Total Amount</label> <input type="text"
+										class="form-control" id="totalAmount">
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>Reference No</label> <input type="text"
+										class="form-control" id="referenceNo">
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>Status</label><select id="status">
+										<option value="">--Select--</option>
+										<option value='1'>Active</option>
+										<option value='0'>Inactive</option>
+									</select><br>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>Description</label>
+									<textarea class="form-control" id="desc"></textarea>
+								</div>
+							</div>
+							
+
+						</div>
+					</div>
+					
+					<!------------- delete product modal start -------------------->
+
+					<div id="deleteDetails" class="modal fade show" aria-modal="true">
+						<div class="modal-dialog modal-confirm">
+							<div class="modal-content">
+								<div class="modal-header flex-column">
+									<button type="button" class="close" data-dismiss="modal"
+										aria-hidden="true" onclick="cancelModalDeleteBtn()">
+										<i class="ti-close modal-close"></i>
+									</button>
+								</div>
+								<div class="modal-body">
+									<p>Do you really want to delete these records? This process
+										cannot be undone.</p>
+								</div>
+								<div class="modal-footer justify-content-center"
+									style="margin-top: -30px;">
+
+									<button type="button" class="btn1" data-dismiss="modal"
+										onclick="cancelModalBtn();">Cancel</button>
+									<button type="button" class="btn3"
+										onclick="deleteDetailsOnclick()">Delete</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+</body>
+</html>

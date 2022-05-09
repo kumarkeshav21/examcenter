@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{/layout/master}">
+<head>
+
+<script>
+
+function openNav() {
+closeNav1();
+			document.getElementById("mySidenav").style.cssText = "width: 350px; position: absolute; right:-30px; overflow: hidden; height:auto;";
+			document.getElementById("main").style.width = "72%";
+			$("#myGrid").show();
+			//$("#myGrid1").hide();
+			$("#leaveId").val("");
+			$("#leaveName").val("");
+			$("#leavePeriod").val("");
+			$("#leaveAssgnEmp").val("");
+			$("#leaveEmpApply").val("");
+			$("#leaveApplyMore").val("");
+			$("#leaveAcrEnable").val("");
+			$("#leaveCarriedForward").val("");
+			$("#leaveFrwdPercentage").val("");
+			$("#leaveMaxCrdAmount").val("");
+			$("#leaveAvaiableTime").val("");
+			$("#leaveProperJdate").val("");
+			$("#leaveSentEmail").val("");
+			$("#status").val("");
+			$("#deleteSlideCat").attr("onclick", "");			
+		}
+		
+		function closeNav() {
+					$("#leaveId").val("");
+					$("#leaveName").val("");
+					$("#leavePeriod").val("");
+					$("#leaveAssgnEmp").val("");
+					$("#leaveEmpApply").val("");
+					$("#leaveApplyMore").val("");
+					$("#leaveAcrEnable").val("");
+					$("#leaveCarriedForward").val("");
+					$("#leaveFrwdPercentage").val("");
+					$("#leaveMaxCrdAmount").val("");
+					$("#leaveAvaiableTime").val("");
+					$("#leaveProperJdate").val("");
+					$("#leaveSentEmail").val("");
+					$("#status").val("");
+					$("#deleteSlideCat").attr("onclick", "");
+					document.getElementById("mySidenav").style.width = "0";
+				    document.getElementById("main").style.width = "100%";
+				}
+				
+		function openNav1() {	
+			closeNav();
+					$("#myGrid1").show();
+					$("#leaveRuleId").val("");
+					$("#leaveRuleType").val("");
+					$("#jobTitle").val("");
+					$("#leaveEmpStatus").val("");
+					$("#leaveEmp").val("");
+					$("#leaveRuleDept").val("");
+					$("#leaveEmpPeriod").val("");
+					$("#leavePerPeriod").val("");
+					$("#leavePerMonth").val("");
+					$("#adminAsgnEmp").val("");
+					$("#empApplyLeave").val("");
+					$("#empApplyMore").val("");
+					$("#leaveEmpAcrEnable").val("");
+					$("#leaveEmpFrwd").val("");
+					$("#leavePrcntg").val("");
+					$("#maxFrwdAmt").val("");
+					$("#avlblLeavePeriod").val("");
+					$("#properJoinDate").val("");
+
+					$("#deleteSlideCat").attr("onclick", "");
+				document.getElementById("mySidenav1").style.cssText = "width: 350px; position: absolute; right:-25px; overflow: hidden;";
+				document.getElementById("main").style.width = "72%";					
+				}
+		
+
+		function closeNav1() {
+					$("#leaveRuleId").val("");
+					$("#leaveRuleType").val("");
+					$("#jobTitle").val("");
+					$("#leaveEmpStatus").val("");
+					$("#leaveEmp").val("");
+					$("#leaveRuleDept").val("");
+					$("#leaveEmpPeriod").val("");
+					$("#leavePerPeriod").val("");
+					$("#leavePerMonth").val("");
+					$("#adminAsgnEmp").val("");
+					$("#empApplyLeave").val("");
+					$("#empApplyMore").val("");
+					$("#leaveEmpAcrEnable").val("");
+					$("#leaveEmpFrwd").val("");
+					$("#leavePrcntg").val("");
+					$("#maxFrwdAmt").val("");
+					$("#avlblLeavePeriod").val("");
+					$("#properJoinDate").val("");
+					$("#deleteSlideCat").attr("onclick", "");
+					document.getElementById("mySidenav1").style.width = "0";
+				    document.getElementById("main").style.width = "100%";
+				}				
+</script>
+<script type="text/javascript">
+	$(document).ready(function() {
+		var dateFormat = localStorage.getItem("dateFormat");
+		//Leave Join Date
+		$("#fromDateCalendar").datetimepicker({
+			format : dateFormat,
+			closeOnDateSelect : true,
+			timepicker : false,
+		}).on("change", function() {
+			$('#leaveProperJdate').val($(this).val());
+		})
+		
+		$('#leaveProperJdate').blur(function(){
+				$("#fromDateCalendar").val($(this).val());
+			})
+			
+			//Proper Join Date			
+			$("#fromDateCalendar1").datetimepicker({
+			format : dateFormat,
+			closeOnDateSelect : true,
+			timepicker : false,
+		}).on("change", function() {
+			$('#properJoinDate').val($(this).val());
+		})
+		
+		$('#properJoinDate').blur(function(){
+				$("#fromDateCalendar1").val($(this).val());
+			})
+			
+		var gridDiv = document.querySelector('#myGrid');
+		new agGrid.Grid(gridDiv, gridOptions);
+		
+		var gridDiv1 = document.querySelector('#myGrid1');
+		new agGrid.Grid(gridDiv1, gridOptions1);
+		
+		agGrid.simpleHttpRequest({
+			url : "leave-type-vieww"
+		}).then(function(obj) {
+			gridOptions.api.setRowData(obj);
+		});
+		
+		 agGrid.simpleHttpRequest({
+			url : "leave-type-rule-view"
+		}).then(function(data) {
+			gridOptions1.api.setRowData(data);
+		});
+	 
+	});	
+	
+	
+	 function saveLeaveType(){
+		 //alert("hi");
+    	 var obj ={};
+    	 obj.leaveId = $("#leaveId").val();
+   		 obj.leaveName = $("#leaveName").val();
+   		 obj.leavePeriod = $("#leavePeriod").val();
+   		 obj.leaveAssgnEmp =$("#leaveAssgnEmp").val();    
+   		 obj.leaveEmpApply = $("#leaveEmpApply").val();
+   		obj.leaveApplyMore = $("#leaveApplyMore").val();
+   		obj.leaveAcrEnable = $("#leaveAcrEnable").val();
+   		 obj.leaveCarriedForward = $("#leaveCarriedForward").val();
+   		 obj.leaveFrwdPercentage = $("#leaveFrwdPercentage").val();
+   		 obj.leaveMaxCrdAmount = $("#leaveMaxCrdAmount").val();
+   		obj.leaveAvaiableTime = $("#leaveAvaiableTime").val();
+   		obj.leaveProperJdate = $("#leaveProperJdate").val();
+   		obj.leaveSentEmail = $("#leaveSentEmail").val();
+   		obj.status = $("#status").val(); 		
+   		console.log(obj)
+			
+   	$.ajax({
+			type : "POST",
+			url : "leave-type-add",
+			dataType : "json",
+			contentType : "application/json",
+			data : JSON.stringify(obj),
+			success : function(response) {
+				if (response.message == "Success") {
+					alert("hii")
+					
+					agGrid.simpleHttpRequest({
+					url : 'leave-type-vieww'
+					}).then(function(obj) {
+					gridOptions.api.setRowData(obj);
+					});
+					closeNav();
+					}
+					},
+					error : function(response) {
+					console.log(response);
+					}
+					})
+			
+			}
+		
+	const columnDefs = [
+	 {
+			headerCheckboxSelection: true,
+			   headerCheckboxSelectionFilteredOnly: true,  checkboxSelection: true ,width: 10, sortable: false,filter: false,resizable: true  
+		},  
+		{headerName: "Leave ID", field: "leaveId",
+			 cellRenderer: function(params){
+	 	        return '<a  onclick=editLeave("' +  params.data.leaveId + '") href="javascript:void(0)">' + params.data.leaveId + '</a>';} },
+	{
+		headerName : "Leave Name",
+		field : "leaveName"
+	}, {
+		headerName : "Leave Period",
+		field : "leavePeriod"
+	}, {
+		headerName : 'Leave Assign',
+		field : "leaveAssgnEmp"
+	}, {
+		headerName : "Leave Apply",
+		field : "leaveEmpApply"
+	},
+
+	{
+		headerName : "Leave Apply More",
+		field : "leaveApplyMore"
+	}, {
+		headerName : "Leave Acure Enable",
+		field : "leaveAcrEnable"
+	}, {
+		headerName : "Leave Carried Forward",
+		field : "leaveCarriedForward"
+	}, {
+		headerName : "Leave Frwd Percentage",
+		field : "leaveFrwdPercentage"
+	}, {
+		headerName : "Leave MaxCrd Amount",
+		field : "leaveMaxCrdAmount"
+	}, {
+		headerName : "Leave Avaiable Time",
+		field : "leaveAvaiableTime"
+	}, {
+		headerName : "Leave Proper Jdate",
+		field : "leaveProperJdate"
+	}, {
+		headerName : "Leave Sent Email",
+		field : "leaveSentEmail"
+	}, {
+		headerName : "Status",
+		field : "status"
+	},
+
+	];
+
+	const gridOptions = {
+		columnDefs : columnDefs,
+		defaultColDef : {
+			sortable : true,
+			filter : true,
+			resizable : true,
+			width : 149,
+			height : 10
+		},
+		rowSelection : 'multiple',
+		onSelectionChanged : rowSelectEmployee,
+		 suppressRowClickSelection: true,
+		getRowNodeId : function(data) {
+			return data.leaveId;
+		}
+
+	};
+
+	 function editLeave(id){ 
+		 openNav();
+		$.ajax({
+			type : "POST",
+			url : "leave-type-edit?id=" + id,
+			async: false,
+			success : function(response) {
+				console.log(response);
+			if (response.message == "Success") {
+					$("#leaveId").val(response.body.leaveId);
+					$("#leaveName").val(response.body.leaveName);
+					$("#leavePeriod").val(response.body.leavePeriod);
+					$("#leaveAssgnEmp").val(response.body.leaveAssgnEmp);
+					$("#leaveEmpApply").val(response.body.leaveEmpApply);
+					$("#leaveApplyMore").val(response.body.leaveApplyMore);
+					$("#leaveAcrEnable").val(response.body.leaveAcrEnable);
+					$("#leaveCarriedForward").val(response.body.leaveCarriedForward);
+					$("#leaveFrwdPercentage").val(response.body.leaveFrwdPercentage); 					
+					$("#leaveMaxCrdAmount").val(response.body.leaveMaxCrdAmount); 					   
+					$("#leaveAvaiableTime").val(response.body.leaveAvaiableTime);
+					$("#leaveProperJdate").val(response.body.leaveProperJdate);
+					$("#leaveSentEmail").val(response.body.leaveSentEmail);				
+					$("#status").val(response.body.status);	
+					
+			}
+			}
+		 }) 
+		
+		} 
+
+	function rowSelectEmployee() {
+		var selectedRows = gridOptions.api.getSelectedRows();
+		console.log(selectedRows);
+
+		deleteId = "";
+		for (var i = 0; i < selectedRows.length; i++) {
+			//alert(i);
+			console.log(selectedRows[i].leaveId);
+			deleteId = deleteId + '"' + selectedRows[i].leaveId + '",';
+			console.log(deleteId);
+
+		}
+		deleteId = deleteId.substring(0, deleteId.length - 1);
+		//alert(deleteId);
+
+		var rowCount = 0;
+		selectedRows.forEach(function() {
+			rowCount = rowCount + 1;
+		});
+		if (rowCount > 0) {
+			$('#delete').attr("disabled", false);
+
+		} else {
+			$('#delete').attr("disabled", true);
+		}
+
+	}
+	
+		function deleteLeaveType(){
+			
+			 $.ajax({
+					type : "GET",
+					url : "leave-type-delete?deleteId=" + deleteId,
+					async: false,
+					success : function(resp) {
+						console.log(resp)
+					if (resp.message == "Success") {
+						agGrid.simpleHttpRequest({
+							url : "leave-type-vieww"
+							}).then(function(data) {
+							gridOptions.api.setRowData(data);
+							});													
+					}							
+					},
+					error : function(data) {
+					
+					}					
+			 });					
+		}
+/* ---------------------------------------Leave Rule Save--------------------------------------------------------- */
+function editLeaveRule(id){ 
+	    openNav1();
+		$.ajax({
+			type : "POST",
+			url : "leave-type-rule-edit?id=" + id,
+			async: false,
+			success : function(response) {
+			if (response.message == "Success") {
+				
+				 $("#leaveRuleId").val(response.body.leaveRuleId); 
+					$("#leaveRuleType").val(response.body.leaveRuleType);
+					$("#jobTitle").val(response.body.jobTitle);
+					$("#leaveEmpStatus").val(response.body.leaveEmpStatus);
+					$("#leaveEmp").val(response.body.leaveEmp);
+					$("#leaveRuleDept").val(response.body.leaveRuleDept);
+					$("#leaveEmpPeriod").val(response.body.leaveEmpPeriod);
+					$("#leavePerPeriod").val(response.body.leavePerPeriod);
+					$("#leavePerMonth").val(response.body.leavePerMonth); 					
+					$("#adminAsgnEmp").val(response.body.adminAsgnEmp); 					   
+					$("#empApplyLeave").val(response.body.empApplyLeave);
+					$("#empApplyMore").val(response.body.empApplyMore);
+					$("#leaveEmpAcrEnable").val(response.body.leaveEmpAcrEnable);				
+					$("#leaveEmpFrwd").val(response.body.leaveEmpFrwd);
+					$("#leavePrcntg").val(response.body.leavePrcntg);
+					$("#maxFrwdAmt").val(response.body.maxFrwdAmt);
+					$("#avlblLeavePeriod").val(response.body.avlblLeavePeriod);
+					$("#properJoinDate").val(response.body.properJoinDate);
+					
+			    }
+			}
+		 }) 		
+		} 	
+
+function saveLeaveRule(){
+    	 var obj1 ={};
+    	 obj1.leaveRuleId = $("#leaveRuleId").val();
+   		 obj1.leaveRuleType = $("#leaveRuleType").val();
+   		 obj1.jobTitle = $("#jobTitle").val();
+   		 obj1.leaveEmpStatus =$("#leaveEmpStatus").val();    
+   		 obj1.leaveEmp = $("#leaveEmp").val();
+   		obj1.leaveRuleDept = $("#leaveRuleDept").val();
+   		obj1.leaveEmpPeriod = $("#leaveEmpPeriod").val();
+   		 obj1.leavePerPeriod = $("#leavePerPeriod").val();
+   		 obj1.leavePerMonth = $("#leavePerMonth").val();
+   		 obj1.adminAsgnEmp = $("#adminAsgnEmp").val();
+   		obj1.empApplyLeave = $("#empApplyLeave").val();
+   		obj1.empApplyMore = $("#empApplyMore").val();
+   		obj1.leaveEmpAcrEnable = $("#leaveEmpAcrEnable").val();
+   		obj1.leaveEmpFrwd = $("#leaveEmpFrwd").val();
+   		obj1.leavePrcntg = $("#leavePrcntg").val();
+   		obj1.maxFrwdAmt = $("#maxFrwdAmt").val();
+   		obj1.avlblLeavePeriod = $("#avlblLeavePeriod").val();
+   		obj1.properJoinDate = $("#properJoinDate").val();
+   		console.log(obj)
+				
+					
+   		$.ajax({
+			type : "POST",
+			url : "leave-type-rule-add",
+			contentType : "application/json",
+			data : JSON.stringify(obj1),
+			
+			success : function(response){
+			console.log(response);
+			
+			if(response.message == "Success"){
+				
+			$("#myGrid1").show();						
+			}	
+			closeNav1();
+			agGrid.simpleHttpRequest({
+				url : "leave-type-rule-view"
+				}).then(function(data) {
+				gridOptions1.api.setRowData(data);
+				}); 
+			},error : function(data){
+			
+			console.log(data);
+			}
+			})
+			
+			}
+	
+	const columnDefs1 = [
+		 {
+			headerCheckboxSelection: true,
+			   headerCheckboxSelectionFilteredOnly: true,  checkboxSelection: true ,width: 10, sortable: false,filter: false,resizable: true  
+		}, 
+		{
+		headerName: "Leave ID", 
+		field: "leaveRuleId",
+		cellRenderer: function(params){
+	 
+				 return '<a  onclick=editLeaveRule("' +  params.data.leaveRuleId + '") href="javascript:void(0)">' + params.data.leaveRuleId + '</a>';} }, 
+				
+				 {
+		headerName : "Leave Type",
+		field : "leaveRuleType"
+	}, {
+		headerName : "Job Title",
+		field : "jobTitle"
+	}, {
+		headerName : 'Leave Emp Status',
+		field : "leaveEmpStatus"
+	}, {
+		headerName : "Employee",
+		field : "leaveEmp"
+	},
+
+	{
+		headerName : "Leave Rule Dept",
+		field : "leaveRuleDept"
+	}, {
+		headerName : "Leave Emp Period",
+		field : "leaveEmpPeriod"
+	}, {
+		headerName : "Leave Per period",
+		field : "leavePerPeriod"
+	}, {
+		headerName : "Leave per Month",
+		field : "leavePerMonth"
+	}, {
+		headerName : "Admin Assign",
+		field : "adminAsgnEmp"
+	}, {
+		headerName : "Employee Apply",
+		field : "empApplyLeave"
+	}, {
+		headerName : "Employee Apply More",
+		field : "empApplyMore"
+	}, {
+		headerName : "Leave Acurable",
+		field : "leaveEmpAcrEnable"
+	}, {
+		headerName : "Leave Forward",
+		field : "leaveEmpFrwd"
+	},
+	{
+		headerName : "Leave Percentage",
+		field : "leavePrcntg"
+	}, {
+		headerName : "Maximum ForwardAmount",
+		field : "maxFrwdAmt"
+	}, {
+		headerName : "Available Period",
+		field : "avlblLeavePeriod"
+	}, {
+		headerName : "Join Date",
+		field : "properJoinDate"
+	},
+	];
+
+	const gridOptions1 = {
+		columnDefs : columnDefs1,
+		defaultColDef : {
+			sortable : true,
+			filter : true,
+			resizable : true,
+			width : 149,
+			height : 10
+		},
+		rowSelection : 'multiple',
+		onSelectionChanged : rowSelectLeaveRule,
+		 suppressRowClickSelection: true,
+		getRowNodeId : function(data) {
+			return data.leaveRuleId;
+		}
+	};
+	function rowSelectLeaveRule() {
+		var selectedRows = gridOptions1.api.getSelectedRows();
+		console.log(selectedRows);
+
+		deleteId = "";
+		for (var i = 0; i < selectedRows.length; i++) {
+			//alert(i);
+			console.log(selectedRows[i].leaveRuleId);
+			deleteId = deleteId + '"' + selectedRows[i].leaveRuleId + '",';
+			console.log(deleteId);
+		}
+		deleteId = deleteId.substring(0, deleteId.length - 1);
+		//alert(deleteId);
+		var rowCount = 0;
+		selectedRows.forEach(function() {
+			rowCount = rowCount + 1;
+		});
+		if (rowCount > 0) {
+			$('#delete').attr("disabled", false);
+
+		} else {
+			$('#delete').attr("disabled", true);
+		}
+
+	}
+	
+		function deleteLeaveRule(){			
+			 $.ajax({
+					type : "GET",
+					url : "leave-type-rule-delete?deleteId=" + deleteId,
+					async: false,
+					success : function(resp) {
+						console.log(resp)
+					if (resp.message == "Success") {
+						agGrid.simpleHttpRequest({
+							url : "leave-type-rule-view"
+							}).then(function(data) {
+							gridOptions1.api.setRowData(data);
+							});													
+					}							
+					},
+					error : function(data) {					
+					}					
+			 });					
+		}	
+</script>
+</head>
+<body>
+	<div layout:fragment="content" class="maincontent">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="maincontentsec">
+					<div class="content_padding">
+						<div id="main">
+   <!------------------------------------------Leave Routine Type------------------------------------------------------------->
+   
+							<div id="mySidenav" class="sidenav">
+								<div class="slidebox">
+
+									<div class="row">
+										<div class="col-md-9">
+											<div class="edit">Leave Routine Type</div>
+										</div>
+										<div class="col-md-3">
+											<div class="arrow">
+												<a href="javascript:void(0)" class="closebtn"
+													onclick="closeNav()"><i class="ti-arrow-right"></i></a>
+											</div>
+										</div>
+
+										<div class="chartbtnsec1">
+											<div align="right">
+												<button class="btn4" onclick="closeNav()">CANCEL</button>
+
+												<button type="submit" class="btn1" onclick="saveLeaveType()">SAVE</button>
+											</div>
+										</div>
+									</div>
+
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label> Leave Name:</label> <input type="text"
+													class="form-control" id="leaveName"> <input
+													type="hidden" id="leaveId">
+											</div>
+										</div>
+
+										<div class="col-md-6">
+											<div class="form-group">
+												<label> Leave Type Period:</label> <input type="text"
+													class="form-control" id="leavePeriod">
+											</div>
+										</div>
+									</div>
+									
+									
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label> Leave Assign:</label>
+												<div class="select">
+													<select id="leaveAssgnEmp">
+														<option value="null">--Select--</option>
+														<option value='1'>Yes</option>
+														<option value='0'>No</option>
+													</select>
+
+												</div>
+											</div>
+										</div>
+
+										<div class="col-md-6">
+											<div class="form-group">
+												<label> Leave Apply:</label>
+												<div class="select">
+													<select id="leaveEmpApply">
+														<option value="null">--Select--</option>
+														<option value='1'>Yes</option>
+														<option value='0'>No</option>
+													</select>
+
+												</div>
+											</div>
+										</div>
+									</div>
+
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label> Leave Apply More:</label>
+												<div class="select">
+													<select id="leaveApplyMore">
+														<option value="null">--Select--</option>
+														<option value='1'>Yes</option>
+														<option value='0'>No</option>
+													</select>
+
+												</div>
+											</div>
+										</div>
+										
+										<div class="col-md-6">
+											<div class="form-group">
+												<label> Leave Acr Enable:</label>
+												<div class="select">
+													<select id="leaveAcrEnable">
+														<option value="null">--Select--</option>
+														<option value='1'>Yes</option>
+														<option value='0'>No</option>
+													</select>
+												</div>
+											</div>
+										</div>
+									</div>
+
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label> Leave Carried Forward:</label>
+												<div class="select">
+													<select id="leaveCarriedForward">
+														<option value="null">--Select--</option>
+														<option value='1'>Yes</option>
+														<option value='0'>No</option>
+													</select>
+
+												</div>
+											</div>
+										</div>
+
+										<div class="col-md-6">
+											<div class="form-group">
+												<label> Leave Forward Percentage:</label> <input type="text"
+													class="form-control" id="leaveFrwdPercentage">
+											</div>
+										</div>
+									</div>
+
+
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label> Leave Max Crd Amount:</label> <input type="text"
+													class="form-control" id="leaveMaxCrdAmount">
+											</div>
+										</div>
+
+										<div class="col-md-6">
+											<div class="form-group">
+												<label> Leave Available Time:</label> <input type="text"
+													class="form-control" id="leaveAvaiableTime">
+											</div>
+										</div>
+									</div>
+
+
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label> Leave Proper Jdate:</label> <input type="text"
+													class="form-control" id="leaveProperJdate"
+													th:attr="onkeyup=|formatDate('leaveProperJdate','${session.DATEFORMAT_JS}')|"
+													placeholder="Enter Your  Joining Date"> <i
+													class="ti-calendar picker_calendar" id="fromDateCalendar"></i>
+											</div>
+										</div>
+										
+										<div class="col-md-6">
+											<div class="form-group">
+												<label> Leave Sent Email:</label>
+												<div class="select">
+													<select id="leaveSentEmail">
+														<option value="null">--Select--</option>
+														<option value='1'>Yes</option>
+														<option value='0'>No</option>
+													</select>
+												</div>
+											</div>
+										</div>
+									</div>
+									
+									<div class="col-md-12">
+										<div class="form-group">
+											<label> Status</label>
+											<div class="select">
+												<select id="status">
+													<option value="select">--Select--</option>
+													<option value='1'>Active</option>
+													<option value='0'>In Active</option>
+												</select>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+
+
+<!-------------------------------------------------Leave Rule------------------------------------------------------------------>
+							
+							<div id="mySidenav1" class="sidenav">
+								<div class="slidebox">
+									<input type="hidden" id="leaveRuleId">
+									<div class="row">
+										<div class="col-md-9">
+											<div class="edit">Leave Rule</div>
+										</div>
+										<div class="col-md-3">
+											<div class="arrow">
+												<a href="javascript:void(0)" class="closebtn"
+													onclick="closeNav1()"><i class="ti-arrow-right"></i></a>
+											</div>
+										</div>
+
+										<div class="chartbtnsec1">
+											<div align="right">
+												<button class="btn4" onclick="closeNav1()">CANCEL</button>
+
+												<button type="submit" class="btn1" onclick="saveLeaveRule()">SAVE</button>
+											</div>
+										</div>
+									</div>
+
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label>Leave Type:</label>												
+												<div class="select">
+													<select id="leaveRuleType">
+														<option value="null">--Select--</option>
+														<option th:each="c,iter:${getLeavetypeList}"
+															th:value="${c.key}" th:text="${c.name}"></option>
+													</select>
+												</div>
+											</div>
+										</div>
+
+										<div class="col-md-6">
+											<div class="form-group">
+												<label> Job Title:</label>
+												<div class="select">
+													<select id="jobTitle">
+														<option value="null">--Select--</option>
+														<option th:each="c,iter:${getJobTitleList}"
+															th:value="${c.key}" th:text="${c.name}"></option>
+													</select>
+												</div>
+											</div>
+										</div>
+									</div>
+									
+									
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label> Employee status:</label>
+												<div class="select">
+													<select id="leaveEmpStatus">
+														<option value="null">--Select--</option>
+														<option th:each="c,iter:${getEmployeeStatus}"
+															th:value="${c.key}" th:text="${c.name}"></option>
+													</select>
+												</div>
+											</div>
+										</div>
+
+
+
+										<div class="col-md-6">
+											<div class="form-group">
+												<label> Employee:</label>
+												<div class="select">
+													<select id="leaveEmp">
+														<option value="null">--Select--</option>
+														<option th:each="c,iter:${getEmployeeName}"
+															th:value="${c.key}" th:text="${c.name}"></option>
+													</select>
+												</div>
+
+											</div>
+										</div>
+									</div>
+
+
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label> Rule Department:</label> <input type="text"
+													class="form-control" id="leaveRuleDept">
+
+											</div>
+										</div>
+
+
+										<div class="col-md-6">
+											<div class="form-group">
+												<label> Leave Period:</label> <input type="text"
+													class="form-control" id="leaveEmpPeriod">
+											</div>
+										</div>
+									</div>
+
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label> Leave Per Leave Period:</label> <input type="text"
+													class="form-control" id="leavePerPeriod">
+											</div>
+										</div>
+
+
+										<div class="col-md-6">
+											<div class="form-group">
+												<label> Leave Per Leave Month:</label> <input type="text"
+													class="form-control" id="leavePerMonth">
+											</div>
+										</div>
+									</div>
+
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label> Admin can assign leave to employee:</label> <input
+													type="text" class="form-control" id="adminAsgnEmp">
+											</div>
+										</div>
+
+
+										<div class="col-md-6">
+											<div class="form-group">
+												<label> Employee can apply for this leave type:</label> <input
+													type="text" class="form-control" id="empApplyLeave">
+											</div>
+										</div>
+									</div>
+
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label> Employee can apply more for this leave type:</label>
+												<input type="text" class="form-control" id="empApplyMore">
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<label> Leave Accrue Enable:</label>
+												<div class="select">
+													<select id="leaveEmpAcrEnable">
+														<option value="null">--Select--</option>
+														<option value='1'>Yes</option>
+														<option value='0'>No</option>
+													</select>
+
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label> Leave Carried Forward:</label>
+												<div class="select">
+													<select id="leaveEmpFrwd">
+														<option value="null">--Select--</option>
+														<option value='1'>Yes</option>
+														<option value='0'>No</option>
+													</select>
+
+												</div>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<label> Percentage of Leave Carried Forward:</label> <input
+													type="text" class="form-control" id="leavePrcntg">
+											</div>
+										</div>
+									</div>
+
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label> Maximum Carried Forward Amount:</label> <input
+													type="text" class="form-control" id="maxFrwdAmt">
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<label> Carried Forward Leave:</label> <input type="text"
+													class="form-control" id="avlblLeavePeriod">
+											</div>
+										</div>
+									</div>
+
+									<div class="col-md-12">
+										<div class="form-group">
+											<label> Leave Proper Joining Date</label> <input type="text"
+												class="form-control" id="properJoinDate"
+												th:attr="onkeyup=|formatDate('properJoinDate','${session.DATEFORMAT_JS}')|"
+												placeholder="Enter Your  Joining Date"> <i
+												class="ti-calendar picker_calendar" id="fromDateCalendar1"></i>
+										</div>
+									</div>
+								</div>
+							</div>
+
+
+
+							<!-- <div class="row margin_topbot" id="searchRowDiv"></div> -->
+							<div class="row">
+								<div class="col-md-10  btn-hs" style="margin-bottom: 15px;">
+									<div class="font-design ft-lt" id="totalReq">Leave Type</div>
+								</div>
+								<div class="col-md-2 " align="right">
+									<button class="btn1" id="new1" onclick="openNav()">NEW</button>
+									<button class="btn3" id="delete" onclick="deleteLeaveType()">DELETE</button>
+								</div>
+							</div>
+							<div id="myGrid" style="width: 100%; height: 300px;"
+								class="ag-theme-alpine"></div>
+								
+								
+								
+							<div class="row">
+								<div class="col-md-10  btn-hs" style="margin-bottom: 15px;">
+									<div class="font-design ft-lt" id="totalReq">Leave Rule</div>
+								</div>
+								<div class="col-md-2 " align="right">
+									<button class="btn1" id="new1" onclick="openNav1()">NEW</button>
+									<button class="btn3" id="delete" onclick="deleteLeaveRule()">DELETE</button>
+								</div>
+							</div>
+							<div id="myGrid1" style="width: 100%; height: 300px;"
+								class="ag-theme-alpine"></div>							
+						</div>						
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+
+
+</body>
+</html>

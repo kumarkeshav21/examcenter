@@ -1,0 +1,1643 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/master}">
+<head>
+<style>
+/* Slimselect ends*/
+
+.select-pure__select {
+align-items: center;
+border-radius: 4px;
+border: 1px solid rgba(0, 0, 0, 0.15);
+box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+box-sizing: border-box;
+color: #363b3e;
+cursor: pointer;
+display: flex;
+font-size: 9px;
+font-weight: 500;
+justify-content: left;
+min-height: 44px;
+padding: 5px 10px;
+position: relative;
+transition: 0.2s;
+width: 100%;
+background: #FFF;
+}
+
+.select-pure__options {
+border-radius: 4px;
+border: 1px solid rgba(0, 0, 0, 0.15);
+box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+box-sizing: border-box;
+color: #363b3e;
+display: none;
+left: 0;
+max-height: 221px;
+overflow-y: scroll;
+position: absolute;
+top: 50px;
+width: 100%;
+z-index: 5;
+}
+
+.select-pure__select--opened .select-pure__options {
+display: block;
+}
+
+.select-pure__option {
+background: #fff;
+border-bottom: 1px solid #e4e4e4;
+box-sizing: border-box;
+height: 44px;
+line-height: 25px;
+padding: 10px;
+}
+
+.select-pure__option--disabled {
+color: #e4e4e4;
+}
+
+.select-pure__option--selected {
+color: #e4e4e4;
+cursor: initial;
+pointer-events: none;
+}
+
+.select-pure__option--hidden {
+display: none;
+}
+
+.select-pure__selected-label {
+align-items: 'center';
+background: #931b1e;
+border-radius: 4px;
+color: #fff;
+cursor: initial;
+display: inline-flex;
+justify-content: 'center';
+margin: 5px 10px 5px 0;
+padding: 3px 7px;
+}
+
+.select-pure__selected-label:last-of-type {
+margin-right: 0;
+}
+
+.select-pure__selected-label i {
+cursor: pointer;
+display: inline-block;
+margin-left: 7px;
+}
+
+.select-pure__selected-label img {
+cursor: pointer;
+display: inline-block;
+height: 18px;
+margin-left: 7px;
+width: 14px;
+}
+
+.select-pure__selected-label i:hover {
+color: #e4e4e4;
+}
+
+.select-pure__autocomplete {
+background: #f9f9f8;
+border-bottom: 1px solid #e4e4e4;
+border-left: none;
+border-right: none;
+border-top: none;
+box-sizing: border-box;
+font-size: 16px;
+outline: none;
+padding: 10px;
+width: 100%;
+
+}
+
+.select-pure__placeholder--hidden {
+display: none;
+}
+
+.ss-content.ss-open {
+    display: block;
+    opacity: 1;
+    transform: scaleY(1);
+    height: 120px;
+    overflow-y: scroll;
+}
+/*Slimselect ends*/
+
+.blueClsWT {
+	background: #0076ba!important;
+	color: #fff!important;
+}
+
+.redClsWT{
+background: #ff9e99!important;
+	color: #fff!important;
+}
+
+.redClsWT::before {
+	font-size: 8px;
+	color: #FFF;
+	content: '\e646';
+	font-family: 'themify';
+	padding-right: 7px;
+}
+
+.blueCls {
+	background: #0076ba;
+	color: #fff;
+}
+
+.blueClsWT::before {
+	font-size: 8px;
+	color: #FFF;
+	content: '\e64c';
+	font-family: 'themify';
+	padding-right: 7px;
+}
+
+.tptCls {
+	background: transparnt;
+}
+
+#myGrid1 .ag-row:first-child
+{
+border: 1px solid #007bff;
+}
+
+#myGrid1 .ag-row-selected {
+border: 1px solid #007bff!important;
+}
+
+#myGrid2 .ag-row-selected {
+border: 1px solid #007bff!important;
+}
+
+</style>
+<script>
+var interviewer = [];
+var emailId = [];
+
+function agGridOnLoad(){
+	var id = $('#requisitionId').val();
+	
+	agGrid.simpleHttpRequest({
+		url : 'review-get-schedule-list?id=' + id
+	}).then(function(data1) {
+		var len1 = data1.length;
+		$('#totalSchedule').find('span').html(len1);
+		gridOptions2.api.setRowData(data1);
+	});
+}
+
+function openNav() {
+
+	closeNav1();
+	closeNav2();
+	$('#hiringManager').val("");
+	$('#date').val("");
+	
+	document.getElementById("mySidenav").style.cssText = "width: 350px; position: absolute; right:-20px; overflow: hidden; height:auto; top:315px;";
+
+	document.getElementById("main").style.width = "73%";
+}
+
+function closeNav() {
+	
+	$('#fromDate').val("");
+	$('#toDate').val("");
+	$('#fromTime').val("");
+	$('#toTime').val("");
+	$('#location').val("");
+	$('#summary').val("");
+	$("#title").val("");
+	$("#CcHiddenId3").val("");
+	$("#emplMail").val("");
+	$(".ss-values").empty();
+	
+	document.getElementById("mySidenav").style.width = "0";
+	document.getElementById("main").style.width = "100%";
+}
+
+function openNav1() {
+	
+	document.getElementById("mySidenav1").style.cssText = "width: 350px; position: absolute; right:-20px; overflow: hidden; height:auto; top:315px;";
+
+	document.getElementById("main").style.width = "73%";
+}
+
+function closeNav1() {
+
+	document.getElementById("mySidenav1").style.width = "0";
+	document.getElementById("main").style.width = "100%";
+}
+
+function openNav2() {
+	
+	$('#rating').val("");
+	$('#feedbackDesc').val("");
+	
+	document.getElementById("mySidenav2").style.cssText = "width: 250px; position: absolute; right:-30px; overflow: hidden; height:auto; bottom:113px;";
+
+	document.getElementById("main").style.width = "82%";
+}
+
+function closeNav2() {
+	
+	document.getElementById("mySidenav2").style.width = "0";
+	document.getElementById("main").style.width = "100%";
+}
+
+	$(function() {
+		
+		agGrid.simpleHttpRequest({
+			url : 'review-requi-mstr-view-data'
+		}).then(function(data) {
+			var len = data.length;
+			$('#totalReq').find('span').html(len);
+			gridOptions1.api.setRowData(data);
+			
+			var id = data[0].requisitionId;
+			$('#requisitionId').val(id);
+			agGrid.simpleHttpRequest({
+				url : 'view-candidate-as-per-requisition?id=' + id
+			}).then(function(data1) {
+				var len1 = data1.length;
+				$('#totalCandidate').find('span').html(len1);
+				gridOptions.api.setRowData(data1);
+			});
+			
+			agGrid.simpleHttpRequest({
+				url : 'review-get-schedule-list?id=' + id
+			}).then(function(data1) {
+				var len1 = data1.length;
+				$('#totalSchedule').find('span').html(len1);
+				gridOptions2.api.setRowData(data1);
+			});
+			
+			agGrid.simpleHttpRequest({
+				url : 'review-get-feedback-list?id=' + id
+			}).then(function(data1) {
+				gridOptions3.api.setRowData(data1);
+			});
+			
+		});
+		
+		var autocomplete = new SlimSelect({
+			select: '#autocomplete-select42',
+		       multiple: true,
+		       autocomplete: true,
+		       icon: "fa fa-times",
+		       onChange: key => { 
+		    	  
+		    	   interviewer = [];
+		    	   emailId = [];
+		    	   console.log(key)
+		    	   for(var i = 0; i < key.length; i++) {
+		        	
+		    		   interviewer.push(key[i].value);
+		    		   var mailId = $("#"+key[i].value).attr("email");
+		    		   emailId.push(mailId);
+		    	   }
+		        	
+		        	 $("#CcHiddenId3").val(interviewer);
+		        	 $("#emplMail").val(emailId);
+		        	   },	      	
+		      });
+		
+		//Schedule Interview Edit Starts
+		
+			var autocomplete = new SlimSelect({
+			select: '#autocomplete-select42Edit',
+		       multiple: true,
+		       autocomplete: true,
+		       icon: "fa fa-times",
+		       onChange: key => { 
+		    	  
+		    	   interviewer = [];
+		    	   emailId = [];
+		    	   console.log(key)
+		    	   for(var i = 0; i < key.length; i++) {
+		        	
+		    		   interviewer.push(key[i].value);
+		    		   var mailId = $("#"+key[i].value).attr("email");
+		    		   emailId.push(mailId);
+		    	   }
+		        	
+		        	 $("#CcHiddenId3Edit").val(interviewer);
+		        	 $("#emplMailEdit").val(emailId);
+		        	   },	      	
+		      });
+		
+		//Schedule Interview Edit Ends
+		
+		$("#fromTime").datetimepicker({
+			format : 'H:i',
+			closeOnDateSelect : false,
+			timepicker : true,
+			datepicker : false,
+			step: 15
+			})
+			
+		$("#toTime").datetimepicker({
+			format:  "H:i",
+			closeOnDateSelect : false,
+			timepicker : true,
+			datepicker : false,
+			step: 15
+			})
+			
+		//Schedule Interview Edit Starts
+		
+		$("#fromTimeEdit").datetimepicker({
+			format : 'H:i',
+			closeOnDateSelect : false,
+			timepicker : true,
+			datepicker : false,
+			step: 15
+			})
+			
+		$("#toTimeEdit").datetimepicker({
+			format:  "H:i",
+			closeOnDateSelect : false,
+			timepicker : true,
+			datepicker : false,
+			step: 15
+			})
+		//Schedule Interview Edit Ends
+			
+		
+		$('#shortList').attr("disabled", true);
+		$('#scheduleInterview').attr("disabled", true);
+		$('#addFeedback').attr("disabled", true);
+		$('#selectId').attr("disabled", true);
+		$('#offerId').attr("disabled", true);
+		$('#rejectId').attr("disabled", true);
+
+		$(".box,.number,.text").click(function() {
+			$(this).css('background-color', '#0076BA');
+			$(this).css('color', '#FFFFFF');
+			$(this).css('color', '#FFFFFF');
+		});
+		
+		window.onclick = function(event) {
+		    	
+		       
+		        $('#myGrid1').find('.ag-row').css('border','none');
+
+		}
+		
+	});
+
+	function cancelBar() {
+		var id = document.getElementById("closeKey");
+		id.style.display = "block";
+		if ($('#quickFilter').val() == null || $('#quickFilter').val() == "") {
+			id.style.display = "none";
+		}
+	}
+
+	function onQuickFilterChanged() {
+		gridOptions.api
+				.setQuickFilter(document.getElementById('quickFilter').value);
+		gridOptions1.api
+				.setQuickFilter(document.getElementById('quickFilter').value);
+	}
+
+	var columnDefs1 = [
+			/* {
+				headerCheckboxSelection : true,
+				headerCheckboxSelectionFilteredOnly : true,
+				checkboxSelection : true,
+				width : 10,
+				sortable : false,
+				filter : false,
+				resizable : true
+			}, */
+			{
+				headerName : "Req ID", /* field: "requisitionId", */
+				cellRenderer : function(params) {
+					return '<a>' + params.data.requisitionId + '</a>';
+				}
+			}, {
+				headerName : "Title",
+				field : "jobTitle"
+			}, {
+				headerName : "# of positions",
+				field : "noPosition",
+				type : "rightAligned"
+			}, {
+				headerName : "Band",
+				field : "band"
+			}, {
+				headerName : "Department",
+				field : "department"
+			}, {
+				headerName : "Hiring Manager",
+				field : "hiringManager"
+			}, {
+				headerName : "Join Date",
+				field : "joinDate",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			}, {
+				headerName : "CTC Cap",
+				field : "minSalary",
+				type : "rightAligned",
+				valueFormatter: 'Math.floor(value).toString().replace(/(\\d)(?=(\\d{3})+(?!\\d))/g, ",")'
+			}, {
+				headerName : "Applicants",
+				field : "applicants",
+				type : "rightAligned",
+			}, {
+				headerName : "Shortlisted",
+				field : "shortList",
+				type : "rightAligned",
+			}, {
+				headerName : "Interviewed",
+				field : "interviewed",
+				type : "rightAligned",
+			}, {
+				headerName : "Offered",
+				field : "offered",
+				type : "rightAligned",
+			}, {
+				headerName : "Create Date",
+				field : "createdOn",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			} ];
+
+	var gridOptions1 = {
+		columnDefs : columnDefs1,
+		defaultColDef : {
+			sortable : true,
+			filter : true,
+			resizable : true,
+			width : 149,
+			height : 10
+		},
+		rowSelection : 'single',
+		onSelectionChanged: changeCandidateAsPerRequisition
+
+	};
+	
+	function changeCandidateAsPerRequisition(){
+		var selectedNodes= gridOptions1.api.getSelectedNodes();
+		var selectedData= selectedNodes.map(node => node.data);
+		
+		var reqId = selectedData.map(node => node.requisitionId);
+		
+		$('#requisitionId').val(reqId);
+		
+		agGrid.simpleHttpRequest({
+			url : 'view-candidate-as-per-requisition?id=' + reqId
+		}).then(function(data1) {
+			console.log(JSON.stringify(data1))
+			var len1 = data1.length;
+			$('#totalCandidate').find('span').html(len1);
+			gridOptions.api.setRowData(data1);
+		});
+		
+		agGrid.simpleHttpRequest({
+			url : 'review-get-schedule-list?id=' + reqId
+		}).then(function(data1) {
+			var len1 = data1.length;
+			$('#totalSchedule').find('span').html(len1);
+			gridOptions2.api.setRowData(data1);
+		});
+		
+		agGrid.simpleHttpRequest({
+			url : 'review-get-feedback-list?id=' + reqId
+		}).then(function(data1) {
+			gridOptions3.api.setRowData(data1);
+		});
+	}
+	
+	var columnDefs = [
+		{
+			headerCheckboxSelection : true,
+			headerCheckboxSelectionFilteredOnly : true,
+			checkboxSelection : true,
+			width : 10,
+			sortable : false,
+			filter : false,
+			resizable : true
+		},
+		{
+			headerName : "Candidate ID",
+			field : "candidateId",
+			cellRenderer : function(params) {
+				return '<a href="javascript:void(0)">'
+						+ params.data.candidateId + '</a>';
+			}
+		}, {
+			headerName : "Name",
+			field : "firstName",
+
+			cellClass : function(params) {
+				if(params.data.shortlistStatus === '1'){
+					return (params.data.shortlistStatus === '1' && params.data.requisitionId === $('#requisitionId').val() ? 'blueClsWT' : 'tptCls');
+				} 
+				if(params.data.rejectStatus === '1'){
+					return (params.data.rejectStatus === '1' && params.data.requisitionId === $('#requisitionId').val() ? 'redClsWT' : 'tptCls');
+				}
+			}
+		}, {
+			headerName : "Location",
+			field : "location"
+		}, {
+			headerName : "DOB",
+			field : "dob",
+			cellStyle : {
+				textAlign : 'center'
+			}
+		}, {
+			headerName : "Experience",
+			field : "experience"
+		}, {
+			headerName : "Source",
+			field : "source"
+		}, {
+			headerName : "# of Applications",
+			field : "noApplications",
+			type : "rightAligned"
+		}, {
+			headerName : "Candidacy Status",
+			field : "shortlistStatus",
+			cellRenderer : function(params) {
+				if(params.data.shortlistStatus === "1"){
+					return '<div >Shortlisted</div>';
+				}
+				if(params.data.rejectStatus === "1"){
+					return '<div >Rejected</div>';
+				}
+				if(params.data.selectedStatus === "1"){
+					return '<div >Hired</div>';
+				}
+				else{
+					return '<div >-</div>';
+				}
+				
+			}
+		}, {
+			headerName : "Resume",
+			field : "resume"
+		},{
+			headerName : "Personal Id",
+			field : "personalEmail"
+		}, {
+			headerName : "Create Date",
+			field : "createdOn",
+			cellStyle : {
+				textAlign : 'center'
+			}
+		} ];
+
+
+	var gridOptions = {
+		columnDefs : columnDefs,
+		defaultColDef : {
+			sortable : true,
+			filter : true,
+			resizable : true,
+			width : 149,
+			height : 10
+		},
+		rowSelection : 'multiple',
+		onSelectionChanged : onSelectionChangedState
+
+	};
+
+	function onSelectionChangedState() {
+
+		closeNav();
+		closeNav2();
+		closeNav1();
+		
+		var selectedRows = gridOptions.api.getSelectedRows();
+		var rowCount = 0;
+		selectedRows.forEach(function(selectedRow, index) {
+			rowCount = rowCount + 1;
+		});
+		
+		var selectedNodes= gridOptions.api.getSelectedNodes();
+		var selectedData= selectedNodes.map(node => node.data);
+		
+		$('#candId').val(selectedData.map(node => node.candidateId));
+		$('#candName').val(selectedData.map(node => node.firstName));
+		
+		if (rowCount > 0) {
+			$('#shortList').attr("disabled", false);
+			$('#scheduleInterview').attr("disabled", false);
+			$('#addFeedback').attr("disabled", false);
+			$('#selectId').attr("disabled", false);
+			$('#offerId').attr("disabled", false);
+			$('#rejectId').attr("disabled", false);
+
+		} else {
+			$('#shortList').attr("disabled", true);
+			$('#scheduleInterview').attr("disabled", true);
+			$('#addFeedback').attr("disabled", true);
+			$('#selectId').attr("disabled", true);
+			$('#offerId').attr("disabled", true);
+			$('#rejectId').attr("disabled", true);
+
+		}
+	}
+	
+	var columnDefs2 = [
+		{
+			headerName : "Req ID", 
+			field: "requisitionId",
+			cellRenderer : function(params) {
+				return '<a>' + params.data.requisitionId + '</a>';
+			}
+		},
+		{
+			headerName : "Candidate Name",
+			field : "candId",
+			cellRenderer : function(params) {
+				return '<div>' + params.data.firstName + '</div>';
+			}
+		},
+		{
+			headerName : "Title",
+			field : "summary",
+			cellRenderer : function(params) {
+				return '<div>' + params.data.title + '</div>';
+			}
+		},{
+			headerName : "From Date",
+			field : "description",
+			cellStyle : {
+				textAlign : 'center'
+			},
+			cellRenderer : function(params) {
+				return '<div>' + params.data.fromDate + '</div>';
+			}
+		}, {
+			headerName : "To Date",
+			field : "location",
+			cellStyle : {
+				textAlign : 'center'
+			},
+			cellRenderer : function(params) {
+				return '<div>' + params.data.toDate + '</div>';
+			}
+		}, {
+			headerName : "From Time",
+			field : "personalMail",
+			cellStyle : {
+				textAlign : 'center'
+			},
+			cellRenderer : function(params) {
+				return '<div>' + params.data.fromTime + '</div>';
+			}
+		}, {
+			headerName : "To Time",
+			field : "emailId",
+			cellStyle : {
+				textAlign : 'center'
+			},
+			cellRenderer : function(params) {
+				return '<div>' + params.data.toTime + '</div>';
+			}
+		}, {
+			headerName : "Interviewer Name",
+			field : "hiringManagerId",
+			cellRenderer : function(params) {
+				return '<div>' + params.data.hiringManagerName + '</div>';
+			}
+		} ];
+
+
+	var gridOptions2 = {
+		columnDefs : columnDefs2,
+		defaultColDef : {
+			sortable : true,
+			filter : true,
+			resizable : true,
+			width : 289,
+			height : 10
+		},
+		rowSelection: 'single',
+		rowMultiSelectWithClick: true,
+		onSelectionChanged : onChangedCandidateScheduleEdit
+
+	};
+	
+	
+	function scheduleInterview(){
+		var candId = [];
+		var candMail = [];
+		var selectedRows = gridOptions.api.getSelectedRows();
+		var selectedRowsString = '';
+		var selectedRowsMail = '';
+		selectedRows.forEach(function(selectedRow, index) {
+		if (index > 0) {
+		selectedRowsString += ',';
+		selectedRowsMail += ',';
+		}
+		selectedRowsString += '"' + selectedRow.candidateId + '"';
+		selectedRowsMail += '"' + selectedRow.personalEmail + '"';
+		});
+		
+		selectedRows.forEach(function(selectedRow, index) {
+			candId.push(selectedRow.candidateId);
+			candMail.push(selectedRow.personalEmail);
+		});
+		
+		var reqId = $('#requisitionId').val();
+		
+		obj.fromDate = $('#fromDate').val();
+		obj.toDate = $('#toDate').val();
+		obj.fromTime = $('#fromTime').val();
+		obj.toTime = $('#toTime').val();
+		obj.location = $('#location').val();
+		obj.summary = $('#summary').val();
+		obj.description = $('#description').val();
+		obj.title = $("#title").val();
+		obj.hiringManager = interviewer;
+		obj.candidateId = candId;
+		obj.requisitionId = reqId;
+		obj.candEmail = candMail;
+		obj.interviewerMail = emailId;
+		obj.locationName = $('#location').find(":selected").text();
+	
+		
+		$.ajax({
+			type : "POST",
+			url : "review-add-schedule-interview",
+			contentType : "application/json",
+			data : JSON.stringify(obj),
+			success : function(response) {
+				if (response.message == "Success") {
+					
+					closeNav();
+					
+					agGrid.simpleHttpRequest({
+						url : 'review-get-schedule-list?id=' + reqId
+					}).then(function(data1) {
+						var len1 = data1.length;
+						$('#totalSchedule').find('span').html(len1);
+						gridOptions2.api.setRowData(data1);
+					});
+					
+				}  else{
+					closeNav();
+					
+					$('#modalMsg').text("");
+					$('#reqValid').modal('toggle');
+					
+					var msg = "";
+					for(i = 0 ; i < response.body.length; i++){
+						msg = msg + response.body[i].name + ", ";
+					}
+					msg = msg.substring(0, msg.length - 2);
+					
+					$('#modalMsg').text("Interview is already Scheduled for " + msg);
+				}
+			},
+			error : function(data) {
+
+				console.log(data);
+			}
+		}) //ajax ends
+		
+	}
+	
+	function deleteInterviewer(event){
+		var id = event.target.id;
+		$("#deleteEmp_"+id).remove();
+	}
+	
+	function onChangedCandidateScheduleEdit(){
+		
+		closeNav();
+		closeNav2();
+		openNav1();
+		agGridOnLoad();
+		
+		var selectedNodes= gridOptions2.api.getSelectedNodes();
+		var selectedData= selectedNodes.map(node => node.data);
+		
+		$("#titleEdit").val(selectedData.map(node => node.title));
+		$("#fromDateEdit").val(selectedData.map(node => node.fromDate));
+		$("#fromTimeEdit").val(selectedData.map(node => node.fromTime));
+		$("#toDateEdit").val(selectedData.map(node => node.toDate));
+		$("#toTimeEdit").val(selectedData.map(node => node.toTime));
+		$("#locationEdit").val(selectedData.map(node => node.location));
+		$("#summaryEdit").val(selectedData.map(node => node.summary));
+		$("#descriptionEdit").val(selectedData.map(node => node.description));
+		$("#CcHiddenId3Edit").val(selectedData.map(node => node.hiringManagerId));
+  	 	$("#emplMailEdit").val(selectedData.map(node => node.emailId));
+  	 	
+  	 	var selectedRows = gridOptions2.api.getSelectedRows();
+		var selectedRowsString = '';
+		selectedRows.forEach(function(selectedRow, index) {
+		if (index > 0) {
+		selectedRowsString += ',';
+		}
+		selectedRowsString += '"' + selectedRow.hiringManagerName + '"';
+		});
+
+		var edit = selectedRowsString.replaceAll('"', '');;
+
+  	 	var hireName = edit.split(",");
+  	 	
+  	 	
+  	 	$(".ss-values").empty();
+  	 	for(var i=0; i<hireName.length; i++){
+  	 		var div = '<div class="ss-value" id="deleteEmp_'+i+'"><span class="ss-value-text">' + hireName[i] + '</span><span class="ss-value-delete" id="'+i+'" onclick="deleteInterviewer(event)" >x</span></div>';
+  	 		$(".ss-values").append(div);
+  	 	}
+	}
+	
+	function editScheduleInterview(){
+		var reqId = $('#requisitionId').val();
+		var obj = {};
+		
+		var candId = [];
+		var candMail = [];
+		var selectedRows = gridOptions2.api.getSelectedRows();
+		var selectedRowsString = '';
+		var selectedRowsMail = '';
+		selectedRows.forEach(function(selectedRow, index) {
+		if (index > 0) {
+		selectedRowsString += ',';
+		selectedRowsMail += ',';
+		}
+		selectedRowsString += '"' + selectedRow.candId + '"';
+		selectedRowsMail += '"' + selectedRow.personalMail + '"';
+		});
+		
+		selectedRows.forEach(function(selectedRow, index) {
+			candId.push(selectedRow.candId);
+			candMail.push(selectedRow.personalEmail);
+		});
+		
+	
+  	 	var editHireManagerEmail = ($("#emplMailEdit").val()).replaceAll('"','');
+  	 	var editHireManager = ($("#CcHiddenId3Edit").val()).replaceAll('"','');
+  	 	
+  	 	var interviewer = 	(editHireManager).split(",");
+  	 	var emailId = (editHireManagerEmail).split(",");
+		
+		obj.fromDate = $('#fromDateEdit').val();
+		obj.toDate = $('#toDateEdit').val();
+		obj.fromTime = $('#fromTimeEdit').val();
+		obj.toTime = $('#toTimeEdit').val();
+		obj.location = $('#locationEdit').val();
+		obj.summary = $('#summaryEdit').val();
+		obj.description = $('#descriptionEdit').val();
+		obj.title = $("#titleEdit").val();
+		obj.hiringManager = interviewer;
+		obj.candidateId = candId;
+		obj.requisitionId = reqId;
+		obj.candEmail = candMail;
+		obj.interviewerMail = emailId;
+		obj.locationName = $('#locationEdit').find(":selected").text();
+		
+		console.log(obj)
+		$.ajax({
+			type : "POST",
+			url : "review-edit-schedule-interview",
+			contentType : "application/json",
+			data : JSON.stringify(obj),
+			success : function(response) {
+				if (response.message == "Success") {
+					
+					closeNav1();
+					
+					agGrid.simpleHttpRequest({
+						url : 'review-get-schedule-list?id=' + reqId
+					}).then(function(data1) {
+						var len1 = data1.length;
+						$('#totalSchedule').find('span').html(len1);
+						gridOptions2.api.setRowData(data1);
+					});
+					
+				}  
+			},
+			error : function(data) {
+
+				console.log(data);
+			}
+		}) //ajax ends
+	}
+	
+	function shortListCand(status){
+		
+		var id = $('#requisitionId').val();
+		
+		var candId = [];
+		var selectedRows = gridOptions.api.getSelectedRows();
+		var selectedRowsString = '';
+		selectedRows.forEach(function(selectedRow, index) {
+		if (index > 0) {
+		selectedRowsString += ',';
+		}
+		selectedRowsString += '"' + selectedRow.candidateId + '"';
+		});
+
+		$.ajax({
+			type : "GET",
+			url : "review-shortlist-candidate?id=" + selectedRowsString + "&reqId=" + id + "&status=" + status,
+			success : function(response) {
+				if (response.message == "Success") {
+					
+					agGrid.simpleHttpRequest({
+						url : 'view-candidate-as-per-requisition?id=' + id
+					}).then(function(data1) {
+						var len1 = data1.length;
+						$('#totalCandidate').find('span').html(len1);
+						gridOptions.api.setRowData(data1);
+					});
+					
+				}  
+			},
+			error : function(data) {
+
+				console.log(data);
+			}
+		}) //ajax ends
+	}
+	
+	function addFeedback(){
+		closeNav();
+		closeNav1();
+		openNav2();
+		
+		/* $.ajax({
+			type : "GET",
+			url : "review-interviewerName-forFeedback?candId=" + candId + "&reqId=" + reqId,
+			success : function(response) {
+				if (response.message == "Success") {
+					
+					$('#hiringManagerFeedback').val(response.body.hiringManager)
+				}  
+			},
+			error : function(data) {
+
+				console.log(data);
+			}
+		})  *///ajax ends
+		
+	}
+	
+	function interviewFeedback(){
+		var obj = {};
+		
+		/* obj.candId = $('#candId').val();
+		obj.requisitionId = $('#requisitionId').val();
+		obj.hiringManager = $('#hiringManagerFeedback').val(); */
+		
+		var candId = [];
+		var selectedRows = gridOptions.api.getSelectedRows();
+		
+		selectedRows.forEach(function(selectedRow, index) {
+			candId.push(selectedRow.candidateId);
+		});
+		
+		var reqId = $('#requisitionId').val();
+		
+		obj.candidateId = candId;
+		obj.candId = $('#candId').val();
+		obj.requisitionId = $('#requisitionId').val();
+		obj.rating = $('#rating').val();
+		obj.feedback = $('#feedbackDesc').val();
+		obj.editId = $("#editId").val();
+		
+		$.ajax({
+			type : "POST",
+			url : "review-add-feedback",
+			contentType : "application/json",
+			data : JSON.stringify(obj),
+			success : function(response) {
+				if (response.message == "Success") {
+					
+					closeNav2();
+					
+					agGrid.simpleHttpRequest({
+						url : 'review-get-feedback-list?id=' + reqId
+					}).then(function(data1) {
+						gridOptions3.api.setRowData(data1);
+					});
+					
+				}  else{
+					closeNav2();
+					
+					$('#modalMsg').text("");
+					$('#reqValid').modal('toggle');
+					
+					var msg = "";
+					for(i = 0 ; i < response.body.length; i++){
+						msg = msg + response.body[i].name + ", ";
+					}
+					msg = msg.substring(0, msg.length - 2);
+					
+					$('#modalMsg').text("Feedback is already given for " + msg);
+				}
+			},
+			error : function(data) {
+
+				console.log(data);
+			}
+		}) //ajax ends
+	}
+	
+	var columnDefs3 = [
+		{
+			headerName : "Req ID", 
+			field: "requisitionId",
+			cellRenderer : function(params) {
+				return '<a>' + params.data.requisitionId + '</a>';
+			}
+		},
+		{
+			headerName : "Candidate Name",
+			field : "candId",
+			cellRenderer : function(params) {
+				return '<div>' + params.data.firstName + '</div>';
+			}
+		}, {
+			headerName : "Rating",
+			field : "rating"
+		}, {
+			headerName : "Feedback",
+			field : "feedback"
+		} ];
+
+
+	var gridOptions3 = {
+		columnDefs : columnDefs3,
+		defaultColDef : {
+			sortable : true,
+			filter : true,
+			resizable : true,
+			width : 289,
+			height : 10
+		},
+		rowSelection : 'single',
+		onSelectionChanged : onChangedCandidateFeedbackEdit
+
+	};
+	
+function onChangedCandidateFeedbackEdit(){
+		
+		closeNav1();
+		closeNav();
+		openNav2();
+		
+		var selectedNodes= gridOptions3.api.getSelectedNodes();
+		var selectedData= selectedNodes.map(node => node.data);
+		
+		$('#candName').val(selectedData.map(node => node.firstName));
+		$('#candId').val(selectedData.map(node => node.candId));
+		$('#rating').val(selectedData.map(node => node.rating));
+		$('#feedbackDesc').val(selectedData.map(node => node.feedback));
+		$('#editId').val("1");
+	}
+	
+	// setup the grid after the page has finished loading
+	document.addEventListener('DOMContentLoaded', function() {
+		var gridDiv = document.querySelector('#myGrid');
+		new agGrid.Grid(gridDiv, gridOptions);
+
+		var gridDiv1 = document.querySelector('#myGrid1');
+		new agGrid.Grid(gridDiv1, gridOptions1);
+		
+		var gridDiv2 = document.querySelector('#myGrid2');
+		new agGrid.Grid(gridDiv2, gridOptions2);
+		
+		var gridDiv3 = document.querySelector('#myGrid3');
+		new agGrid.Grid(gridDiv3, gridOptions3);
+	});
+	
+	window.onclick = function(event) {
+	    if (event.target.id == 'myGrid1' ) {
+	        $('#myGrid1').find('.ag-row:first').css('border','none');
+	       
+	    }
+	}
+	
+	$(document).ready(function(){
+		var dateFormat = localStorage.getItem("dateFormat");
+		$("#fromDateCalendar").datetimepicker({
+			format : dateFormat,
+			closeOnDateSelect : true,
+			timepicker : false,
+		}).on("change", function() {
+			$('#fromDate').val($(this).val());
+		})
+		
+		$('#fromDate').blur(function(){
+			$("#fromDateCalendar").val($(this).val());
+		})
+		
+		$("#toDateCalendar").datetimepicker({
+			format : dateFormat,
+			closeOnDateSelect : true,
+			timepicker : false,
+		}).on("change", function() {
+			$('#toDate').val($(this).val());
+		})
+		
+		$('#toDate').blur(function(){
+			$("#toDateCalendar").val($(this).val());
+		})
+		
+		// Schedule Edit
+		$("#fromDateCalendarEdit").datetimepicker({
+			format : dateFormat,
+			closeOnDateSelect : true,
+			timepicker : false,
+		}).on("change", function() {
+			$('#fromDateEdit').val($(this).val());
+		})
+		
+		$('#fromDateEdit').blur(function(){
+			$("#fromDateCalendarEdit").val($(this).val());
+		})
+		
+		$("#toDateCalendarEdit").datetimepicker({
+			format : dateFormat,
+			closeOnDateSelect : true,
+			timepicker : false,
+		}).on("change", function() {
+			$('#toDateEdit').val($(this).val());
+		})
+		
+		$('#toDateEdit').blur(function(){
+			$("#toDateCalendarEdit").val($(this).val());
+		})
+
+	})	
+</script>
+<body>
+	<div layout:fragment="content" class="maincontent">
+
+		<div class="container-fluid">
+			<div class="row">
+				<div class="maincontentsec">
+					<div class="content_padding">
+						<div class="row margin_topbot">
+							<div class="col-md-8 ">
+								<div class="input-style row">
+									<input type="text" placeholder="Search.." name="search"
+										class="searchboxinput" onkeyup="cancelBar()"
+										oninput="onQuickFilterChanged()" id="quickFilter">
+									<div class="searchicon">
+										<a href="javascript: void(0)"><span
+											style="display: none; border-right: 1px solid #ccc; padding-right: 5px;"
+											id="closeKey"
+											onclick="gridOptions1.api.setQuickFilter(null);gridOptions.api.setQuickFilter(null);$('#quickFilter').val('');document.getElementById('closeKey').style.display='none';"
+											class="close_i"><i class="ti-close srchicon"></i></span></a><a
+											href="javascript: void(0)"><i class="ti-search srchicon"></i></a>
+									</div>
+								</div>
+							</div>
+						</div>
+						
+						<!-- SIDE BAR NAVIGATION STARTS -->
+										<div id="mySidenav" class="sidenav">
+											<div class="slidebox">
+												<div class="row">
+													<div class="col-md-10">
+														<div class="edit" id="heading">SCHEDULE INTERVIEW</div>
+													</div>
+													<div class="col-md-2">
+														<div class="arrow">
+															<a href="javascript:void(0)" class="closebtn"
+																onclick="closeNav()"><i class="ti-arrow-right"></i></a>
+														</div>
+													</div>
+												
+												<div class="chartbtnsec1">
+													<div align="right">
+														
+															<button class="btn1" onclick="scheduleInterview()">SCHEDULE</button>
+															<!-- <button class="btn3" onclick="deleteSource()">DELETE</button> -->
+															<button class="btn4" onclick="closeNav()">CANCEL</button>
+														
+													</div>
+												</div>
+												
+													<div class="col-md-12">
+																<div class="form-group">
+																
+																	<label>Title</label> <input type="text"
+																		 class="form-control" id="title" placeholder="Title">
+	
+																</div>
+															</div>
+															
+													<div class="col-md-12">
+																
+	
+																	<label>Interviewer Name</label>
+																	<select id="autocomplete-select42" multiple class="form-control">
+																		<option th:each="c,iter:${employeeFullList}" th:value='${c.key}' 
+																			th:text="${c.name}" th:id="${c.key}" th:attr="email=${c.email}"></option>
+						
+																	</select> <input type="hidden" id="CcHiddenId3">
+																		<input type="hidden" id="emplMail">
+	
+															</div>
+	
+										<div class="col-md-6">
+											<div class="form-group">
+	
+												<label>From Date</label> <input type="text" id="fromDate"
+													class="form-control"
+													th:attr="onkeyup=|formatDate('fromDate','${session.DATEFORMAT_JS}')|">
+												<i class="ti-calendar picker_calendar" id="fromDateCalendar"></i>
+	
+											</div>
+										</div>
+	
+										<div class="col-md-6">
+											<div class="form-group">
+	
+												<label>From Time</label> <input type="text" id="fromTime"
+													class="form-control" readonly>
+	
+											</div>
+										</div>
+	
+										<div class="col-md-6">
+											<div class="form-group">
+	
+												<label>To Date</label> <input type="text" id="toDate"
+													class="form-control"
+													th:attr="onkeyup=|formatDate('toDate','${session.DATEFORMAT_JS}')|">
+												<i class="ti-calendar picker_calendar" id="toDateCalendar"></i>
+	
+											</div>
+										</div>
+										
+										<div class="col-md-6">
+											<div class="form-group">
+	
+												<label>To Time</label> <input type="text" id="toTime"
+													class="form-control" readonly>
+	
+											</div>
+										</div>
+	
+										<div class="col-md-12">
+												<div class="form-group">
+													<label>Location</label>
+													<div class="select">
+															<select id="location">
+																<option value="">Select Location</option>
+																<option th:each="c,iter:${jobLocationList}"
+																	th:value="${c.key}" th:text="${c.name}"></option>
+															</select>
+														</div>
+												</div>
+										</div>
+	
+										<div class="col-md-12">
+												<div class="form-group">
+													<label>Summary</label>
+													<input type="text" id="summary" placeholder="summary"
+													class="form-control">
+												</div>
+										</div>
+										
+										<div class="col-md-12">
+												<div class="form-group">
+													<label>Description</label>
+													<textarea style="height: 90px;" id="description"></textarea>
+												</div>
+										</div>
+
+
+								</div>
+
+											</div>
+										</div>
+
+										<!-- SIDE BAR NAVIGATION ENDS -->
+										
+										<!-- SIDE BAR NAVIGATION STARTS -->
+										<div id="mySidenav1" class="sidenav">
+											<div class="slidebox">
+												<div class="row">
+													<div class="col-md-10">
+														<div class="edit" id="heading">SCHEDULE INTERVIEW</div>
+													</div>
+													<div class="col-md-2">
+														<div class="arrow">
+															<a href="javascript:void(0)" class="closebtn"
+																onclick="closeNav1()"><i class="ti-arrow-right"></i></a>
+														</div>
+													</div>
+												
+												<div class="chartbtnsec">
+													<div align="right">
+														
+															<button class="btn1" onclick="editScheduleInterview()">SCHEDULE</button>
+															<!-- <button class="btn3" onclick="deleteSource()">DELETE</button> -->
+															<button class="btn4" onclick="closeNav1()">CANCEL</button>
+														
+													</div>
+												</div>
+												
+														<div class="col-md-12">
+																<div class="form-group">
+																
+																	<label>Title</label> <input type="text"
+																		 class="form-control" id="titleEdit" placeholder="Title">
+	
+																</div>
+															</div>
+															
+													<div class="col-md-12">
+																
+	
+																	<label>Interviewer Name</label>
+																	<select id="autocomplete-select42Edit" multiple class="form-control">
+																		<option th:each="c,iter:${employeeFullList}" th:value='${c.key}' 
+																			th:text="${c.name}" th:id="${c.key}" th:attr="email=${c.email}"></option>
+						
+																	</select> <input type="hidden" id="CcHiddenId3Edit">
+																		<input type="hidden" id="emplMailEdit">
+	
+															</div>
+	
+													<div class="col-md-6">
+														<div class="form-group">
+				
+															<label>From Date</label> <input type="text" id="fromDateEdit"
+																class="form-control"
+																th:attr="onkeyup=|formatDate('fromDateEdit','${session.DATEFORMAT_JS}')|">
+															<i class="ti-calendar picker_calendar" id="fromDateCalendarEdit"></i>
+				
+														</div>
+													</div>
+				
+													<div class="col-md-6">
+														<div class="form-group">
+				
+															<label>From Time</label> <input type="text" id="fromTimeEdit"
+																class="form-control" readonly>
+				
+														</div>
+													</div>
+				
+													<div class="col-md-6">
+														<div class="form-group">
+				
+															<label>To Date</label> <input type="text" id="toDateEdit"
+																class="form-control"
+																th:attr="onkeyup=|formatDate('toDateEdit','${session.DATEFORMAT_JS}')|">
+															<i class="ti-calendar picker_calendar" id="toDateCalendarEdit"></i>
+				
+														</div>
+													</div>
+													
+													<div class="col-md-6">
+														<div class="form-group">
+				
+															<label>To Time</label> <input type="text" id="toTimeEdit"
+																class="form-control" readonly>
+				
+														</div>
+													</div>
+				
+													<div class="col-md-12">
+															<div class="form-group">
+																<label>Location</label>
+																<div class="select">
+																		<select id="locationEdit">
+																			<option value="">Select Location</option>
+																			<option th:each="c,iter:${jobLocationList}"
+																				th:value="${c.key}" th:text="${c.name}"></option>
+																		</select>
+																	</div>
+															</div>
+													</div>
+				
+													<div class="col-md-12">
+															<div class="form-group">
+																<label>Summary</label>
+																<input type="text" id="summaryEdit" placeholder="summary"
+																class="form-control">
+															</div>
+													</div>
+													
+													<div class="col-md-12">
+															<div class="form-group">
+																<label>Description</label>
+																<textarea style="height: 90px;" id="descriptionEdit"></textarea>
+															</div>
+													</div>
+
+													</div>
+
+											</div>
+										</div>
+
+										<!-- SIDE BAR NAVIGATION ENDS -->
+										
+										<!-- SIDE BAR NAVIGATION STARTS -->
+										<div id="mySidenav2" class="sidenav">
+											<div class="slidebox">
+												<div class="row">
+													<div class="col-md-10">
+														<div class="edit" id="heading">FEEDBACK</div>
+													</div>
+													<div class="col-md-2">
+														<div class="arrow">
+															<a href="javascript:void(0)" class="closebtn"
+																onclick="closeNav2()"><i class="ti-arrow-right"></i></a>
+														</div>
+													</div>
+												
+												<div class="chartbtnsec2">
+													<div align="right">
+														
+															<button class="btn1" onclick="interviewFeedback()">Save</button>
+															<!-- <button class="btn3" onclick="deleteSource()">DELETE</button> -->
+															<button class="btn4" onclick="closeNav2()">CANCEL</button>
+														
+													</div>
+												</div>
+												
+														<div class="col-md-12">
+															<div class="form-group">
+																<input type="hidden" id="candId">
+																<input type="hidden" id="editId">
+																<label>Candidate Name</label> <input type="text"
+																	 class="form-control" id="candName" readonly>
+
+															</div>
+														</div>
+														
+														<!-- <div class="col-md-12">
+															<div class="form-group">
+
+																<label>Interviewer Name</label>
+															    <div class="select">
+															   	<select id="hiringManagerFeedback" >
+															      <option value="">Select</option>
+															      <option th:each="c,iter:${managerList}" th:value="${c.key}"
+																		th:text="${c.name}"></option>
+															    </select>
+															    </div>
+
+															</div>
+														</div> -->
+														
+														<div class="col-md-12">
+															<div class="form-group">
+
+																<label>Rating</label>
+															    <div class="select">
+															   	<select id="rating" >
+																     <option value="">Select</option>
+																     <option value="1">1</option>
+																     <option value="2">2</option>
+																     <option value="3">3</option>
+																     <option value="4">4</option>
+																     <option value="5">5</option>
+															    </select>
+															    </div>
+
+															</div>
+														</div>
+														
+														<div class="col-md-12">
+															<div class="form-group">
+																<label>FeedBack</label> <textarea
+																	 class="form-control" id="feedbackDesc"></textarea>
+															</div>
+														</div>
+
+													</div>
+
+											</div>
+										</div>
+
+										<!-- SIDE BAR NAVIGATION ENDS -->
+										
+						
+						<div id="main">
+							<div class="col-md-12 ">
+								<div class="row">
+								
+								    <div class="col-md-5 ">
+										<div class="font-design" id="totalReq">
+											REQUISITION LIST (<span></span>)
+										</div>
+									</div>
+
+									
+								</div>
+
+								<div id="myGrid1" style="width: 100%; height: 200px;"
+									class="ag-theme-alpine"></div>
+
+
+
+								<div class="row mt-20">
+									<input type="hidden" id="requisitionId">
+									<div class="col-md-4">
+										<div class="font-design" id="totalCandidate">
+											CANDIDATE LIST (<span></span>)
+										</div>
+									</div>
+									<div class="col-md-8">
+										<div class="buttonsec">
+											<button class="btn3" id="rejectId" onclick="shortListCand(3)">Reject</button>
+											<button class="btn2" id="offerId">Generate Offer</button>
+											<button class="btn2" id="selectId" onclick="shortListCand(2)">Select</button>
+											<button class="btn2" id="addFeedback" onclick="addFeedback()">Add Feedback</button>
+											<button class="btn2" id="scheduleInterview"
+													onclick="openNav()">Schedule Interview</button>
+											<button class="btn1" id="shortList" onclick="shortListCand(1)">Short List</button>
+											
+										</div>
+									</div>
+								</div>
+								<div id="myGrid" style="width: 100%; height: 220px;"
+									class="ag-theme-alpine"></div>
+
+								<div class="row mt-20">
+									<div class="col-md-7 ">
+										<div class="font-design" id="totalSchedule">
+											SCHEDULE LIST (<span></span>)
+										</div>
+										<div class="section2_new"></div>
+										<div class="section3_new" align="right"></div>
+
+									</div>
+								</div>
+
+								<div id="myGrid2" style="width: 100%; height: 200px;"
+									class="ag-theme-alpine"></div>
+									
+									<div class="row mt-20">
+									<div class="col-md-7 ">
+										<div class="font-design" >
+											FEEDBACK
+										</div>
+										<div class="section2_new"></div>
+										<div class="section3_new" align="right"></div>
+
+									</div>
+								</div>
+
+								<div id="myGrid3" style="width: 100%; height: 200px;"
+									class="ag-theme-alpine"></div>
+
+							</div>
+
+						</div>
+						
+					</div>
+				</div>
+			</div>
+
+			<!-- The Modal For Validation-->
+			<div class="modal fade" id="reqValid">
+				<div class="modal-dialog modal-confirm">
+					<div class="modal-content">
+						<div class="modal-header flex-column">
+							<button type="button" class="close" data-dismiss="modal"
+								aria-hidden="true">
+								<i class="ti-close modal-close"></i>
+							</button>
+						</div>
+						<div class="modal-body">
+							<p id="modalMsg"></p>
+						</div>
+						<div class="modal-footer justify-content-center">
+							<button type="button" class="btn1" data-dismiss="modal"
+								aria-hidden="true">Ok</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+
+		</div>
+
+	</div>
+
+</body>
+
+
+</html>

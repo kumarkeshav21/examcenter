@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{/layout/master}">
+<head>
+
+<script>
+$(document).ready(function() {
+
+	var gridDiv = document.querySelector('#myGrid');
+	new agGrid.Grid(gridDiv, gridOptions);
+
+	agGrid.simpleHttpRequest({
+		url : "purchase-order-view"
+	}).then(function(data) {
+		var len = data.length;
+		$('#totalReq').find('span').html(len);
+		gridOptions.api.setRowData(data);
+	})
+	
+	$('#new1').show();
+	$('#demo').hide();
+	$('#delete1').attr('disabled', true);
+	$('#delete').attr('disabled', true);
+	
+	//myGrid1
+	
+	var gridDiv1 = document.querySelector('#myGrid1');
+	new agGrid.Grid(gridDiv1, gridOptions1);
+	var data = [];
+	gridOptions1.api.setRowData(data);
+	
+	//date formatter
+	var dateFormat = localStorage.getItem("dateFormat");
+	//Date fromatter for Apply Date 
+
+	$("#toCalendar").datetimepicker({
+		format : dateFormat,
+		closeOnDateSelect : true,
+		timepicker : false,
+	}).on("change", function() {
+		$('#deliveryDate').val($(this).val());
+	})
+
+	$('#deliveryDate').blur(function() {
+		$("#toCalendar").val($(this).val());
+	})
+});
+
+
+	/* -------------------search bar for mygrid1------------------------ */
+
+	function onQuickFilterChanged() {
+		gridOptions.api
+				.setQuickFilter(document.getElementById('quickFilter').value);
+	}
+
+	function cancelBar() {
+		var id = document.getElementById("closeKey");
+		id.style.display = "block";
+
+		if ($('#quickFilter').val() == null || $('#quickFilter').val() == "") {
+			id.style.display = "none";
+		}
+	}
+
+	$('input,textarea').focus(
+			function() {
+				$(this).data('placeholder', $(this).attr('placeholder')).attr(
+						'placeholder', '');
+			}).blur(function() {
+		$(this).attr('placeholder', $(this).data('placeholder'));
+	});
+
+	var count = 0;
+	function allCheck() {
+		count++;
+
+		if (count == 1) {
+			$('.checkCls').prop("checked", true);
+		} else {
+			count = 0;
+			$('.checkCls').prop("checked", false);
+		}
+	}
+
+	/* ----------------ag grid for myGrid parent table----------- */
+	
+	const columnDefs = [
+	{
+		headerCheckboxSelection : true,
+		headerCheckboxSelectionFilteredOnly : true,
+		checkboxSelection : true,
+		width : 10,
+		sortable : false,
+		filter : false,
+		resizable : true
+	},
+	{
+		headerName : 'Purchase Order',
+		field : "poID",
+		cellRenderer : function(params) {
+				return '<a onclick=editPurchaseOrder("'
+						+ params.data.poID
+						+ '") href="javascript:void(0)">'
+						+ params.data.poID + '</a>';
+		} 
+	},{
+		headerName : 'Vendor',
+		field : "vendorName"
+	}, {
+		headerName : 'Delivery Date',
+		field : "deliveryDate",
+		cellStyle : {
+			textAlign : 'center'
+		}
+	}, {
+		headerName : 'PO Status',
+		field : "poStatus"
+	}, {
+		headerName : 'PO Complete Status',
+		field : "poCompleteStatus"
+
+	}, {
+		headerName : 'Created By',
+		field : "createdBy"
+	}, {
+		headerName : 'Created Date',
+		field : "createdDate"
+	} ];
+
+	const gridOptions = {
+		columnDefs : columnDefs,
+		defaultColDef : {
+			sortable : true,
+			filter : true,
+			resizable : true,
+			width : 175,
+			height : 10
+		},
+		rowSelection : 'multiple',
+		onSelectionChanged : rowSelectPurchaseOrder,
+		suppressRowClickSelection : true ,
+		getRowNodeId : function(data) {
+		return data.poID; 
+		}
+	 
+	};
+	
+	/* ---------------edit purchase Order ---------------*/
+	
+	function editPurchaseOrder(id) {
+
+		var poID = id;
+		$("#poID").html(poID);
+		agGrid.simpleHttpRequest({
+			url : "purchase-order-edit?id=" + id
+		}).then(function(data) {
+			gridOptions1.api.setRowData(data);
+			console.log(JSON.stringify(data));
+			for(var i=0;i<=data.length;i++){
+						
+					$("#myGrid1").show();
+					$("#deliveryDate").val(data[0].deliveryDate);
+					$("#vendorID").val(data[0].vendorID);
+					$("#vendorName").val(data[0].vendorName);
+					$("#itemId").val(data[0].itemId);
+					$("#itemName").val(data[0].itemName);
+					$("#quantity").html(data[0].quantity);
+					$("#price").html(data[0].price);
+					$("#poStatus").html(data[0].poStatus);
+					var status = data[0].poStatus;
+					if (status === '0') {
+
+							$('#poStatus').prop('checked', false)
+
+					} else {
+							$('#poStatus').prop('checked', true)
+					}
+									
+				}
+			});
+					$("#myGrid").hide();
+					$("#demo1").show();
+					$("#save").show();
+					$("#demo").show();
+					$("#new1").hide();
+					$("#totalReq1").hide();
+					$("#totalReq").hide();
+					$("#searchRowDiv").hide();
+			}
+	
+	
+	/*-------------- Edit data from mygrid1 (leave details-child table) --------------*/
+
+	function editItemList(id) {
+		var x = parseInt(id);
+		var rowNode = gridOptions1.api.getRowNode(x);
+		var dataNode = rowNode.data;
+		openNav();
+
+		$("#itemId").val(dataNode.itemId);
+		$("#itemName").val(dataNode.itemName);
+		$("#quantity").val(dataNode.quantity);
+		$("#price").val(dataNode.price);
+		$("#rowId").val(dataNode.rowId);
+	}
+	
+	/* ---------------------------function for new button------------------ */
+	
+	function newButton(){
+		$('#demo').show();
+		$('#new1').hide();
+		$('#delete1').hide();
+		$('#myGrid').hide();
+		$("#myGrid1").show();
+		$('#totalReq').hide();
+		$('#demo1').show();
+		$('#searchRowDiv').hide();
+		$("#poStatus").prop("checked",true);
+		$("#vendorID").val("");
+		$("#vendorName").val("");
+		$("#deliveryDate").val("");
+		$("#poStatus").val("");
+		$("#poID").html("");
+		
+		gridOptions1.api.setRowData([]);
+	}
+	
+	/* -------------function for cancel button-------------- */
+	
+	function cancelBtn() {
+		$("#new1").show();
+		$("#totalReq").show();
+		$("#myGrid").show();
+		$("#myGrid1").hide();
+		$("#searchRowDiv").show();
+		$("#demo").hide();
+		$("#demo1").hide();
+		$('#delete1').show();
+		$('#delete1').attr('disabled', true);
+		/* $("#maincancel").hide();
+		$("#mainsave").hide(); */
+
+		agGrid.simpleHttpRequest({
+			url : "purchase-order-view"
+		}).then(function(data) {
+			var len = data.length;
+			$('#totalReq').find('span').html(len);
+			gridOptions.api.setRowData(data);
+
+		});
+	}
+	
+	/*------------------ ag grid for myGrid1 child table------------------- */
+	
+	const columnDefs1 = [
+			{
+				headerCheckboxSelection : true,
+				headerCheckboxSelectionFilteredOnly : true,
+				checkboxSelection : true,
+				width : 10,
+				sortable : false,
+				filter : false,
+				resizable : true
+			},
+			{
+				headerName : 'Item ID',
+				field : "itemId",
+				cellRenderer : function(params) {
+					return '<a onclick=editItemList("' + params.data.rowId
+							+ '") href="javascript:void(0)">'
+							+ params.data.itemId + '</a>';
+				}
+			},
+
+			{
+				headerName : 'Item Name',
+				field : "itemName"
+
+			}, {
+				headerName : 'Quantity',
+				field : "quantity",
+				cellStyle : {
+					textAlign : 'right'
+				}
+			}, {
+				headerName : 'Price',
+				field : "price",
+				cellStyle : {
+					textAlign : 'right'
+				}
+			}
+
+	];
+
+	const gridOptions1 = {
+		columnDefs : columnDefs1,
+		defaultColDef : {
+			sortable : true,
+			filter : true,
+			resizable : true,
+			width : 299,
+			height : 10
+		},
+		rowSelection : 'multiple',
+		onSelectionChanged : rowSelectItemList,
+		suppressRowClickSelection : true,
+		getRowNodeId : function(data) {
+			return data.rowId;
+		}
+	};
+	
+	
+	function openNav() {
+
+		document.getElementById("mySidenav").style.cssText = "width: 350px; position: absolute; right:-30px; overflow: hidden; height:auto;";
+		document.getElementById("myGrid1").style.width = "72%";
+		$("#myGrid1").show();
+		$("#save").show();
+		$("#cancel").show();
+		$("#myGrid").hide();
+		$('#new1').hide();
+		$('#new').hide();
+		$("#mainsave").show();
+		$("#delete1").hide();
+		$('#mainsave').attr('disabled', true);
+		$('#maincancel').attr('disabled', true);
+		
+		$("#itemName").val("");
+		$("#quantity").val("");
+		$("#price").val("");
+		$("#itemId").val("");
+	}
+
+	/* ------------------function for closing side nav(side nav cancel button)-------------------- */
+
+	function closeNav() {
+
+		$("#new").show();
+		$("#cancel").hide();
+		$("#new1").hide();
+		$('#mainsave').attr('disabled', false);
+		$('#maincancel').attr('disabled', false);
+		$("#delete").show();
+		document.getElementById("mySidenav").style.width = "0";
+		document.getElementById("myGrid1").style.width = "100%";
+	}
+	
+	/*--------------function for row selection for item list table-------------- */
+
+	var deleteid = "";
+	function rowSelectItemList() {
+		var selectedRows = gridOptions1.api.getSelectedRows();
+
+		deleteid = "";
+		for (var i = 0; i < selectedRows.length; i++) {
+
+			deleteid = deleteid + '"' + selectedRows[i].itemId + '",';
+
+		}
+		deleteid = deleteid.substring(0, deleteid.length - 1);
+
+		var rowCount = 0;
+		selectedRows.forEach(function() {
+			rowCount = rowCount + 1;
+		});
+		if (rowCount > 0) {
+			$('#delete').attr("disabled", false);
+
+		} else {
+			$('#delete').attr("disabled", true);
+		}
+
+	}
+	/* ------------function for delete modal for my grid1)------------ */
+	
+	function deleteDetail() {
+		$('#deleteDetails').modal('show');
+	}
+	
+	/* --------delete selected record from my grid1 (child table) through modal-----------  */
+
+	function deleteDetailsOnclick() {
+
+		$('.modal').hide();
+		$('.modal-backdrop').hide();
+		var selectedRows = gridOptions1.api.getSelectedRows();
+		gridOptions1.api.applyTransaction({
+			remove : selectedRows
+		});
+		cancelModalDeleteBtn();
+	}
+	
+	/* -------------------for closeing modal box for delete---------------- */
+
+	function cancelModalDeleteBtn() {
+		$('#deleteDetails').modal('hide');
+		$('#alertModal').modal('hide');
+
+	}
+	
+	/*----------------------- function for ok button in modal2------------------ */
+
+	function okModalBtnOnclick() {
+		$('#alertModal').modal('hide');
+		$("#itemId").val("");
+		$("#itemName").val("");
+	}
+	/* ------------function for add leave details (child table) from side nav-------------- */
+
+	var po = [];
+	function saveSideNav() {
+		//po=[];
+		var obj = {};
+		var validation = true;
+		var itemID = $("#itemId").val();
+		var cnt = 0;
+		gridOptions1.api.forEachNode(function(rowNode, index) {
+			if (rowNode.data.itemId === itemID) {
+				cnt = cnt + 1;
+			}
+		});
+		if (cnt > 0) {
+			var rowId = $("#rowId").val();
+			if (rowId != null && rowId != "") {
+					
+					obj.itemId = $("#itemId").val();
+					obj.itemName = $("#itemName").val();
+					obj.quantity = $("#quantity").val();
+					obj.price = $("#price").val();
+					obj.rowId = $("#rowId").val();
+					
+					if (obj.itemName == null || obj.itemName == "") {
+						validation = validationUpdated("ItemName Required", "itemName");
+					}
+					if (obj.quantity == null || obj.quantity == "") {
+						validation = validationUpdated("Quantity Required", "quantity");
+					}
+					if (obj.price == null || obj.price == "") {
+						validation = validationUpdated("Price Required", "price");
+					}
+					updateRowData(obj);
+			}else{
+				$('#alertModal').modal('show');
+				}
+			}else{
+				obj.itemId = $("#itemId").val();
+				obj.itemName = $("#itemName").val();
+				obj.quantity = $("#quantity").val();
+				obj.price = $("#price").val();
+				obj.rowId = $("#rowId").val();
+				
+				if (obj.itemName == null || obj.itemName == "") {
+					validation = validationUpdated("ItemName Required", "itemName");
+				}
+				if (obj.quantity == null || obj.quantity == "") {
+					validation = validationUpdated("Quantity Required", "quantity");
+				}
+				if (obj.price == null || obj.price == "") {
+					validation = validationUpdated("Price Required", "price");
+				}
+				if (validation) {
+					
+					po=[];
+					var cntt = 0;
+					gridOptions1.api.forEachNode(function(rowNode, index) {
+						
+						cntt = cntt + 1;
+						po.push(rowNode.data);
+
+					});
+
+					obj.rowId = cntt + 1;
+					po.push(obj);
+					var rowId = $("#rowId").val();
+
+					if (rowId == "" || rowId == null) {
+					gridOptions1.api.setRowData(po);
+
+					$("#itemId").val("");
+					$("#itemName").val("");
+					$("#quantity").val("");
+					$("#price").val("");
+					$("#rowId").val("");
+					closeNav();
+					}else{
+						updateRowData(obj);
+					}
+
+				}
+			}
+		
+	}
+	
+	/* ---------function for getting the data of leave apply parent table---------- */
+
+	function addDetails() {
+
+		var datas = [];
+		gridOptions1.api.forEachNode(function(rowNode, index) {
+			var details = rowNode.data;
+			
+			details.poID = $("#poID").html();
+			details.vendorID = $("#vendorID").val();
+			//details.vendorName = $("#vendorName").val();
+			details.deliveryDate = $("#deliveryDate").val();
+			details.poStatus=$("#poStatus:checkbox:checked").val();
+				if(details.poStatus==undefined)
+				{
+					details.poStatus="0";
+				
+				}
+				else
+				{
+				details.poStatus="1";
+				} 
+			datas.push(details);
+			console.log(datas);
+		})
+		savePurchaseOrder(datas);
+	}
+	
+	
+	/* ------------function for main save both parent and child table data---------- */
+
+	function savePurchaseOrder(datas) {
+
+		$.ajax({
+			type : "POST",
+			url : "purchase-order-save",
+			contentType : "application/json",
+			data : JSON.stringify(datas),
+			success : function(response) {
+				if (response.message == "Success") {
+					
+					$("#messageParagraph").text(
+					"Data Saved Successfully");
+					$("#msgOkModal").removeClass("btn3");
+					$("#msgOkModal").addClass("btn1");
+					$("#msgModal").modal('show');
+					$("#myGrid").show();
+					$("#demo").hide();
+					$("#new1").show();
+					$("#demo1").hide();
+
+					agGrid.simpleHttpRequest({
+						url : "purchase-order-view"
+					}).then(function(data) {
+						var len = data.length;
+						$('#totalReq').find('span').html(len);
+						gridOptions.api.setRowData(data);
+					})
+
+					gridOptions1.api.setRowData([]);
+				}
+			},
+			error : function(datas) {
+			}
+		})
+
+	}
+	
+	/*-------------- function for update mygrid1(child table)------------------ */
+
+	function updateRowData(data) {
+
+		var rowNode = gridOptions1.api.getRowNode(data.rowId);
+		rowNode.setDataValue('price', data.price);
+		rowNode.setDataValue('quantity', data.quantity);
+		
+		$("#itemId").val("");
+		$("#itemName").val("");
+		$("#price").val("");
+		$("#quantity").val("");
+		
+		$("#rowId").val("");
+		closeNav();
+	}
+
+	/* ----------function for rowselection for leave apply parent table----------- */
+
+	var id = "";
+	function rowSelectPurchaseOrder() {
+		var selectedRows = gridOptions.api.getSelectedRows();
+		//console.log(selectedRows);
+		id = "";
+		for (var i = 0; i < selectedRows.length; i++) {
+
+			id = id + '"' + selectedRows[i].poID + '",';
+			//console.log(selectedRows[i].poID);
+		}
+		id = id.substring(0, id.length - 1);
+
+		var rowCount = 0;
+		selectedRows.forEach(function(i) {
+			rowCount = rowCount + 1;
+
+		});
+		//console.log(rowCount);
+		if (rowCount > 0 ) {
+			$('#delete1').attr("disabled", false);
+			
+		} else {
+			$('#delete1').attr("disabled", true);
+			
+		}
+
+	}
+
+	/*------------- Function for delete leave apply parent table----------- */
+
+	function deletePurchaseOrder() {
+
+		$.ajax({
+			type : "GET",
+			url : "purchase-order-delete?deleteId=" + id,
+			async : false,
+			success : function(response) {
+
+				if (response.message == "Success") {
+					
+					$("#messageParagraph").text(
+					"Data Deleted Successfully");
+					$("#msgOkModal").removeClass("btn3");
+					$("#msgOkModal").addClass("btn1");
+					$("#msgModal").modal('show');
+					
+					agGrid.simpleHttpRequest({
+						url : "purchase-order-view"
+					}).then(function(data) {
+						gridOptions.api.setRowData(data);
+					});
+					$('#delete').attr("disabled", true);
+				}
+			},
+			error : function(data) {
+			}
+		});
+	}
+
+	
+	/* ----------------auto search item list--------------- */
+	
+	function getItemList() {
+		var search = $("#itemName").val();
+		
+		if(search == ""){
+			$("#suggesstion-box1_").hide();
+			}
+		
+		if (search) {
+
+					$.ajax({
+						type : "POST",
+						url : "purchase-order-itemlist-autosearch",
+						dataType : 'json',
+						contentType : 'application/json',
+						data : search,
+						success : function(response) {
+							if (response.message == "success") {
+								//console.log(response);
+								if (response.body.length != 0) {
+									$("#search").css("background", "#FFF");
+									var content = '<ul id="autosearch-list1" style="margin-left:-40px; font-weight:100; font-size:14px; color:#ccc;">';
+									for (var i = 0; i < response.body.length; i++) {
+										content += '<li class="autocompletedata cp" onClick="selectAutosearchValue1(\''
+												+ response.body[i].itemId
+												+ '\',\''
+												+ response.body[i].itemName
+												+ '\')">'
+												+ response.body[i].itemName
+												+ '</li>';
+									}
+									content += '</ul>';
+									$("#suggesstion-box1_").show();
+									$("#suggesstion-box1_").html(content);
+
+								} else {
+									$("#search").css("background", "#FFF");
+									var content = '<div id="autosearch-list1">';
+									content += '<div onClick="selectAutocompleteValue()">'
+											+ "No Data Found" + '</div>';
+									content += '</div>';
+									$("#suggesstion-box1_").show();
+									$("#suggesstion-box1_").html(content);
+								}
+							}
+						},
+						error : function(data) {
+							console.log(data);
+						}
+				})
+		   }
+	   }
+	
+	
+	function selectAutosearchValue1(itemId, itemName) {
+
+		if (itemId) {
+			
+				$("#itemName").val(itemName);
+				$("#itemId").val(itemId);
+				$("#search").val(itemName)
+				$("#search").attr('data-procat', itemId);
+				$("#suggesstion-box1_").hide();
+
+		} else {
+
+				$("#itemName").val("");
+				$("#itemId").val("");
+				$("#search").val("");
+				$("#search").attr('data-procat', "");
+				$("#suggesstion-box1_").hide();
+		}
+	}
+	
+	function selectAutocompleteValue() {
+		
+		$("#itemName").val("");
+		$("#search").val("");
+		$("#search").attr('data-procat', "");
+		$("#suggesstion-box1_").hide();
+	} 
+	
+</script>
+</head>
+<body>
+	<div layout:fragment="content" class="maincontent">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="maincontentsec">
+					<div class="row margin_topbot" id="searchRowDiv">
+						<div class="input-style row">
+							<input type="text" placeholder="Search.." name="search"
+								class="searchboxinput" onkeyup="cancelBar()"
+								oninput="onQuickFilterChanged()" id="quickFilter">
+							<div class="searchicon">
+								<a href="javascript:void(0)"><span
+									style="display: none; border-right: 1px solid #ccc; padding-right: 5px;"
+									id="closeKey"
+									onclick="gridOptions.api.setQuickFilter(null);$('#quickFilter').val('');document.getElementById('closeKey').style.display='none';"
+									class="close_i"><i class="ti-close srchicon"></i></span></a><a
+									href="javascript:void(0)"><i class="ti-search srchicon"></i></a>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-3  btn-hs">
+							<div class="font-design" id="totalReq">
+								PURCHASE ORDER LIST(<span></span>)
+							</div>
+						</div>
+						<div class="col-md-9 padding-0" align="right">
+							<button class="btn1" id="new1" onclick="newButton()">NEW</button>
+							<button class="btn3" id="delete1" onclick="deletePurchaseOrder()">DELETE</button>
+						</div>
+					</div>
+					<div id="myGrid" style="width: 100%; height: 500px;"
+						class="ag-theme-alpine"></div>
+
+					<div class="collapse" id="demo1">
+						<div class="innercontent">
+							<div class="innerstickybg">
+								<div class="row">
+								<div class="col-md-6" id="idDiv">
+										PO ID : <span id="poID"></span>
+									</div>
+								<div class="col-md-6">
+										<button class="btn1" id="mainsave" onclick="addDetails()">Save</button>
+										<button class="btn4" id="maincancel" onclick="cancelBtn()">Cancel</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="collapse" id="demo">
+						<!-- <input type="hidden" id="vendorID"> -->
+						<div class="row">
+							<div class="col-md-4">
+								<div class="form-group">
+									<label>Vendor</label>
+									<div class="select">
+										<select id="vendorID">
+											<option value="">--Select--</option>
+											<option th:each="c,iter:${vendorlist}" th:value="${c.key}"
+												th:text="${c.name}"></option>
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-4">
+								<div class="form-group">
+									<label>Delivery Date</label> <input type="text"
+										id="deliveryDate" class="form-control"
+										th:attr="onkeyup=|formatDate('deliveryDate','${session.DATEFORMAT_JS}')|">
+									<i class="ti-calendar picker_calendar" id="toCalendar"></i>
+								</div>
+							</div>
+
+							<div class="col-md-4">
+								<div class="form-group">
+									<div class="row">
+										<label>Status</label>
+									</div>
+									<input type="checkbox" id="poStatus" class="check" name="active"
+										value="1"> <label for="1">Active</label>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+								<div class="col-md-3  btn-hs">
+									<div class="font-design" id="totalReq1">ITEM LIST</div>
+								</div>
+								<div class="col-md-9 padding-0" align="right">
+									<button class="btn1" id="new" onclick="openNav()">NEW</button>
+									<button class="btn3" id="delete" onclick="deleteDetail()">DELETE</button>
+								</div>
+							</div>
+						
+						<div id="main_contentClrnc">
+							<div id="mySidenav" class="sidenav">
+								<div class="slidebox">
+									<div class="row">
+										<div class="col-md-12 buttonsec btn-hs">
+											<button class="btn1" id="save" onclick="saveSideNav()">Save</button>
+											<button class="btn4" id="cancel" onclick="closeNav()">Cancel</button>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-12">
+											<div class="form-group">
+											<input type="hidden" id="rowId" />
+											<input type="hidden" id="itemId" /> <label>Item Name
+												</label> <input type="text" autocomplete="off"
+												class="form-control" id="itemName"
+												onkeyup="getItemList();"/>
+											<div id="suggesstion-box1_" class="sugg-cls"></div>
+										</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-12">
+											<div class="form-group">
+												<label>Quantity</label> <input type="text"
+													class="form-control" id="quantity" autocomplete="off" />
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-12">
+											<div class="form-group">
+												<label>Price</label> <input type="text" class="form-control"
+													autocomplete="off" id="price">
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div id="myGrid1" style="width: 100%; height: 500px;"
+								class="ag-theme-alpine"></div>
+					</div>
+					
+					<!------------- delete product modal start -------------------->
+
+					<div id="deleteDetails" class="modal fade show" aria-modal="true">
+						<div class="modal-dialog modal-confirm">
+							<div class="modal-content">
+								<div class="modal-header flex-column">
+									<button type="button" class="close" data-dismiss="modal"
+										aria-hidden="true" onclick="cancelModalDeleteBtn()">
+										<i class="ti-close modal-close"></i>
+									</button>
+								</div>
+								<div class="modal-body">
+									<p>Do you really want to delete these records? This process
+										cannot be undone.</p>
+								</div>
+								<div class="modal-footer justify-content-center"
+									style="margin-top: -30px;">
+
+									<button type="button" class="btn1" data-dismiss="modal"
+										onclick="cancelModalBtn();">Cancel</button>
+									<button type="button" class="btn3"
+										onclick="deleteDetailsOnclick()">Delete</button>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+					<!-- -------------------second modal----------------------->
+
+					<div id="alertModal" class="modal fade show" aria-modal="true">
+						<div class="modal-dialog modal-confirm">
+							<div class="modal-content">
+								<div class="modal-header flex-column">
+									<button type="button" class="close" data-dismiss="modal"
+										aria-hidden="true" onclick="cancelModalDeleteBtn()">
+										<i class="ti-close modal-close"></i>
+									</button>
+								</div>
+								<div class="modal-body">
+									<p>Same Item Name Can Not Be Choosen</p>
+								</div>
+								<div class="modal-footer justify-content-center"
+									style="margin-top: -30px;">
+									<button type="button" class="btn1"
+										onclick="okModalBtnOnclick()">OK</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

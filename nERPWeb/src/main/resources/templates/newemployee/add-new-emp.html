@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/master}">
+<head>
+<meta charset="ISO-8859-1">
+<title></title>
+<script type="text/javascript" charset="utf-8">
+		 
+		
+		 
+		function add(){
+			
+				$("#empId").val("");
+				$("#fname").val("");
+				$("#lname").val("");
+				$("#gender").val("");
+				$("#maritalsts").val("");
+				$("#age").val("");
+				$("#phnno").val("");
+				$("#address").val("");
+				$("#status").val("");
+					 
+				$("#add").hide();
+				$("#myGrid").hide();
+				$("#cancel").show();
+				$("#save").show();
+				$("#demo").show();
+				//$('#delete').attr("disabled", true);
+				$("#delete").hide();
+		 }	
+			 
+		function cancel(){
+			
+				$("#add").show();
+				$("#myGrid").show();
+				$("#cancel").hide();
+				$("#save").hide();
+				$("#demo").hide();
+				$("#delete").show();
+		}
+	
+		$(document).ready(function(){
+			 var gridDiv = document.querySelector('#myGrid');
+			 new agGrid.Grid(gridDiv, gridOptions);
+			 
+			 	$("#cancel").hide();
+				$("#save").hide();
+				$("#demo").hide();
+				$('#delete').attr("disabled", true);
+			
+			agGrid.simpleHttpRequest({
+				url : "view-new-emp-through-ajax"
+				}).then(function(data) {
+				gridOptions.api.setRowData(data);
+				});
+			
+			});
+
+		const columnDefs = [
+			{
+				headerCheckboxSelection: true,
+				  headerCheckboxSelectionFilteredOnly: true,  checkboxSelection: true ,width: 10, sortable: false,filter: false,resizable: true 
+			},
+			{  headerName: 'EMP ID', field: "empId" ,
+				 cellRenderer: function(params){
+			 	        return '<a onclick=viewPage("' +  params.data.empId + '") href="javascript:void(0)">' + params.data.empId + '</a>';}},
+			{  headerName: 'FirstName',field: "fname"},
+			{  headerName: 'LastName',field: "lname"},
+			{  headerName: 'Gender ID',field: "genderId", hide: true},
+			{  headerName: 'Gender',field: "gender"},
+			{  headerName: 'MatitalSts ID',field: "maritalId", hide: true},
+			{  headerName: 'Marital Status',field: "maritalsts"},
+			{  headerName: 'Age',field: "age",type:"rightAligned"},
+			{  headerName: 'Phn No',field: "phnno",type:"rightAligned"},
+			{  headerName: 'Address',field: "address"},
+			{  headerName: 'Status',field: "status"} 
+			
+			];
+
+		const gridOptions = {
+		    columnDefs: columnDefs,
+		    defaultColDef: {
+		  	  sortable: true, 
+		  	  filter: true, 
+		  	  resizable: true, 
+		  	  width: 149,
+		  	  height: 10
+		     },
+		     rowSelection : 'multiple',
+		     onSelectionChanged: rowSelectEmployee,
+		     suppressRowClickSelection: true,
+		     getRowNodeId : function(data) {
+		    	 return data.empId;
+		    	 }
+		    }; 
+
+		var  deleteId="";
+		
+	function rowSelectEmployee()
+		{
+			var selectedRows = gridOptions.api.getSelectedRows();
+			console.log(selectedRows);
+			
+			 deleteId="";
+			for(var i=0;i<selectedRows.length;i++)
+				{
+				//alert(i);
+				//console.log(selectedRows[i].empId);
+				deleteId=deleteId+'"'+selectedRows[i].empId+'",';
+				//console.log(deleteId);
+				
+				} 
+			deleteId=deleteId.substring(0,deleteId.length-1);
+			//alert(deleteId);
+			
+			var rowCount = 0;
+			selectedRows.forEach(function() {
+				rowCount = rowCount + 1;
+			});
+			if (rowCount > 0) {
+				$('#delete').attr("disabled", false);
+				
+			} else {
+				$('#delete').attr("disabled", true);
+			} 
+			
+		}
+		
+		
+		function deleteEmp(){
+			
+			 $.ajax({
+					type : "GET",
+					url : "view-new-emp-delete?deleteId=" + deleteId,
+					async: false,
+					success : function(response) {
+						console.log(response)
+					if (response.message == "Success") {
+						agGrid.simpleHttpRequest({
+							url : "view-new-emp-through-ajax"
+							}).then(function(data) {
+							gridOptions.api.setRowData(data);
+							});
+						$('#delete').attr("disabled", true);
+							
+					}
+							
+					},
+					error : function(data) {
+					
+					}
+					
+			 });
+			
+		
+		}
+		
+		
+			function viewPage(id){
+				  $("#myGrid").hide();
+				  $("#cancel").show();
+					$("#save").show();
+					$("#demo").show();
+					$("#add").hide();
+					$("#delete").hide();
+					
+					var rowNode = gridOptions.api.getRowNode(id);
+					console.log(rowNode);
+					
+					$("#empId").val(rowNode.data.empId);
+					$("#fname").val(rowNode.data.fname);
+					$("#lname").val(rowNode.data.lname);
+					$("#gender").val(rowNode.data.genderId);
+					$('#maritalsts').val(rowNode.data.maritalId);
+					$('#age').val(rowNode.data.age);
+					$('#phnno').val(rowNode.data.phnno);
+					$('#address').val(rowNode.data.address);
+					/* $('#status').val(rowNode.data.status); */
+					if(rowNode.data.status == "Active"){
+						$("#status").val("1");
+						} else{
+						$("#status").val("0");
+						}
+					
+					
+					
+					/*  $.ajax({
+							type : "GET",
+							url : "view-new-emp-edit?id=" + id,
+							async: false,
+							success : function(response) {
+							if (response.message == "Success") {
+								
+									$("#empId").val(response.body.empId);
+									$("#fname").val(response.body.fname);
+									$("#lname").val(response.body.lname);
+									$("#gender").val(response.body.gender);
+									$('#maritalsts').val(response.body.maritalsts);
+									$('#age').val(response.body.age);
+									$('#phnno').val(response.body.phnno);
+									$('#address').val(response.body.address);
+									$('#status').val(response.body.status);
+									
+								
+							}
+							}
+					 }) */
+					 
+			}
+			 
+			var dataset = []; 
+			
+	  function addDetails(){
+				
+				
+			var obj = {};
+			obj.empId = $("#empId").val();
+			obj.fname = $("#fname").val();
+			obj.lname = $("#lname").val();
+			obj.gender =$("#gender").val();
+			obj.maritalsts = $("#maritalsts").val();
+			obj.age = $("#age").val();
+			obj.phnno = $("#phnno").val();
+			obj.address = $("#address").val();
+			obj.status=$("#status").val();
+			//alert($("#fname").val())
+			
+			
+			//console.log(obj)
+			
+			var validation = true;
+
+			if(obj.fname == null || obj.fname == ""){
+				validation = validationUpdated("First Name Required","fname");
+			}
+			if(obj.lname == null || obj.lname == ""){
+				validation = validationUpdated("Last Name Required","lname");
+			}
+			if(obj.gender == null || obj.gender == "" ){
+				validation = validationUpdated("Gender Required","gender");
+			}
+			if(obj.maritalsts == null || obj.maritalsts == "" ){
+				validation = validationUpdated("Marital Status Required","maritalsts");
+			}
+			if(obj.age == null || obj.age == ""){
+				validation = validationUpdated("age Required","age");
+			}
+			if(obj.phnno == null || obj.phnno == ""){
+				validation = validationUpdated("Phone No Required","phnno");
+			}
+			if(obj.address == null || obj.address == ""){
+				validation = validationUpdated("Address Required","address");
+			}
+			if(obj.status == null || obj.status == "" || obj.status =="null"){
+				//alert("hello");
+				validation = validationUpdated("Status Required","status");
+			}
+			//alert(validation);
+			if(validation){
+				$.ajax({
+					type		: "POST",
+					url 		: "view-new-emp-add",
+					contentType	: "application/json",
+					data		: JSON.stringify(obj),
+					/* async 		: false, */
+					success		: function(response){
+						//console.log(response);
+						if(response.message == "Success"){
+							$("#add").show();
+							$("#myGrid").show();
+							$("#cancel").hide();
+							$("#save").hide();
+							$("#demo").hide(); 
+							$("#delete").show();
+							agGrid.simpleHttpRequest({
+								url : "view-new-emp-through-ajax"
+								}).then(function(data) {
+								gridOptions.api.setRowData(data);
+								});
+						}
+					},
+					error : function(data){
+						
+						console.log(data);
+					}
+				})
+			}
+			
+			}
+			
+		/* document.addEventListener('DOMContentLoaded', function() {
+		    var gridDiv = document.querySelector('#myGrid');
+		    new agGrid.Grid(gridDiv, gridOptions);
+		}); */
+
+		</script>
+
+<body>
+	<div layout:fragment="content" class="maincontent">
+
+		<div class="container-fluid">
+			<div class="row">
+				<div class="maincontentsec">
+					<div class="content_padding">
+						<div class="row">
+							<div class="col-md-5 buttonsec btn-hs"></div>
+							<div class="col-md-7 buttonsec btn-hs">
+								<button class="btn1" id="add" onclick="add()">Add</button>
+								<button class="btn3" id="delete" onclick="deleteEmp()">Delete</button>
+								<button class="btn4" id="cancel" onclick="cancel()">Cancel</button>
+								<button class="btn2" type="submit" id="save" form="form"
+									value="add" onclick="addDetails()">Save</button>
+							</div>
+						</div>
+
+						<div class="collapse" id="demo">
+						<input type="hidden" id="empId">
+						<div class="row">
+
+							<div class="col-md-6">
+								<div class="form-group">
+									<label><b>First Name</b></label> <input type="text"
+										class="form-control" id="fname">
+								</div>
+							</div>
+
+
+							<div class="col-md-6">
+								<div class="form-group">
+									<label><b>Last Name</b></label> <input type="text"
+										class="form-control" id="lname">
+								</div>
+							</div>
+						</div>
+						
+						<div class="row">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label><b>Gender</b></label>
+									<div class="select">
+										<select id="gender">
+											<option value="">--Select--</option>
+											<option th:each="c,iter:${genderlist}"
+											th:value="${c.key}" th:text="${c.name}"></option>
+										</select>
+									</div>
+								</div>
+							</div>
+
+
+							<div class="col-md-6">
+								<div class="form-group">
+									<label><b>Marital Status</b></label>
+									<div class="select">
+										<select id="maritalsts">
+											<option value="">--Select--</option>
+											<option th:each="c,iter:${maritalsts}"
+											th:value="${c.key}" th:text="${c.name}"></option>
+										</select>
+									</div>
+								</div>
+							</div>
+							</div>
+						<div class="row">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label><b>Age</b></label> <input type="text"
+										class="form-control" id="age">
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label><b>Phone No</b></label> <input type="text"
+										class="form-control" id="phnno">
+								</div>
+							</div>
+						</div>
+						<div class="row">						
+							
+							
+							<div class="col-md-6">
+								<div class="form-group">
+									<label><b>Address</b></label> <textarea
+										class="form-control" id="address"></textarea>
+								</div>
+							</div>
+												
+							<div class="col-md-6">
+								<div class="form-group">
+									<label><b>Status</b></label><select id="status">
+						            <option value="">--Select--</option>
+						            <option value='1'>Active</option>
+						            <option value='0'>Inactive</option>
+						            </select><br>
+								</div>
+							</div>
+						</div>
+						</div>
+						
+						<div id="myGrid" style="width: 100%; height: 500px;"
+							class="ag-theme-alpine"></div>
+
+				</div>
+			</div>
+		</div>
+	</div>
+	</div>
+	
+</body>
+
+</head>
+</html>

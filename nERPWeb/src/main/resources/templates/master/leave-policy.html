@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{/layout/master}">
+<head>
+<script>
+$(document).ready(function() {
+
+		var gridDiv = document.querySelector('#myGrid');
+		new agGrid.Grid(gridDiv, gridOptions);
+
+		agGrid.simpleHttpRequest({
+			url : "leave-policy-view"
+		}).then(function(data) {
+			var len = data.length;
+			$('#totalReq').find('span').html(len);
+
+			gridOptions.api.setRowData(data);
+
+		});
+		$("#myGrid").show();
+		$("#delete").attr("disabled", true); 
+		
+		//date
+		var dateFormat = localStorage.getItem("dateFormat");
+		//alert(dateFormat);
+		$("#toDateCalendar").datetimepicker({
+			format : dateFormat,
+			closeOnDateSelect : true,
+			timepicker : false,
+		}).on("change", function() {
+			$('#leaveApplyDate').val($(this).val());
+		})
+
+		$('#leaveApplyDate').blur(function() {
+			$("#toDateCalendar").val($(this).val());
+		})
+
+		//TO Date Calendar
+
+		$("#toDateCalendar").datetimepicker({
+			format : dateFormat,
+			closeOnDateSelect : true,
+			timepicker : false,
+		}).on("change", function() {
+			$('#toDate').val($(this).val());
+		})
+
+		$('#toDate').blur(function() {
+			$("#toDateCalendar").val($(this).val());
+		})
+
+		//FROM DATE
+
+		$("#fromDateCalendar").datetimepicker({
+			format : dateFormat,
+			closeOnDateSelect : true,
+			timepicker : false,
+		}).on("change", function() {
+			$('#fromDate').val($(this).val());
+		})
+
+		$('#fromDate').blur(function() {
+			$("#fromDateCalendar").val($(this).val());
+		})
+		
+		
+
+	});
+
+	$(function() {
+		$('.collapse').on('show.bs.collapse', function() {
+			$(this).siblings('.panel-heading').addClass('active');
+		});
+
+	})
+	//search bar for mygrid1
+
+	function onQuickFilterChanged() {
+		gridOptions.api
+				.setQuickFilter(document.getElementById('quickFilter').value);
+	}
+
+	function cancelBar() {
+		var id = document.getElementById("closeKey");
+		id.style.display = "block";
+
+		if ($('#quickFilter').val() == null || $('#quickFilter').val() == "") {
+			id.style.display = "none";
+		}
+	}
+
+	$('input,textarea').focus(
+			function() {
+				$(this).data('placeholder', $(this).attr('placeholder')).attr(
+						'placeholder', '');
+			}).blur(function() {
+		$(this).attr('placeholder', $(this).data('placeholder'));
+	});
+
+	var count = 0;
+	function allCheck() {
+		count++;
+
+		if (count == 1) {
+			$('.checkCls').prop("checked", true);
+		} else {
+			count = 0;
+			$('.checkCls').prop("checked", false);
+		}
+	}
+
+	
+	
+	
+	// column Defs
+	const columnDefs = [
+	
+	 {
+			headerName : 'Employee ID',
+			field : "empID", hide: true
+		},{
+		headerName : 'Employee Name',
+		field : "empName"
+	}, {
+		headerName : 'Leave ID',
+		field : "leaveId"
+	}, {
+		headerName : 'Leave Apply Date',
+		field : "leaveApplyDate",
+
+	}, {
+		headerName : 'Status',
+		field : "status"
+	}
+
+	];
+
+	const gridOptions = {
+		columnDefs : columnDefs,
+		defaultColDef : {
+			sortable : true,
+			filter : true,
+			resizable : true,
+			width : 305,
+			height : 10
+		},
+		rowSelection : 'multiple',
+	/* onSelectionChanged : rowSelectAsset,
+	 suppressRowClickSelection : true,
+	 getRowNodeId : function(data) {
+	 return data.policyId;
+	 } */
+	};
+
+	// for new button
+	function newBtn() {
+		
+		
+		$("#new").hide();
+		$("#approve").hide();
+		$("#cancel").show();
+		$("#myGrid").hide();
+		$("#myGrid1").show();
+		$("#searchRowDiv").hide();
+		$("#totalReq").hide();
+		$("#totalReq1").show();
+		$("#idDiv").show();
+		$("#idDiv1").show();
+		$("#demo").show();
+		
+		
+		//var empId = $('#empID').html();
+		//alert(empId);
+		
+		var date = (new Date()).toISOString().split('T')[0];
+	
+		//let date = new Date().toLocaleDateString("en", {year:"numeric", day:"2-digit", month:"2-digit"});
+		
+		$("#leaveApplyDate").html(date);
+	}
+	// for cancel button
+	function cancelBtn() {
+		$("#new").show();
+		$("#approve").show();
+		$("#totalReq").show();
+		$("#myGrid").show();
+		$("#myGrid1").hide(); 
+		$("#searchRowDiv").show();
+		$("#demo").hide();
+
+		agGrid.simpleHttpRequest({
+			url : "leave-policy-view"
+		}).then(function(data) {
+			var len = data.length;
+			$('#totalReq').find('span').html(len);
+
+			gridOptions.api.setRowData(data);
+
+		});
+	}
+
+
+</script>
+
+<!-- *************************             MyGrid1               *************************************-->
+
+<script>
+	//ag grid for myGrid1
+	$(document).ready(function() {
+		
+		var gridDiv1 = document.querySelector('#myGrid1');
+		new agGrid.Grid(gridDiv1, gridOptions1);
+
+		agGrid.simpleHttpRequest({
+			url : "leave-policy-apply-view"
+		}).then(function(data) {
+			var len = data.length;
+			$('#totalReq1').find('span').html(len);
+
+			gridOptions1.api.setRowData(data);
+
+		});
+		$("#myGrid1").show();
+	});
+
+	const columnDefs1 = [
+	
+	{
+		headerName : 'Leave Type ID',
+		field : "leaveTypeId", hide: true
+	}, {
+		headerName : 'Leave Type',
+		field : "leaveType"
+	}, {
+		headerName : 'From Date',
+		field : "fromDate"
+	}, {
+		headerName : 'To Date',
+		field : "toDate",
+	}, {
+		headerName : 'Total Leave Apply',
+		field : "totalLeave"
+	}, {
+		headerName : 'Reason',
+		field : "reason"
+	}, {
+		headerName : 'Available Leave',
+		field : "availableLeave"
+	}
+
+	];
+
+	const gridOptions1 = {
+		columnDefs : columnDefs1,
+		defaultColDef : {
+			sortable : true,
+			filter : true,
+			resizable : true,
+			width : 205,
+			height : 10
+		},
+		rowSelection : 'multiple'
+	};
+
+	function openNav() {
+
+		document.getElementById("mySidenav").style.cssText = "width: 350px; position: absolute; right:-30px; overflow: hidden; height:auto;";
+		document.getElementById("myGrid1").style.width = "72%";
+		$("#myGrid1").show();
+		$("#save").show();
+		$("#cancel1").show();
+		$("#myGrid").hide();
+		//$('#delete').hide(); 
+		$('#new1').hide();
+		$('#new').hide();
+		$('#cancel').hide();
+		$("#mainsave").hide();
+		//$('#save').show();
+	}
+
+	function closeNav() {
+
+		$("#new1").show();
+		$("#cancel1").hide();
+		$("#cancel").show();
+		$("#new").hide();
+		$("#mainsave").show();
+		//$('#delete').attr("disabled", true);
+		$("#delete").show();
+		document.getElementById("mySidenav").style.width = "0";
+		document.getElementById("myGrid1").style.width = "100%";
+	}
+
+	//Parent table add
+	function addDetails() {
+
+		var datas = [];
+
+		gridOptions1.api.forEachNode(function(rowNode, index) {
+			var details = rowNode.data;
+			details.leaveId = $("#leaveId").val();
+			details.empID = $("#empID").html();
+			details.leaveApplyDate = $("#leaveApplyDate").html();
+
+			datas.push(details);
+		});
+
+		/* if (gridOptions1.api.getDisplayedRowCount() > 0) {
+			gridOptions1.api.forEachNode(function(rowNode, index) {
+				var details = rowNode.data;
+				details.leaveId = $("#leaveId").val();
+				details.empID = $("#empID").html();
+				details.leaveApplyDate = $("#leaveApplyDate").html();
+				
+
+				datas.push(details);
+			});
+		}  else {
+			var details = {};
+
+			details.leaveId = $("#leaveId").val();
+			details.empID = $("#empID").val();
+			details.leaveApplyDate = $("#leaveApplyDate").val();
+			
+
+			datas.push(details);
+		} */
+
+		console.log(datas);
+		saveLeaveApply(datas);
+
+	}
+
+	function saveLeaveApply(datas) {
+		alert("hello")
+		$.ajax({
+			type : "POST",
+			url : "leave-policy-save",
+			contentType : "application/json",
+			data : JSON.stringify(datas),
+			success : function(response) {
+				if (response.message == "Success") {
+					/* $("#leaveId").html(response.body[0].leaveId); */
+				}
+
+			},
+			error : function(datas) {
+			}
+		})
+
+	}
+
+	/*
+	 *Add sidenav
+	 */
+	var leave = [];
+	//var data = 1;
+
+	function saveLeaveDetails() {
+
+		//var editRow = $("#editRow").val();
+		var obj = {};
+		var validation = true;
+		//obj.slNo = data;
+		/* obj.leaveTypeId = $("#leaveTypeId").val(); */
+		obj.leaveType = $("#leaveTypeId :selected").text();
+		console.log(obj.leaveType);
+		obj.fromDate = $("#fromDate").val();
+		obj.toDate = $("#toDate").val();
+		obj.totalLeave = $("#totalLeave").val();
+		obj.reason = $("#reason").val();
+		obj.availableLeave = $("#availableLeave").val();
+
+		if (obj.fromDate == null || obj.fromDate == "") {
+			validation = validationUpdated("FromDate Required", "fromDate");
+		}
+		if (obj.toDate == null || obj.toDate == "") {
+			validation = validationUpdated("ToDate Required", "toDate");
+		}
+		if (obj.totalLeave == null || obj.totalLeave == "") {
+			validation = validationUpdated("TotalLeave Required", "totalLeave");
+		}
+		if (obj.reason == null || obj.reason == "") {
+			validation = validationUpdated("Reason Required", "reason");
+		}
+		if (obj.availableLeave == null || obj.availableLeave == "") {
+			validation = validationUpdated("AvailableLeave Required",
+					"availableLeave");
+		}
+
+		if (validation) {
+
+			gridOptions1.api.forEachNode(function(rowNode, index) {
+				leave.push(rowNode.data);
+
+			});
+			leave.push(obj);
+			console.log(leave);
+			gridOptions1.api.setRowData(leave);
+
+			$("#leaveType").val("");
+			$("#fromDate").val("");
+			$("#toDate").val("");
+			$("#reason").val("");
+			$("#availableLeave").val("");
+			closeNav()
+
+		}
+	}
+	////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	function dateChange() {
+		var fromdate = $('#fromDate').val();
+		var todate = $('#toDate').val();
+
+		if (fromdate == '' || todate == '') {
+			var diffDays = 'enter both date';
+			$('#totalLeave').val(diffDays);
+		} else {
+			var date1 = new Date(fromdate);
+			var date2 = new Date(todate);
+			var diffDays = parseInt((date2 - date1) / (1000 * 60 * 60 * 24), 10);
+			$('#totalLeave').val(diffDays);
+
+		}
+	}
+</script>
+
+</head>
+
+<body>
+	<div layout:fragment="content" class="maincontent">
+
+		<div class="container-fluid">
+			<div class="row">
+				<div class="maincontentsec">
+					<!-- <div class="content_padding"> -->
+
+						<div class="row margin_topbot" id="searchRowDiv">
+							<div class="input-style row">
+								<input type="text" placeholder="Search.." name="search"
+									class="searchboxinput" onkeyup="cancelBar()"
+									oninput="onQuickFilterChanged()" id="quickFilter">
+								<div class="searchicon">
+									<a href="javascript:void(0)"><span
+										style="display: none; border-right: 1px solid #ccc; padding-right: 5px;"
+										id="closeKey"
+										onclick="gridOptions.api.setQuickFilter(null);$('#quickFilter').val('');document.getElementById('closeKey').style.display='none';"
+										class="close_i"><i class="ti-close srchicon"></i></span></a><a
+										href="javascript:void(0)"><i class="ti-search srchicon"></i></a>
+								</div>
+							</div>
+
+						</div>
+						
+						<div class="row">
+
+							<div class="col-md-3  btn-hs">
+								<div class="font-design" id="totalReq">
+									Leave Policy (<span></span>)
+
+								</div>
+							</div>
+							<div class="col-md-9 buttonsec btn-hs">
+								<div class="buttongap"></div>
+								<!-- <button class="btn3" id="cancel" onclick="cancel()">Cancel</button> -->
+								 <input type="button" class="btn1" id="new" value="NEW" onclick="newBtn()" readonly>
+									<button class="btn2" id="approve" onclick="approve()">Approve</button>
+							</div>
+						</div>				
+
+					<div id="myGrid" style="width: 100%; height: 500px;"
+						class="ag-theme-alpine"></div>
+
+						<div class="collapse" id="demo">
+							
+							
+							<div class="innercontent">
+
+							<div class="innerstickybg">
+								<div class="row">
+									<div class="col-md-4" id="idDiv">
+										EMPLOYEE ID: <span id="empID" th:text="${session.USER_ID}"></span>
+									</div>
+									<!-- <input type="hidden" id="applydateformat" th:value="${session.DATEFORMAT}"> -->
+									<div class="col-md-4"  >
+										LEAVE APPLY DATE: <span id="leaveApplyDate"></span>
+
+									</div>
+									<div class="col-md-4" id="idDiv1">
+										<button class="btn4" type="button" data-dismiss="modal"
+											id="cancel" onclick="cancelBtn()">CANCEL</button>
+										<button class="btn1" id="mainsave" onclick="addDetails()">SAVE</button>
+										
+									</div>
+								</div>
+							</div>
+
+							<div class="row">
+								
+								
+									<div class="col-md-3  btn-hs">
+										<div class="font-design" id="totalReq1">
+											Leave Apply(<span></span>)
+
+										</div>
+									</div>
+									<div class="col-md-9 padding-0" align="right">
+										
+										<!-- <button class="btn1" id="save" onclick="addDetails()">SAVE</button> -->
+										<button class="btn1" id="new1" onclick="openNav()">NEW</button>
+									</div>
+								</div>
+								
+								
+								
+						<div id="main_contentClrnc">
+							<div id="mySidenav" class="sidenav">
+								
+								<div class="slidebox">
+									<div class="row">
+										<div class="col-md-12 buttonsec btn-hs">
+											<button class="btn1" id="save" onclick="saveLeaveDetails()">Save</button>
+											<button class="btn4" id="cancel1" onclick="closeNav()">Cancel</button>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-12">
+											<div class="form-group">
+											
+												<label><b>Leave Type</b></label>
+												<div class="select">
+												<!-- <input type="hidden" id="leaveTypeId"> --> 
+													<select id="leaveTypeId">
+														<option value="">--Select--</option>
+														<option th:each="c,iter:${leavelist}" th:value="${c.key}"
+															th:text="${c.name}"></option>
+															
+													</select>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-12">
+											<div class="form-group">
+												<label><b>From Date</b></label> <input type="text" id="fromDate" autocomplete="off" 
+													class="form-control"
+													th:attr="onkeyup=|formatDate('fromDate','${session.DATEFORMAT_JS}')|">
+												<i class="ti-calendar picker_calendar" id="fromDateCalendar" onchange="dateChange();" ></i>
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-12">
+											<div class="form-group">
+												<label><b>To Date</b></label> <input type="text" id="toDate" autocomplete="off"
+													class="form-control"
+													th:attr="onkeyup=|formatDate('toDate','${session.DATEFORMAT_JS}')|">
+												<i class="ti-calendar picker_calendar" id="toDateCalendar"  onchange="dateChange();" ></i>
+											</div>
+										</div>
+									</div>
+									
+									<div class="row">
+										<div class="col-md-12">
+											<div class="form-group">
+												<label><b>Total Leave Days</b></label>
+												<input type="text"
+														class="form-control" id="totalLeave" autocomplete="off" readonly /><!--  <input type="text"
+													class="form-control" autocomplete="off" id="totalLeave"> -->
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-12">
+											<div class="form-group">
+												<label><b>Reason</b></label> <input type="text"
+													class="form-control" autocomplete="off" id="reason">
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-12">
+											<div class="form-group">
+												<label><b>Available leave</b></label> <input type="text"
+													class="form-control" autocomplete="off" id="availableLeave">
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+							
+								<div id="myGrid1" style="width: 100%; height: 500px;"
+									class="ag-theme-alpine"></div>
+									
+							</div>
+						</div>
+				<!-- 	</div> -->
+				</div>
+			</div>
+		</div>
+	</div>
+
+</body>
+</html>

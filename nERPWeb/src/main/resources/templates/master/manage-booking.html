@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{/layout/master}">
+<head>
+<script>
+$(document).ready(function() {
+	
+	var gridDiv = document.querySelector('#myGrid');
+	new agGrid.Grid(gridDiv, gridOptions);
+	
+	//gridOptions.api.setRowData([]);
+	$('#delete1').attr("disabled", true);
+	 $("#myGrid").show();
+	 
+	 
+ //$("#walkin").prop("checked",true); 
+	 
+	 /* if(walkin){
+		 alert("if");
+		 $("#mobileNo").show();
+		 $("#registrationId").attr('readonly', true);
+		
+		 }else{
+			 $("#registrationId").show();
+			 $("#mobileNo").attr('readonly', true);
+		 }   */
+	 
+	 
+	 
+	 var dateFormat = localStorage.getItem("dateFormat"); 
+	 $("#fromDateCalendar").datetimepicker({
+			format : dateFormat,
+			closeOnDateSelect : true,
+			timepicker : false,
+		}).on("change", function() {
+			$('#fromDate').val($(this).val());
+		})
+		
+		 $('#fromDate').blur(function(){
+			$("#fromDateCalendar").val($(this).val());
+		})
+	 $("#toDateCalendar").datetimepicker({
+			format : dateFormat,
+			closeOnDateSelect : true,
+			timepicker : false,
+		}).on("change", function() {
+			$('#todate').val($(this).val());
+		})
+		
+		 $('#todate').blur(function(){
+			$("#toDateCalendar").val($(this).val());
+		})
+		//joining
+		
+		$("#checkinDateCalendar").datetimepicker({
+			format : dateFormat,
+			closeOnDateSelect : true,
+			timepicker : false,
+		}).on("change", function() {
+			$('#checkInDate').val($(this).val());
+		})
+		
+		 $('#checkInDate').blur(function(){
+			$("#checkinDateCalendar").val($(this).val());
+		}) 
+		
+		//passout
+		
+		/* $("#checkoutDateCalendar").datetimepicker({
+			format : dateFormat,
+			closeOnDateSelect : true,
+			timepicker : false,
+		}).on("change", function() {
+			$('#passout').val($(this).val());
+		})
+		
+		 $('#passout').blur(function(){
+			$("#checkoutDateCalendar").val($(this).val());
+		})  */
+	 
+});
+
+/* -------------------search bar for mygrid1------------------------ */
+
+
+function onQuickFilterChanged() {
+	gridOptions.api
+			.setQuickFilter(document.getElementById('quickFilter').value);
+}
+
+function cancelBar() {
+	var id = document.getElementById("closeKey");
+	id.style.display = "block";
+
+	if ($('#quickFilter').val() == null || $('#quickFilter').val() == "") {
+		id.style.display = "none";
+	}
+}
+
+$('input,textarea').focus(
+		function() {
+			$(this).data('placeholder', $(this).attr('placeholder')).attr(
+					'placeholder', '');
+		}).blur(function() {
+	$(this).attr('placeholder', $(this).data('placeholder'));
+});
+
+var count = 0;
+function allCheck() {
+	count++;
+
+	if (count == 1) {
+		$('.checkCls').prop("checked", true);
+	} else {
+		count = 0;
+		$('.checkCls').prop("checked", false);
+	}
+}
+
+function newButton(){
+	 $("#myGrid").hide();
+	 $("#new1").hide();
+	 $("#delete1").hide();
+	 $("#totalReq").hide();
+	 $("#searchRowDiv").hide();
+	 $("#demo").show();
+	 $("#demo1").show();
+	$("#walkin").prop("checked",true); 
+	$("#registrationId").attr('readonly', true);
+	$("#registrationId").attr("style","background:#f8f8ff");
+	$("#guestName").attr('readonly', true);
+	$("#guestName").attr("style","background:#f8f8ff");
+	$("#fromDate").attr('readonly', true);
+	$("#fromDate").attr("style","background:#f8f8ff");
+	$("#todate").attr('readonly', true);
+	$("#todate").attr("style","background:#f8f8ff");
+	$("#checkInDate").attr('readonly', true);
+	$("#fromDateCalendar").hide();
+	$("#toDateCalendar").hide();
+	$("#checkinDateCalendar").hide();
+	$("#checkInDate").attr("style","background:#f8f8ff");
+}
+
+function myFunction() {
+	$("#mobileNo").attr('readonly', false);
+	$("#registrationId").attr('readonly', false);
+	$("#mobileNo").attr("style","background:transparent");
+	$("#registrationId").attr("style","background:transparent");
+	$("#guestName").attr("style","background:transparent");
+	$("#fromDate").attr("style","background:transparent");
+	$("#todate").attr("style","background:transparent");
+	$("#checkInDate").attr("style","background:transparent");
+	
+	 var walkin=$("#walkin").val();
+	 if(walkin){
+		
+		 $("#mobileNo").show();
+		 $("#registrationId").attr('readonly', true);
+		 $("#registrationId").attr("style","background:#f8f8ff");
+		 $("#guestName").attr("style","background:#f8f8ff");
+		 $("#fromDate").attr("style","background:#f8f8ff");
+		 $("#todate").attr("style","background:#f8f8ff");
+		 $("#checkInDate").attr("style","background:#f8f8ff");
+		 $("#fromDateCalendar").hide();
+		 $("#toDateCalendar").hide();
+		 $("#checkinDateCalendar").hide();
+		 }else{
+			 $("#registrationId").show();
+			 $("#mobileNo").attr('readonly', true);
+			
+		 }
+	}
+function myFunction1() {
+	
+	$("#mobileNo").attr('readonly', false);
+	$("#registrationId").attr('readonly', false);
+	$("#mobileNo").attr("style","background:transparent");
+	$("#registrationId").attr("style","background:transparent");
+	$("#guestName").attr("style","background:transparent");
+	$("#fromDate").attr("style","background:transparent");
+	$("#todate").attr("style","background:transparent");
+	$("#checkInDate").attr("style","background:transparent");
+	$("#fromDateCalendar").show();
+	$("#toDateCalendar").show();
+	$("#checkinDateCalendar").show();
+	
+	
+	 var thirdParty=$("#thirdParty").val();
+	 if(thirdParty){
+		 
+		 $("#registrationId").show();
+		 $("#mobileNo").attr('readonly', true);
+		 $("#mobileNo").attr("style","background:#f8f8ff ");
+		 }else{
+			 $("#mobileNo").show();
+			 $("#registrationId").attr('readonly', true);
+		 }
+	}
+
+
+function cancelBtn(){
+	$("#myGrid").show();
+	 $("#new1").show();
+	 $("#delete1").show();
+	 $("#totalReq").show();
+	 $("#searchRowDiv").show();
+	 $("#demo").hide();
+	 $("#demo1").hide();
+}
+function addDetails(){
+	 
+	$("#myGrid").show();
+	 $("#new1").show();
+	 $("#delete1").show();
+	 $("#totalReq").show();
+	 $("#searchRowDiv").show();
+	 $("#demo").hide();
+	 $("#demo1").hide();
+}	
+
+	const columnDefs = [ {
+		headerCheckboxSelection : true,
+		headerCheckboxSelectionFilteredOnly : true,
+		checkboxSelection : true,
+		width : 10,
+		sortable : false,
+		filter : false,
+		resizable : true
+	},/*  {
+		headerName : 'Guest ID',
+		field : "guestId",
+		cellRenderer : function(params) {
+			return '<a onclick=editSalesPOS("'
+					+ params.data.guestId
+					+ '") href="javascript:void(0)">'
+					+ params.data.guestId + '</a>'; 
+	}
+	}, */ {
+		headerName : 'Guest Name',
+		field : "guestName"
+	}, {
+		headerName : 'Property Name',
+		field : "propertyName"
+	
+	}, {
+		headerName : 'Booking Type',
+		field : "bookingType"
+	},{
+		headerName : 'Booked From',
+		field : "bookedFrom",
+		cellStyle : {
+			textAlign : 'center'
+		}
+	
+	},{
+		headerName : 'Booked To',
+		field : "bookedTo",
+			cellStyle : {
+				textAlign : 'center'
+			}
+	
+	},{
+		headerName : 'Checkin Amount',
+		field : "checkinAmount",
+		cellStyle : {
+			textAlign : 'right'
+		}
+	
+	},{
+		headerName : 'CheckIn Date ',
+		field : "checkinDate",
+		cellStyle : {
+			textAlign : 'center'
+		}
+	
+	},{
+		headerName : 'CheckOut Date',
+		field : "checkoutDate",
+		cellStyle : {
+			textAlign : 'center'
+		}
+	
+	},{
+		headerName : ' Booking Status',
+		field : "status",
+		cellStyle : {
+			textAlign : 'right'
+		}
+	
+	}
+	];
+	const rowData = [
+	      { guestName: "Aman", propertyName: "Kumar", bookingType: "Guest", bookedFrom:"2021-05-15", bookedTo: "2021-05-17", checkinAmount:2000, checkinDate: "2021-05-15", checkoutDate: "2021-05-17", status: 1 },
+	      {guestName: "Ram", propertyName: "Mishra", bookingType: "Guest", bookedFrom:"2021-05-11", bookedTo: "2021-05-15", checkinAmount:7000, checkinDate: "2021-05-11", checkoutDate: "2021-05-15", status: 1 },
+	      {guestName: "Arjun", propertyName: "Kumar", bookingType: "Guest", bookedFrom:"2021-05-04", bookedTo: "2021-05-06", checkinAmount:7650, checkinDate: "2021-05-04", checkoutDate: "2021-05-06", status: 0 },
+	      {guestName: "Bikash", propertyName: "Nayak", bookingType: "Guest", bookedFrom:"2021-05-09", bookedTo: "2021-05-18", checkinAmount:6789, checkinDate: "2021-05-09", checkoutDate: "2021-05-18", status: 1 },
+	    ];
+	
+	
+	const gridOptions = {
+		columnDefs : columnDefs,
+		rowData: rowData,
+		defaultColDef : {
+			sortable : true,
+			filter : true,
+			resizable : true,
+			width :132,
+			height : 10
+		},
+		rowSelection : 'multiple',
+		onSelectionChanged : rowSelectGuestList,
+		suppressRowClickSelection : true
+	};
+	
+	/*--------------function for row selection for child table-------------- */
+
+	var deleteid = "";
+	function rowSelectGuestList() {
+		var selectedRows = gridOptions.api.getSelectedRows();
+
+		deleteid = "";
+		for (var i = 0; i < selectedRows.length; i++) {
+
+			deleteid = deleteid + '"' + selectedRows[i].idProofNo + '",';
+
+		}
+		deleteid = deleteid.substring(0, deleteid.length - 1);
+
+		var rowCount = 0;
+		selectedRows.forEach(function() {
+			rowCount = rowCount + 1;
+		});
+		if (rowCount > 0) {
+			$('#delete1').attr("disabled", false);
+
+		} else {
+			$('#delete1').attr("disabled", true);
+		}
+
+	}
+	
+function deleteDetailsOnclick() {
+		
+
+		$('.modal').hide();
+		$('.modal-backdrop').hide();
+		
+		var selectedRows = gridOptions.api.getSelectedRows();
+		gridOptions.api.applyTransaction({
+			remove : selectedRows,
+		});
+	
+		cancelModalDeleteBtn();
+	}
+
+function deleteDetail() {
+	
+	$('#deleteDetails').modal('show');
+}
+	
+
+</script>
+</head>
+<body>
+	<div layout:fragment="content" class="maincontent">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="maincontentsec">
+				<div class="row margin_topbot" id="searchRowDiv">
+						<div class="input-style row">
+							<input type="text" placeholder="Search.." name="search"
+								class="searchboxinput" onkeyup="cancelBar()"
+								oninput="onQuickFilterChanged()" id="quickFilter">
+							<div class="searchicon">
+								<a href="javascript:void(0)"><span
+									style="display: none; border-right: 1px solid #ccc; padding-right: 5px;"
+									id="closeKey"
+									onclick="gridOptions.api.setQuickFilter(null);$('#quickFilter').val('');document.getElementById('closeKey').style.display='none';"
+									class="close_i"><i class="ti-close srchicon"></i></span></a><a
+									href="javascript:void(0)"><i class="ti-search srchicon"></i></a>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-3  btn-hs">
+							<div class="font-design" id="totalReq">
+								 Booking Details(<span></span>)
+							</div>
+						</div>
+						<div class="col-md-9 padding-0" align="right">
+							<button class="btn1" id="new1" onclick="newButton()">NEW</button>
+							<button class="btn3" id="delete1" onclick="deleteDetail()">DELETE</button>
+						</div>
+					</div>
+				<div id="myGrid" style="width: 100%; height: 500px;"
+						class="ag-theme-alpine"></div>
+					<div class="collapse" id="demo1">
+						<div class="innercontent">
+							<div class="innerstickybg">
+								<div class="row">
+								
+								 <div class="col-md-12">
+										<button class="btn4" id="maincancel" onclick="cancelBtn()">Cancel</button>
+										<button class="btn1" id="mainsave" onclick="addDetails()">Save</button>
+										
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+
+					
+					<div class="collapse" id="demo">
+						 <div class="row">
+						<div class="form-group">
+							&nbsp;&nbsp;
+								<label for="bookingType" >Booking Type : </label><input
+									type="radio" id="walkin" name="bookingType" value="walkin" onchange="myFunction()">
+								<label for="walkin">Walk in</label>
+							
+							
+								<input type="radio" id="thirdParty" name="bookingType"
+									value="thirdParty" onchange="myFunction1()"> <label for="thirdParty">Third
+									Party</label><br>
+						
+						</div>
+					</div>
+						<div class="row">
+							
+							<div class="col-md-6 mobile">
+								<div class="form-group">
+									<label>Mobile No</label> <input type="text"
+										class="form-control" id="mobileNo">
+								</div>
+							</div>
+
+
+							<div class="col-md-6 registration">
+								<div class="form-group">
+									<label>Registration Id</label> <input type="text" 
+										class="form-control" id="registrationId">
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>Guest Name</label> <input type="text"
+										class="form-control" id="guestName">
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>Property Category</label><select id="propertyCategory">
+										<option value="">--Select--</option>
+										<option value='1'>Room</option>
+										<option value='0'>House</option>
+									</select><br>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>Property Type</label><select id="propertyType">
+										<option value="">--Select--</option>
+										<option value='1'></option>
+										<option value='0'></option>
+									</select><br>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>Property Name</label><select id="propertyName">
+										<option value="">--Select--</option>
+										<option value='1'></option>
+										<option value='0'></option>
+									</select><br>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>Seating Plan</label><select id="seatingPlan">
+										<option value="">--Select--</option>
+										<option value='1'></option>
+										<option value='0'></option>
+									</select><br>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>Theme Name</label><select id="theme">
+										<option value="">--Select--</option>
+										<option value='1'></option>
+										<option value='0'></option>
+									</select><br>
+								</div>
+							</div>
+							
+							<div class="col-md-6">
+								<div class="form-group">
+										<label>CheckIn date</label> <input type="text" id="checkInDate"
+												class="form-control"
+												th:attr="onkeyup=|formatDate('checkInDate','${session.DATEFORMAT_JS}')|">
+												<i class="ti-calendar picker_calendar" id="checkinDateCalendar"></i>
+									</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>CheckIn Amount</label> <input type="text"
+										class="form-control" id="checkinAmount">
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+										<label>Book FromDate</label> <input type="text" id="fromDate"
+												class="form-control"
+												th:attr="onkeyup=|formatDate('fromDate','${session.DATEFORMAT_JS}')|">
+												<i class="ti-calendar picker_calendar" id="fromDateCalendar"></i>
+									</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+										<label>Book ToDate</label> <input type="text" id="todate"
+												class="form-control"
+												th:attr="onkeyup=|formatDate('todate','${session.DATEFORMAT_JS}')|">
+												<i class="ti-calendar picker_calendar" id="toDateCalendar"></i>
+									</div>
+							</div>
+
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>Description</label>
+									<textarea class="form-control" id="desc"></textarea>
+								</div>
+							</div>
+							
+							
+							
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>Status</label><select id="status">
+										<option value="">--Select--</option>
+										<option value='1'>Active</option>
+										<option value='0'>Inactive</option>
+									</select><br>
+								</div>
+							</div>
+
+
+						</div>
+					</div>
+					<!------------- delete product modal start -------------------->
+
+					<div id="deleteDetails" class="modal fade show" aria-modal="true">
+						<div class="modal-dialog modal-confirm">
+							<div class="modal-content">
+								<div class="modal-header flex-column">
+									<button type="button" class="close" data-dismiss="modal"
+										aria-hidden="true" onclick="cancelModalDeleteBtn()">
+										<i class="ti-close modal-close"></i>
+									</button>
+								</div>
+								<div class="modal-body">
+									<p>Do you really want to delete these records? This process
+										cannot be undone.</p>
+								</div>
+								<div class="modal-footer justify-content-center"
+									style="margin-top: -30px;">
+
+									<button type="button" class="btn1" data-dismiss="modal"
+										onclick="cancelModalBtn();">Cancel</button>
+									<button type="button" class="btn3"
+										onclick="deleteDetailsOnclick()">Delete</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</body>
+</html>

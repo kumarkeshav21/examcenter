@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{/layout/master}">
+<head>
+<script>
+	$(document).ready(function() {
+
+		var gridDiv = document.querySelector('#myGrid');
+		new agGrid.Grid(gridDiv, gridOptions);
+
+		agGrid.simpleHttpRequest({
+			url : "leave-apply-view"
+		}).then(function(data) {
+			var len = data.length;
+			$('#totalReq').find('span').html(len);
+
+			gridOptions.api.setRowData(data);
+		})
+		
+		$('#new').show();
+		$('#delete').attr('disabled', true);
+		$('#delete1').attr('disabled', true);
+		$('#approve').attr('disabled', true);
+		$('#reject').attr('disabled', true);
+
+		var dateFormat = localStorage.getItem("dateFormat");
+
+		//Date fromatter for Apply Date 
+
+		$("#toCalendar").datetimepicker({
+			format : dateFormat,
+			closeOnDateSelect : true,
+			timepicker : false,
+		}).on("change", function() {
+			$('#leaveApplyDate').val($(this).val());
+		})
+
+		$('#leaveApplyDate').blur(function() {
+			$("#toCalendar").val($(this).val());
+		})
+
+		//Date fromatter for TO DATE 
+
+		$("#toDateCalendar").datetimepicker({
+			format : dateFormat,
+			closeOnDateSelect : true,
+			timepicker : false,
+		}).on("change", function() {
+			$('#toDate').val($(this).val());
+		})
+
+		$('#toDate').blur(function() {
+			$("#toDateCalendar").val($(this).val());
+		})
+
+		//Date fromatter for FROM DATE
+
+		$("#fromDateCalendar").datetimepicker({
+			format : dateFormat,
+			closeOnDateSelect : true,
+			timepicker : false,
+		}).on("change", function() {
+			$('#fromDate').val($(this).val());
+		})
+
+		$('#fromDate').blur(function() {
+			$("#fromDateCalendar").val($(this).val());
+		})
+
+		var gridDiv1 = document.querySelector('#myGrid1');
+		new agGrid.Grid(gridDiv1, gridOptions1);
+		var data = [];
+		gridOptions1.api.setRowData(data);
+		agGrid.simpleHttpRequest({
+			url : "leave-apply-edit"
+		}).then(function(data) {
+			var len = data.length;
+			$('#totalReq1').find('span').html(len);
+
+			gridOptions1.api.setRowData(data);
+
+		});
+		$("#myGrid1").show();
+
+	});
+	
+	/* -------------------search bar for mygrid1------------------------ */
+
+	function onQuickFilterChanged() {
+		gridOptions.api
+				.setQuickFilter(document.getElementById('quickFilter').value);
+	}
+
+	function cancelBar() {
+		var id = document.getElementById("closeKey");
+		id.style.display = "block";
+
+		if ($('#quickFilter').val() == null || $('#quickFilter').val() == "") {
+			id.style.display = "none";
+		}
+	}
+
+	$('input,textarea').focus(
+			function() {
+				$(this).data('placeholder', $(this).attr('placeholder')).attr(
+						'placeholder', '');
+			}).blur(function() {
+		$(this).attr('placeholder', $(this).data('placeholder'));
+	});
+
+	var count = 0;
+	function allCheck() {
+		count++;
+
+		if (count == 1) {
+			$('.checkCls').prop("checked", true);
+		} else {
+			count = 0;
+			$('.checkCls').prop("checked", false);
+		}
+	}
+
+	/* ------------ag grid for leave apply(parent table)----------------------- */
+
+	const columnDefs = 
+	[
+			{
+				headerCheckboxSelection : true,
+				headerCheckboxSelectionFilteredOnly : true,
+				checkboxSelection : true,
+				width : 10,
+				sortable : false,
+				filter : false,
+				resizable : true
+			},
+			{
+				headerName : 'Leave ID',
+				field : "leaveId",
+				cellRenderer : function(params) {
+						return '<a onclick=editLeaveApply("'
+								+ params.data.leaveId
+								+ '") href="javascript:void(0)">'
+								+ params.data.leaveId + '</a>';
+				}
+			}, {
+				headerName : 'Employee ID',
+				field : "empID",
+				hide : true
+			}, {
+				headerName : 'Employee Name',
+				field : "empName"
+			}, {
+				headerName : 'Leave Apply Date',
+				field : "leaveApplyDate",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			}, {
+				headerName : 'Approve Status',
+				field : "status",
+				cellRenderer : function(params) {
+					if (params.data.status == 0) {
+						return 'Pending';
+					} else if (params.data.status == 1) {
+						return 'Approved';
+					} else {
+						return 'Rejected';
+					}
+				}
+			}, {
+				headerName : 'Approved By',
+				field : "approvedBy"
+
+			}, {
+				headerName : 'Rejected By',
+				field : "rejectedBy"
+			} ];
+
+	const gridOptions = {
+		columnDefs : columnDefs,
+		defaultColDef : {
+			sortable : true,
+			filter : true,
+			resizable : true,
+			width : 200,
+			height : 10
+		},
+		rowSelection : 'single',
+		onSelectionChanged : rowSelectLeaveApply,
+		suppressRowClickSelection : true,
+		getRowNodeId : function(data) {
+			return data.leaveId;
+		}
+	};
+
+	/* ----------function for rowselection for leave apply parent table----------- */
+
+	var id = "";
+	function rowSelectLeaveApply() {
+		var selectedRows = gridOptions.api.getSelectedRows();
+
+		id = "";
+		for (var i = 0; i < selectedRows.length; i++) {
+
+			id = id + '"' + selectedRows[i].leaveId + '",';
+			console.log(selectedRows[i].status);
+		}
+		id = id.substring(0, id.length - 1);
+
+		var rowCount = 0;
+		selectedRows.forEach(function(i) {
+			rowCount = rowCount + 1;
+
+		});
+
+		if (rowCount > 0 && selectedRows[0].status == "0") {
+			$('#delete').attr("disabled", false);
+			$('#approve').attr('disabled', false);
+			$('#reject').attr('disabled', false);
+		} else {
+			$('#delete').attr("disabled", true);
+			$('#approve').attr('disabled', true);
+			$('#reject').attr('disabled', true);
+		}
+
+	}
+
+	/*------------- Function for delete leave apply parent table----------- */
+
+	function deleteLeaveApply() {
+
+		$.ajax({
+			type : "GET",
+			url : "leave-apply-delete?deleteId=" + id,
+			async : false,
+			success : function(response) {
+
+				if (response.message == "Success") {
+					
+					$("#messageParagraph").text(
+					"Data Deleted Successfully");
+					$("#msgOkModal").removeClass("btn3");
+					$("#msgOkModal").addClass("btn1");
+					$("#msgModal").modal('show');
+					
+					agGrid.simpleHttpRequest({
+						url : "leave-apply-view"
+					}).then(function(data) {
+						gridOptions.api.setRowData(data);
+					});
+					$('#delete').attr("disabled", true);
+				}
+			},
+			error : function(data) {
+			}
+		});
+	}
+
+	/* -------------------function for approve button----------------- */
+	var empid = "";
+	var empname = "";
+	function approveLeave() {
+		empid = $("#sessionId").val();
+		empname = $("#sessionName").val();
+		//console.log(empname); 
+		$.ajax({
+			type : "GET",
+			url : "leave-apply-approve?approveId=" + id + "&name=" + empid,
+			async : false,
+			success : function(response) {
+
+				if (response.message == "Success") {
+					agGrid.simpleHttpRequest({
+						url : "leave-apply-view"
+					}).then(function(data) {
+						gridOptions.api.setRowData(data);
+					});
+					$('#approve').attr('disabled', true);
+					$('#delete').attr('disabled', true);
+					$('#reject').attr('disabled', true);
+				}
+
+			},
+			error : function(data) {
+			}
+		});
+	}
+
+	/*-----------------------function for reject button------------------- */
+	var rejempid = "";
+	var rejempname = "";
+	function rejectLeave() {
+		rejempid = $("#sessionId").val();
+		rejempname = $("#sessionName").val();
+		$.ajax({
+			type : "GET",
+			url : "leave-apply-reject?rejectId=" + id + "&name=" + rejempid,
+			async : false,
+			success : function(response) {
+
+				if (response.message == "Success") {
+					agGrid.simpleHttpRequest({
+						url : "leave-apply-view"
+					}).then(function(data) {
+						gridOptions.api.setRowData(data);
+				});
+					
+					$('#approve').attr('disabled', true);
+					$('#delete').attr('disabled', true);
+					$('#reject').attr('disabled', true);
+				}
+
+			},
+			error : function(data) {
+			}
+		});
+	}
+
+	/* ------------------function for new button----------------- */
+
+	function newBtn() {
+
+		$("#new").hide();
+		$("#approve").hide();
+		$("#cancel").show();
+		$("#myGrid").hide();
+		$("#myGrid1").show();
+		$("#searchRowDiv").hide();
+		$("#totalReq").hide();
+		$("#totalReq1").show();
+		$("#idDiv").show();
+		$("#idDiv1").show();
+		$("#demo").show();
+
+		var date = (new Date()).toISOString().split('T')[0];
+		$("#leaveApplyDate").val(date);
+		$("#empID").val($("#sessionId").val());
+		$("#empName").val($("#sessionName").val());
+
+	}
+
+	/*----------------------- function for main cancel button----------- */
+
+	function cancelBtn() {
+		$("#new").show();
+		$("#approve").show();
+		$("#totalReq").show();
+		$("#myGrid").show();
+		$("#myGrid1").hide();
+		$("#searchRowDiv").show();
+		$("#demo").hide();
+
+		agGrid.simpleHttpRequest({
+			url : "leave-apply-view"
+		}).then(function(data) {
+			var len = data.length;
+			$('#totalReq').find('span').html(len);
+			gridOptions.api.setRowData(data);
+
+		});
+	}
+
+	/* -------------function for open side nav-------------------  */
+
+	function openNav() {
+
+		document.getElementById("mySidenav").style.cssText = "width: 350px; position: absolute; right:-30px; overflow: hidden; height:auto;";
+		document.getElementById("myGrid1").style.width = "72%";
+		$("#myGrid1").show();
+		$("#save").show();
+		$("#cancel1").show();
+		$("#myGrid").hide();
+		$('#new1').hide();
+		$('#new').hide();
+		$('#cancel').hide();
+		$("#mainsave").hide();
+		$("#delete1").hide();
+
+		//$("#leaveId").html();
+		//$("#leaveType :selected").text("");
+		$("#leaveType").val("");
+		$("#fromDate").val("");
+		$("#toDate").val("");
+		$("#totalLeave").val("");
+		$("#reason").val("");
+		$("#availableLeave").val("");
+		$("#rowId").val("");
+	}
+
+	/* ------------------function for closing side nav(side nav cancel button)-------------------- */
+
+	function closeNav() {
+
+		$("#new1").show();
+		$("#cancel1").hide();
+		$("#cancel").show();
+		$("#new").hide();
+		$("#mainsave").show();
+		$("#delete1").show();
+		document.getElementById("mySidenav").style.width = "0";
+		document.getElementById("myGrid1").style.width = "100%";
+	}
+
+	/* -------------ag grid for leave details table(child table)---------- */
+
+	const columnDefs1 = [
+			{
+				headerCheckboxSelection : true,
+				headerCheckboxSelectionFilteredOnly : true,
+				checkboxSelection : true,
+				width : 10,
+				sortable : false,
+				filter : false,
+				resizable : true
+			},
+			{
+				headerName : 'Leave Type ID',
+				field : "leaveTypeId",
+				cellRenderer : function(params) {
+					return '<a onclick=editLeaveDetails("' + params.data.rowId
+							+ '") href="javascript:void(0)">'
+							+ params.data.leaveTypeId + '</a>';
+				}
+			},
+
+			{
+				headerName : 'Leave Type',
+				field : "leaveType"
+
+			}, {
+				headerName : 'From Date',
+				field : "fromDate",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			}, {
+				headerName : 'To Date',
+				field : "toDate",
+				cellStyle : {
+					textAlign : 'center'
+				}
+			}, {
+				headerName : 'Total Leave Apply',
+				field : "totalLeave",
+				cellStyle : {
+					textAlign : 'right'
+				}
+			}, {
+				headerName : 'Reason',
+				field : "reason"
+			}, {
+				headerName : 'Available Leave',
+				field : "availableLeave"
+			}
+
+	];
+
+	const gridOptions1 = {
+		columnDefs : columnDefs1,
+		defaultColDef : {
+			sortable : true,
+			filter : true,
+			resizable : true,
+			width : 203,
+			height : 10
+		},
+		rowSelection : 'multiple',
+		onSelectionChanged : rowSelectLeaveDetails,
+		suppressRowClickSelection : true,
+		getRowNodeId : function(data) {
+			return data.rowId;
+		}
+	};
+
+	/*--------------function for row selection for leave details table(child table)-------------- */
+
+	var deleteid = "";
+	function rowSelectLeaveDetails() {
+		var selectedRows = gridOptions1.api.getSelectedRows();
+
+		deleteid = "";
+		for (var i = 0; i < selectedRows.length; i++) {
+
+			deleteid = deleteid + '"' + selectedRows[i].leaveTypeId + '",';
+
+		}
+		deleteid = deleteid.substring(0, deleteid.length - 1);
+
+		var rowCount = 0;
+		selectedRows.forEach(function() {
+			rowCount = rowCount + 1;
+		});
+		if (rowCount > 0) {
+			$('#delete1').attr("disabled", false);
+
+		} else {
+			$('#delete1').attr("disabled", true);
+		}
+
+	}
+
+	/* ------------------function to calculate total leave days------------------ */
+
+	function dateChange() {
+		var fromdate = $('#fromDate').val();
+		var todate = $('#toDate').val();
+		
+		if (fromdate != '' && todate != '') {
+				if (fromdate<todate) {
+					var date1 = new Date(fromdate);
+					var date2 = new Date(todate);
+					var diffDays = parseInt((date2 - date1) / (1000 * 60 * 60 * 24), 10);
+					$('#totalLeave').val(diffDays);
+				} else {
+					$('#dateModal').modal('show');
+				}
+		}/* else{
+			//$('#dateModal').modal('show');
+			alert("aa");
+		} */
+	}
+
+	/* ------------function for add leave details (child table) from side nav-------------- */
+
+	var leave = [];
+	function saveSideNav() {
+
+		var obj = {};
+		var validation = true;
+		var leaveId = $("#leaveType").val();
+		var cnt = 0;
+		gridOptions1.api.forEachNode(function(rowNode, index) {
+			if (rowNode.data.leaveTypeId === leaveId) {
+				cnt = cnt + 1;
+			}
+		});
+		if (cnt > 0) {
+			var rowId = $("#rowId").val();
+			if (rowId != null && rowId != "") {
+
+				obj.leaveId = $("#leaveId").html();
+				obj.leaveType = $("#leaveType :selected").text();
+				obj.leaveTypeId = $("#leaveType").val();
+				obj.fromDate = $("#fromDate").val();
+				obj.toDate = $("#toDate").val();
+				obj.totalLeave = $("#totalLeave").val();
+				obj.reason = $("#reason").val();
+				obj.availableLeave = $("#availableLeave").val();
+				obj.rowId = $("#rowId").val();
+
+				if (obj.fromDate == null || obj.fromDate == "") {
+					validation = validationUpdated("FromDate Required",
+							"fromDate");
+				}
+				if (obj.toDate == null || obj.toDate == "") {
+					validation = validationUpdated("ToDate Required", "toDate");
+				}
+				if (obj.totalLeave == null || obj.totalLeave == "") {
+					validation = validationUpdated("TotalLeave Required",
+							"totalLeave");
+				}
+				if (obj.reason == null || obj.reason == "") {
+					validation = validationUpdated("Reason Required", "reason");
+				}
+
+				updateRowData(obj);
+			} else {
+				$('#alertModal').modal('show');
+			}
+
+		} else {
+			obj.leaveId = $("#leaveId").html();
+			obj.leaveType = $("#leaveType :selected").text();
+			obj.leaveTypeId = $("#leaveType").val();
+			obj.fromDate = $("#fromDate").val();
+			obj.toDate = $("#toDate").val();
+			obj.totalLeave = $("#totalLeave").val();
+			obj.reason = $("#reason").val();
+			obj.availableLeave = $("#availableLeave").val();
+			obj.rowId = $("#rowId").val();
+
+			if (obj.fromDate == null || obj.fromDate == "") {
+				validation = validationUpdated("FromDate Required", "fromDate");
+			}
+			if (obj.toDate == null || obj.toDate == "") {
+				validation = validationUpdated("ToDate Required", "toDate");
+			}
+			if (obj.totalLeave == null || obj.totalLeave == "") {
+				validation = validationUpdated("TotalLeave Required",
+						"totalLeave");
+			}
+			if (obj.reason == null || obj.reason == "") {
+				validation = validationUpdated("Reason Required", "reason");
+			}
+
+			if (validation) {
+				leave = [];
+				var cntt = 0;
+				gridOptions1.api.forEachNode(function(rowNode, index) {
+					//console.log(index)
+					cntt = cntt + 1;
+					leave.push(rowNode.data);
+
+				});
+				obj.rowId = cntt + 1;
+				leave.push(obj);
+
+				var rowId = $("#rowId").val();
+
+				if (rowId == "" || rowId == null) {
+					gridOptions1.api.setRowData(leave);
+
+					$("#leaveTypeId").val("");
+					$("#leaveType").val("");
+					$("#fromDate").val("");
+					$("#toDate").val("");
+					$("#totalLeave").val("");
+					$("#reason").val("");
+					$("#availableLeave").val("");
+					$("#rowId").val("");
+					closeNav();
+				} else {
+					updateRowData(obj);
+				}
+
+			}
+		}
+
+	}
+
+	/* ---------function for getting the data of leave apply parent table---------- */
+
+	function addDetails() {
+
+		var datas = [];
+		gridOptions1.api.forEachNode(function(rowNode, index) {
+			var details = rowNode.data;
+
+			details.leaveId = $("#leaveId").html();
+			details.empName = $("#empName").val();
+			details.empID = $("#empID").val();
+			details.leaveApplyDate = $("#leaveApplyDate").val();
+			datas.push(details);
+		})
+		saveLeaveApply(datas);
+	}
+
+	/* ------------function for main save both parent and child table data---------- */
+
+	function saveLeaveApply(datas) {
+
+		$.ajax({
+			type : "POST",
+			url : "leave-apply-save",
+			contentType : "application/json",
+			data : JSON.stringify(datas),
+			success : function(response) {
+				if (response.message == "Success") {
+					
+					$("#messageParagraph").text(
+					"Data Saved Successfully");
+					$("#msgOkModal").removeClass("btn3");
+					$("#msgOkModal").addClass("btn1");
+					$("#msgModal").modal('show');
+					$("#myGrid").show();
+					$("#demo").hide();
+					$("#new").show();
+					$("#approve").show();
+
+					agGrid.simpleHttpRequest({
+						url : "leave-apply-view"
+					}).then(function(data) {
+						var len = data.length;
+						$('#totalReq').find('span').html(len);
+						gridOptions.api.setRowData(data);
+					})
+
+					gridOptions1.api.setRowData([]);
+				}
+			},
+			error : function(datas) {
+			}
+		})
+
+	}
+
+	/*---------------function for edit leave apply parent table------------ */
+
+	function editLeaveApply(id) {
+
+		var leaveId = id;
+		$("#leaveId").html(leaveId);
+		agGrid.simpleHttpRequest({
+			url : "leave-apply-edit?id=" + id
+		}).then(function(data) {
+			gridOptions1.api.setRowData(data);
+			
+			for(var i=0;i<=data.length;i++){
+						
+				if (data[i].status != "0") {
+					$('#mainsave').attr('disabled', true);
+					$('#new1').attr('disabled', true);
+					$("#myGrid1").show();
+					$("#empID").val(data[0].empID);
+					$("#empName").val(data[0].empName);
+					$("#leaveApplyDate").val(data[0].leaveApplyDate);
+					$("#createdDate").html(data[0].createdOn);
+					$("#approveDate").html(data[0].approvedDate);
+					$("#rejectDate").html(data[0].rejectDate);
+					var rejectStatus = data[0].status;
+					headerStatus(rejectStatus);
+				} else {
+					$('#mainsave').attr('disabled', false);
+					$('#new1').attr('disabled', false);
+					$("#myGrid1").show();
+					$("#empID").val(data[0].empID);
+					$("#empName").val(data[0].empName);
+					$("#leaveApplyDate").val(data[0].leaveApplyDate);
+					$("#createdDate").html(data[0].createdOn);
+					$("#approveDate").html(data[0].approvedDate);
+					$("#rejectDate").html(data[0].rejectDate);
+					var rejectStatus = data[0].status;
+					headerStatus(rejectStatus);
+				}
+			}
+		});
+
+		$("#myGrid").hide();
+		$("#cancel").show();
+		$("#save").show();
+		$("#demo").show();
+		$("#new").hide();
+		$("#totalReq").hide();
+		$("#approve").hide();
+	}
+
+	/* --------delete selected record from my grid1 (child table) through modal-----------  */
+
+	function deleteDetailsOnclick() {
+
+		$('.modal').hide();
+		$('.modal-backdrop').hide();
+		var selectedRows = gridOptions1.api.getSelectedRows();
+		gridOptions1.api.applyTransaction({
+			remove : selectedRows
+		});
+		cancelModalDeleteBtn();
+	}
+
+	/*----------------------- function for ok button in modal2------------------ */
+
+	function okModalBtnOnclick() {
+		$('#alertModal').modal('hide');
+		$("#leaveTypeId").val("");
+		$("#leaveType").val("");
+	}
+	/*----------------------- function for  date ok button in modal3------------------ */
+
+	function okModalDateBtnOnclick() {
+		$('#dateModal').modal('hide');
+		$("#fromDate").val("");
+		$("#toDate").val("");
+		$("#totalLeave").val("");
+	}
+
+	/* ------------function for showing the modal(delete record from my grid1)------------ */
+
+	function deleteDetail() {
+		$('#deleteDetails').modal('show');
+	}
+
+	/* -------------------function for cancel button in modal1------------------ */
+
+	function cancelModalBtn() {
+		$("#deleteModalBtn").removeAttr("disabled");
+	}
+
+	/* -------------------for closeing modal box for delete---------------- */
+
+	function cancelModalDeleteBtn() {
+		$('#deleteDetails').modal('hide');
+		$('#alertModal').modal('hide');
+
+	}
+
+	/*-------------- Edit data from mygrid1 (leave details-child table) --------------*/
+
+	function editLeaveDetails(id) {
+		var x = parseInt(id);
+		var rowNode = gridOptions1.api.getRowNode(x);
+		var dataNode = rowNode.data;
+		openNav();
+
+		$("#leaveType").val(dataNode.leaveTypeId);
+		$("#fromDate").val(dataNode.fromDate);
+		$("#toDate").val(dataNode.toDate);
+		$("#totalLeave").val(dataNode.totalLeave);
+		$('#reason').val(dataNode.reason);
+		$("#availableLeave").val(dataNode.availableLeave);
+		$("#rowId").val(dataNode.rowId);
+	}
+
+	/*-------------- function for update mygrid1(child table)------------------ */
+
+	function updateRowData(data) {
+
+		var rowNode = gridOptions1.api.getRowNode(data.rowId);
+		rowNode.setDataValue('fromDate', data.fromDate);
+		rowNode.setDataValue('toDate', data.toDate);
+		rowNode.setDataValue('totalLeave', data.totalLeave);
+		rowNode.setDataValue('reason', data.reason);
+		rowNode.setDataValue('availableLeave', data.availableLeave);
+		$("#leaveTypeId").val("");
+		$("#leaveType").val("");
+		$("#fromDate").val("");
+		$("#toDate").val("");
+		$("#totalLeave").val("");
+		$("#reason").val("");
+		$("#availableLeave").val("");
+		$("#rowId").val("");
+		closeNav();
+	}
+
+	/* --------------------function for header status----------------- */
+
+	function headerStatus(rejectStatus) {
+
+		$("#statusDiv").show();
+		var createdDate = $("#createdDate").text();
+		//var approveDate = $("#approveDate").text();
+		var rejectDate = $("#rejectDate").text();
+
+		if (createdDate) {
+			$('#createdDiv').addClass('green-box');
+			$('#createdDiv').removeClass('grey-box');
+		} else {
+			$('#createdDiv').removeClass('green-box');
+			$('#createdDiv').addClass('grey-box');
+		}
+
+		if (rejectStatus == "2") {
+			$('#rejectDiv').removeClass('grey-box');
+			$('#rejectDiv').addClass('green-box');
+		} else {
+			$('#rejectDiv').removeClass('green-box');
+			$('#rejectDiv').addClass('grey-box');
+		}
+
+		if (rejectStatus == "1") {
+			$('#approveDiv').removeClass('grey-box');
+			$('#approveDiv').addClass('green-box');
+		} else {
+			$('#approveDiv').removeClass('green-box');
+			$('#approveDiv').addClass('grey-box');
+
+		}
+		if (rejectStatus == "0") {
+			$('#pendingDiv').removeClass('grey-box');
+			$('#pendingDiv').addClass('green-box');
+		} else {
+			$('#pendingDiv').removeClass('green-box');
+			$('#pendingDiv').addClass('grey-box');
+
+		}
+	}
+</script>
+</head>
+<body>
+	<div layout:fragment="content" class="maincontent">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="maincontentsec">
+					<div class="row margin_topbot" id="searchRowDiv">
+						<div class="input-style row">
+							<input type="text" placeholder="Search.." name="search"
+								class="searchboxinput" onkeyup="cancelBar()"
+								oninput="onQuickFilterChanged()" id="quickFilter">
+							<div class="searchicon">
+								<a href="javascript:void(0)"><span
+									style="display: none; border-right: 1px solid #ccc; padding-right: 5px;"
+									id="closeKey"
+									onclick="gridOptions.api.setQuickFilter(null);$('#quickFilter').val('');document.getElementById('closeKey').style.display='none';"
+									class="close_i"><i class="ti-close srchicon"></i></span></a><a
+									href="javascript:void(0)"><i class="ti-search srchicon"></i></a>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-3  btn-hs">
+							<div class="font-design" id="totalReq">
+								Leave Apply(<span></span>)
+							</div>
+							<input type="hidden" id="sessionId" th:value="${userId}" /> <input
+								type="hidden" id="sessionName" th:value="${userName}" />
+							<input type="hidden" id="hrRole" th:value="${hrRole}" />
+
+						</div>
+						<div class="col-md-9 buttonsec btn-hs">
+							<div class="buttongap"></div>
+							<input type="button" class="btn1" id="new" value="NEW"
+								onclick="newBtn()" readonly>
+							<button class="btn2" id="approve" onclick="approveLeave()"
+								th:if="${hrRole != null}">Approve</button>
+							<button class="btn2" id="reject" onclick="rejectLeave()"
+								th:if="${hrRole != null}">Reject</button>
+							<button class="btn3" id="delete" onclick="deleteLeaveApply()">Delete</button>
+						</div>
+					</div>
+
+					<!------------- parent table my grid ---------------------->
+
+					<div id="myGrid" style="width: 100%; height: 500px;"
+						class="ag-theme-alpine"></div>
+
+					<div class="collapse" id="demo">
+						<div class="innercontent">
+							<div class="innerstickybg">
+								<div class="row">
+									<div class="col-md-4" id="idDiv">
+										LEAVE ID : <span id="leaveId"></span>
+									</div>
+									<div class="col-md-4">
+										<div id="statusDiv">
+											<div class="hr4"></div>
+											<div class="main-div">
+												<div class="section2">
+													<div id="createdDiv" class="green-box">
+														<div class="green-box-heading">CREATED</div>
+														<div class="date" id="createdDate"></div>
+													</div>
+												</div>
+												<div class="section3">
+													<div id="pendingDiv" class="grey-box">
+														<div class="green-box-heading">PENDING</div>
+														<div class="date" id="pendingDate"></div>
+													</div>
+												</div>
+												<div class="section4">
+													<div id="rejectDiv" class="grey-box">
+														<div class="green-box-heading">REJECT</div>
+														<div class="date" id="rejectDate"></div>
+													</div>
+												</div>
+												<div class="section5">
+													<div id="approveDiv" class="grey-box">
+														<div class="green-box-heading">APPROVE</div>
+														<div class="date" id="approveDate"></div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="col-md-4">
+										<button class="btn1" id="mainsave" onclick="addDetails()">Save</button>
+										<button class="btn4" id="cancel" onclick="cancelBtn()">Cancel</button>
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-md-4">
+									<div class="form-group">
+										<!-- <input type="hidden" id="sessionempId" th:text="${session.USER_ID}"/> -->
+										<label>Employee ID</label> <input type="text"
+											class="form-control" id="empID" autocomplete="off" readonly />
+									</div>
+								</div>
+								<div class="col-md-4">
+									<div class="form-group">
+										<!--<input type="hidden" id="sessionempName" th:text="${session.USER_NAME}"/> -->
+										<label>Employee Name</label> <input type="text"
+											class="form-control" id="empName" autocomplete="off" readonly />
+									</div>
+								</div>
+								<div class="col-md-4">
+									<div class="form-group">
+										<label>Leave Apply Date</label> <input type="text"
+											id="leaveApplyDate" autocomplete="off" class="form-control"
+											th:attr="onkeyup=|formatDate('leaveApplyDate','${session.DATEFORMAT_JS}')|">
+										<i class="ti-calendar picker_calendar" id="toCalendar"
+											onchange="dateChange();"></i>
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-md-3  btn-hs">
+									<div class="font-design" id="totalReq1">Leave Details</div>
+								</div>
+								<div class="col-md-9 padding-0" align="right">
+									<button class="btn1" id="new1" onclick="openNav()">NEW</button>
+									<button class="btn3" id="delete1" onclick="deleteDetail()">DELETE</button>
+								</div>
+							</div>
+							<!----------------------- side nav---------------------- -->
+
+							<div id="main_contentClrnc">
+								<div id="mySidenav" class="sidenav">
+
+									<div class="slidebox">
+										<div class="row">
+											<div class="col-md-12 buttonsec btn-hs">
+												<button class="btn1" id="save" onclick="saveSideNav()">Save</button>
+												<button class="btn4" id="cancel1" onclick="closeNav()">Cancel</button>
+											</div>
+										</div>
+										<div class="row">
+											<div class="col-md-12">
+												<div class="form-group">
+													<input type="hidden" id="rowId" /> <label>Leave
+														Type</label>
+													<div class="select">
+														<input type="hidden" id="leaveTypeId"> <select
+															id="leaveType">
+															<option value="">--Select--</option>
+															<option th:each="c,iter:${leavelist}" th:value="${c.key}"
+																th:text="${c.name}"></option>
+														</select>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="row">
+											<div class="col-md-12">
+												<div class="form-group">
+													<label>From Date</label> <input type="text" id="fromDate"
+														autocomplete="off" class="form-control"
+														th:attr="onkeyup=|formatDate('fromDate','${session.DATEFORMAT_JS}')|">
+													<i class="ti-calendar picker_calendar"
+														id="fromDateCalendar" onchange="dateChange();"></i>
+												</div>
+											</div>
+										</div>
+										<div class="row">
+											<div class="col-md-12">
+												<div class="form-group">
+													<label>To Date</label> <input type="text" id="toDate"
+														autocomplete="off" class="form-control"
+														th:attr="onkeyup=|formatDate('toDate','${session.DATEFORMAT_JS}')|">
+													<i class="ti-calendar picker_calendar" id="toDateCalendar"
+														onchange="dateChange();"></i>
+												</div>
+											</div>
+										</div>
+										<div class="row">
+											<div class="col-md-12">
+												<div class="form-group">
+													<label>Total Leave Days</label> <input type="text"
+														class="form-control" id="totalLeave" autocomplete="off"
+														readonly />
+												</div>
+											</div>
+										</div>
+										<div class="row">
+											<div class="col-md-12">
+												<div class="form-group">
+													<label>Reason</label> <input type="text"
+														class="form-control" autocomplete="off" id="reason">
+												</div>
+											</div>
+										</div>
+										<div class="row">
+											<div class="col-md-12">
+												<div class="form-group">
+													<label>Available leave</label> <input type="text"
+														class="form-control" autocomplete="off"
+														id="availableLeave">
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div id="myGrid1" style="width: 100%; height: 500px;"
+								class="ag-theme-alpine"></div>
+						</div>
+					</div>
+
+			<!------------- delete product modal start -------------------->
+
+					<div id="deleteDetails" class="modal fade show" aria-modal="true">
+						<div class="modal-dialog modal-confirm">
+							<div class="modal-content">
+								<div class="modal-header flex-column">
+									<button type="button" class="close" data-dismiss="modal"
+										aria-hidden="true" onclick="cancelModalDeleteBtn()">
+										<i class="ti-close modal-close"></i>
+									</button>
+								</div>
+								<div class="modal-body">
+									<p>Do you really want to delete these records? This process
+										cannot be undone.</p>
+								</div>
+								<div class="modal-footer justify-content-center"
+									style="margin-top: -30px;">
+
+									<button type="button" class="btn1" data-dismiss="modal"
+										onclick="cancelModalBtn();">Cancel</button>
+									<button type="button" class="btn3"
+										onclick="deleteDetailsOnclick()">Delete</button>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!-- -------------------second modal----------------------->
+
+					<div id="alertModal" class="modal fade show" aria-modal="true">
+						<div class="modal-dialog modal-confirm">
+							<div class="modal-content">
+								<div class="modal-header flex-column">
+									<button type="button" class="close" data-dismiss="modal"
+										aria-hidden="true" onclick="cancelModalDeleteBtn()">
+										<i class="ti-close modal-close"></i>
+									</button>
+								</div>
+								<div class="modal-body">
+									<p>Same Leave Type Can Not Be Choosen</p>
+								</div>
+								<div class="modal-footer justify-content-center"
+									style="margin-top: -30px;">
+									<button type="button" class="btn1"
+										onclick="okModalBtnOnclick()">OK</button>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+		<!-- ------------------date modal------------------------- -->
+					
+					<div id="dateModal" class="modal fade show" aria-modal="true">
+						<div class="modal-dialog modal-confirm">
+							<div class="modal-content">
+								<div class="modal-header flex-column">
+									<button type="button" class="close" data-dismiss="modal"
+										aria-hidden="true" onclick="cancelModalDeleteBtn()">
+										<i class="ti-close modal-close"></i>
+									</button>
+								</div>
+								<div class="modal-body">
+									<p>From Date must be lesser than To Date</p>
+								</div>
+								<div class="modal-footer justify-content-center"
+									style="margin-top: -30px;">
+
+									<button type="button" class="btn1"
+										onclick="okModalDateBtnOnclick()">OK</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

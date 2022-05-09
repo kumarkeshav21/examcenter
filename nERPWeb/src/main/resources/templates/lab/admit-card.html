@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+	 
+	 
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script type="text/javascript">
+        $("#btnPrint").live("click", function () {
+            var divContents = $("#dvContainer").html();
+            var printWindow = window.open('', '', 'height=400,width=800');
+            printWindow.document.write('<html><head><title>DIV Contents</title>');
+            printWindow.document.write('</head><body >');
+            printWindow.document.write(divContents);
+            printWindow.document.write('</body></html>');
+            printWindow.document.close();
+            printWindow.print();
+        });
+    </script>
+    
+    
+<head>
+
+<style>
+body {
+	font-size: 1rem !important;
+}
+
+.mainsec {
+	background: #fff;
+	padding: 15px;
+	margin: 15px 0;
+	box-shadow: rgb(0 0 0/ 15%) 0px 2px 15px;
+}
+
+.mainsec .table td, .table th {
+	padding: 4px;
+}
+
+.pretitle {
+	font-size: 20px;
+}
+
+.admit {
+	font-size: 20px;
+}
+
+.mr-6 {
+	margin: 6px 0;
+}
+
+ul.list {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+ul.list li {
+	margin: 5px;
+}
+
+.pd-5 {
+	padding: 10px 5px !important;
+}
+</style>
+</head>
+
+
+<body>
+	<div layout:fragment="content" class="maincontent">
+		<div class="container-scroller">
+			<!-- partial -->
+			<div class="container-fluid">
+				<!-- partial -->
+				<div class="main-panel">
+					<div class="content-wrapper">
+
+						<div class="mainsec">
+							<div class="row">
+								<div class="col-md-12 text-center mr-6">
+									 <input class="btn btn-primary" type="button" value="Download Admit Card" id="btnPrint" />
+									<button type="button" class="btn btn-danger">Back</button>
+								</div>
+							</div>
+							
+
+							<div class="table-responsive" id="dvContainer">
+							<div class="row">
+								<div class="col-md-3 text-left">
+									<img src="../assets/images/logo.jpg" style="max-width: 100%;"
+										class="img-responsive"></img>
+								</div>
+								<div class="col-md-6 text-center">
+									<h2 class="pretitle">NATIONAL ELIGIBILTY CUM ENTRANCE
+										TEST(UG)-2021</h2>
+									<h3 class="admit">Admit Card Provisional</h3>
+								</div>
+								<div class="col-md-3 text-right">
+									<img src="../assets/images/NTA_logo.png"
+										style="max-width: 100%;" class="img-responsive">
+								</div>
+							</div>
+								<table  class="table table-striped table-bordered" width="100%"
+									cellspacing="2" cellpadding="4" th:each="c,iter:${getFullDetails}">
+									<tbody>
+										<tr>
+											<td width="20%"><strong>Roll No.:</strong></td>
+											<td width="20%" th:text="${c.roll}">SG213012</td>
+											<td width="20%"><strong>Apllication Number:</strong></td>
+											<td width="20%" th:text="${c.applicationNo}">21303003</td>
+											<td width="20%" rowspan="6" class="pd-5"><img
+												src="../assets/images/photo.jpg" width="200" height="200"
+												style="border: solid 1px #ccc;"></td>
+										</tr> 
+
+										<tr>
+											<td><strong>Candidate's Name:</strong></td>
+											<td th:text="${c.candiName}">Nihar Ranjan Dash</td>
+											<td><strong>Father's Name:</strong></td>
+											<td th:text="${c.candiFatherName}">Ramesh Chandra Dash</td>
+
+										</tr>
+
+										<tr>
+											<td><strong>Gender:</strong></td>
+											<td th:text="${c.gender}">Male</td>
+											<td><strong>Date of Birth:</strong></td>
+											<td th:text="${c.dateOfBirth}">20.12.1985</td>
+
+										</tr>
+										<tr>
+											<td><strong>Category:</strong></td>
+											<td th:text="${c.catogary}">GENERAL</td>
+											<td><strong>Person with Disability(PwD):</strong></td>
+											<td th:text="${c.personWithDisablity}">No</td>
+
+										</tr>
+
+
+										<tr>
+											<td colspan="2"><img src="../assets/images/barcode.png"
+												width="400" height="80"></td>
+
+											<td colspan="2"><img src="../assets/images/sign.png"
+												width="400" height="80"></td>
+
+										</tr>
+
+										<tr>
+											<td colspan="5" align="center"><h2 class="pretitle">Test
+													Details</h2></td>
+
+										</tr>
+
+										<tr>
+											<td colspan="2"><strong>Question Paper Medium:</strong></td>
+											<td colspan="3" th:text="${c.quesPaperMedium}">English</td>
+										</tr>
+
+										<tr>
+											<td colspan="2"><strong>Date of Examination:</strong></td>
+											<td colspan="3" th:text="${c.dateOfExam}">12.02.2021(Sunday)</td>
+										</tr>
+
+										<tr>
+											<td colspan="2"><strong>Reporting/Entry Time at
+													Centre :</strong></td>
+											<td colspan="3" th:text="${c.reportingTime}">11:40AM(IST)</td>
+										</tr>
+
+										<tr>
+											<td colspan="2"><strong>Gate Closing Time of
+													Centre :</strong></td>
+											<td colspan="3" th:text="${c.gateClosingTime}">01:30PM(IST)</td>
+										</tr>
+
+										<tr>
+											<td colspan="2"><strong>Time of Test :</strong></td>
+											<td colspan="3">02:00PM to 05:00PM(IST)</td>
+										</tr>
+
+										<tr>
+											<td colspan="2"><strong>Test Centre No. :</strong></td>
+											<td colspan="3">200138</td>
+										</tr>
+
+										<tr>
+											<td colspan="2"><strong>Test Centre Name :</strong></td>
+											<td colspan="3" th:text="${c.testCenterName}">RAVENSHAW COLLEGE</td>
+										</tr>
+
+										<tr>
+											<td colspan="2"><strong>Test Centre
+													Address(Venue of Test) :</strong></td>
+											<td colspan="3" th:text="${c.testCenterAddress}">College Square,Ranihat, Cuttack-753014</td>
+										</tr>
+
+										<tr>
+											<td colspan="5" align="center"><img
+												src="../assets/images/sign.png" width="400" height="50">
+												<p>SENIOR DIRECTOR(NTA)</p></td>
+
+										</tr>
+
+										<tr>
+											<td colspan="5" align="left">
+												<h2 class="pretitle">Document Required on Exam Day:</h2>
+										</tr>
+
+										<tr>
+											<td colspan="5" align="left">
+
+												<p>Candidates who will download their NEET Admit Card
+													2021 will be required to bring the following documents at
+													the exam center:</p>
+												<ul class="list">
+													<li><i class="fa fa-angle-double-right"></i> Admit
+														Card along with passport size photograph affixed on it.</li>
+													<li><i class="fa fa-angle-double-right"></i> Two
+														passport size photograph to be affixed on attendance
+														sheet.</li>
+												</ul>
+										</tr>
+
+
+										<tr>
+											<td colspan="5" align="left">
+												<h2 class="pretitle">Instructions for Candidates on
+													Exam Day :</h2>
+										</tr>
+
+										<tr>
+											<td colspan="5" align="left">
+
+												<ul class="list">
+
+													<li><i class="fa fa-angle-double-right"></i> The exam
+														center will be opened 2 hours before starting of the
+														examination. So, candidates must reach into the
+														examination center on time.</li>
+													<li><i class="fa fa-angle-double-right"></i> After
+														1:30 AM, no candidates will be allowed to enter the exam
+														center.</li>
+													<li><i class="fa fa-angle-double-right"></i>
+														Candidates must reach the exam venue with downloaded admit
+														card &amp; passport size photograph.</li>
+													<li><i class="fa fa-angle-double-right"></i>
+														Candidates, those not possess a valid admit will not be
+														permitted to enter the examination hall.</li>
+													<li><i class="fa fa-angle-double-right"></i> During
+														the examination time, the invigilator will check Admit
+														Card of the candidates to satisfy himself/herself about
+														the identity of each candidate. The invigilator will also
+														put his/her signatures in the place provided in the Answer
+														Sheet on SIDE-1.</li>
+													<li><i class="fa fa-angle-double-right"></i>
+														Candidates must find out &amp; occupy their allotted
+														seats. If candidates found to sit in another seat or room
+														other than an allotted seat, then their candidature will
+														be cancelled.</li>
+													<li><i class="fa fa-angle-double-right"></i>
+														Candidates will not be allowed to carry any barred items
+														except NEET 2021 hall ticket and photographs inside the
+														examination hall.</li>
+													<li><i class="fa fa-angle-double-right"></i> No
+														candidates will leave their seat or exam hall until exam
+														concludes as per schedule.</li>
+													<li><i class="fa fa-angle-double-right"></i> Smoking
+														in the examination center is strictly prohibited.</li>
+													<li><i class="fa fa-angle-double-right"></i> Water
+														Bottles, Tea, coffee, cold drinks or snacks etc. are not
+														allowed to be taken by the candidates into the examination
+														center.</li>
+													<li><i class="fa fa-angle-double-right"></i>
+														Candidates must sign twice on the attendance sheet, first
+														after starting of examination &amp; second while handling
+														over the answer sheet to the examiner.</li>
+													<li><i class="fa fa-angle-double-right"></i>
+														Candidates also have to put their finger impression in
+														given space on the attendance sheet.</li>
+													<li><i class="fa fa-angle-double-right"></i> The
+														candidate will check and ensure that the Test-Booklet
+														contain as many number of pages as are written on the top
+														of the cover page.</li>
+													<li><i class="fa fa-angle-double-right"></i> For those
+														who are unable to appear on the scheduled date of test for
+														any reason, re-test shall not be held by the Board under
+														any circumstances.</li>
+													<li><i class="fa fa-angle-double-right"></i> The
+														candidates, suffering from Diabetes Type – I, may be taken
+														care of at the centre as per the instructions issued by
+														CBSE.</li>
+													<li><i class="fa fa-angle-double-right"></i> No
+														candidate shall be allowed to use toilets in last 30
+														minutes of examination i.e. from 12.30 pm to 01.00 pm.</li>
+												</ul>
+
+												
+										</tr>
+
+
+
+
+									</tbody>
+								</table>
+
+							</div>
+
+
+
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</body>
+</html>
